@@ -9,16 +9,16 @@ import com.jfinal.core.Controller;
  */
 public class FrameController extends Controller {
 
-    public void index(){
-        this.render("/back/frame.html");
+
+    public void index() {
+        this.render("/webapp/back-end/src/main/frame.html");
     }
 
-    public void initView(){
+    public void initView() {
 
     }
 
-    public void getMenu(){
-
+    public void menus() {
     }
 
 }
