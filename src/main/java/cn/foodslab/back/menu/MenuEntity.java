@@ -12,32 +12,32 @@ public class MenuEntity {
     private int queue; // 顺序
     private String method; // 调用的方法的名称
     private String positionId; // 位置ID，标记在界面上所处的位置
-    private String pid; // 父ID
-    private int status; // -1 0 1 (-1删除状态，0，不显示状态，1正常状态)
+    private String pId; // 父ID
+    private int status; // -1 0 1 (-1删除状态，0，不显示状态，1正常状态，2该菜单除了超级管理员不可授予其他人)
     private String createTime;
     private String updateTime;
 
     public MenuEntity() {}
 
-    public MenuEntity(String menuId, String label, int level, int queue, String method, String positionId, String pid, int status) {
+    public MenuEntity(String menuId, String label, int level, int queue, String method, String positionId, String pId, int status) {
         this.menuId = menuId;
         this.label = label;
         this.level = level;
         this.queue = queue;
         this.method = method;
         this.positionId = positionId;
-        this.pid = pid;
+        this.pId = pId;
         this.status = status;
     }
 
-    public MenuEntity(String menuId, String label, int level, int queue, String method, String positionId, String pid, int status, String createTime, String updateTime) {
+    public MenuEntity(String menuId, String label, int level, int queue, String method, String positionId, String pId, int status, String createTime, String updateTime) {
         this.menuId = menuId;
         this.label = label;
         this.level = level;
         this.queue = queue;
         this.method = method;
         this.positionId = positionId;
-        this.pid = pid;
+        this.pId = pId;
         this.status = status;
         this.createTime = createTime;
         this.updateTime = updateTime;
@@ -91,12 +91,12 @@ public class MenuEntity {
         this.positionId = positionId;
     }
 
-    public String getPid() {
-        return pid;
+    public String getpId() {
+        return pId;
     }
 
-    public void setPid(String pid) {
-        this.pid = pid;
+    public void setpId(String pId) {
+        this.pId = pId;
     }
 
     public int getStatus() {
@@ -139,7 +139,7 @@ public class MenuEntity {
     }
 
     public String toInsertSQLString(){
-        return "INSERT INTO MENU (menuId,label,level,queue,method,positionId,pid,status) " +
-                "VALUES('"+ this.getMenuId() +"','"+ this.getLabel()+"','"+this.getLevel()+"','"+this.getQueue()+"','"+this.getMethod()+"','"+this.getPositionId()+"','"+this.getPid()+"','"+this.getStatus()+"');";
+        return "INSERT INTO MENU (menuId,label,level,queue,method,positionId,pId,status) " +
+                "VALUES('"+ this.getMenuId() +"','"+ this.getLabel()+"','"+this.getLevel()+"','"+this.getQueue()+"','"+this.getMethod()+"','"+this.getPositionId()+"','"+this.getpId()+"','"+this.getStatus()+"');";
     }
 }

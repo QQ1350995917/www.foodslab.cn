@@ -7,18 +7,10 @@ import com.jfinal.core.Controller;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: 后台管理页面控制器
  */
-public class FrameController extends Controller {
+public class FrameController extends Controller implements IFrameController{
 
-
+    @Override
     public void index() {
-        this.render("/webapp/back-end/src/main/frame.html");
+        this.render("/webapp/widgets/frame.html");
     }
-
-    public void initView() {
-
-    }
-
-    public void menus() {
-    }
-
 }

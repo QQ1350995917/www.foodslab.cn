@@ -5,9 +5,6 @@ package cn.foodslab.back;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: 对管理界面菜单的操作
  */
-public interface IFrame {
-
-
-
-
+public interface IFrameController {
+    void index();
 }

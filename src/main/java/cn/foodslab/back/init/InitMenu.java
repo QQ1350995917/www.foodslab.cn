@@ -1,7 +1,8 @@
 package cn.foodslab.back.init;
 
-import cn.foodslab.back.menu.MenuDao;
 import cn.foodslab.back.menu.MenuEntity;
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
 
 import java.util.LinkedList;
 
@@ -10,11 +11,23 @@ import java.util.LinkedList;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: 初始化菜单
  */
-public class InitMenu {
+public class InitMenu extends InitBase{
 
     public static void main(String[] args) throws Exception {
-        MenuDao menuDao = new MenuDao();
-        boolean result = menuDao.initMenus(genMenus());
+        boolean result = false;
+        LinkedList<MenuEntity> menuEntities = genMenus();
+        for (MenuEntity menuEntity:menuEntities){
+            Record menu = new Record()
+                    .set("menuId", menuEntity.getMenuId())
+                    .set("label", menuEntity.getLabel())
+                    .set("level", menuEntity.getLevel())
+                    .set("queue", menuEntity.getQueue())
+                    .set("method", menuEntity.getMethod())
+                    .set("positionId", menuEntity.getPositionId())
+                    .set("pId", menuEntity.getpId())
+                    .set("status", menuEntity.getStatus());
+            result = Db.save("menu", menu);
+        }
         if (result) {
             System.out.println("success");
         } else {
@@ -25,119 +38,123 @@ public class InitMenu {
     private static LinkedList<MenuEntity> genMenus() {
 
         MenuEntity menuEntityTop1 = new MenuEntity(ids[0], "流量报表", 0, 0, "method", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[0], 1);
-        MenuEntity menuEntityTop11 = new MenuEntity(ids[1], "逐月", 1, 0, "method", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[0], 1);
-        MenuEntity menuEntityTop12 = new MenuEntity(ids[2], "逐年", 1, 1, "method", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[0], 1);
+//        MenuEntity menuEntityTop11 = new MenuEntity(ids[1], "逐月", 1, 0, "method", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[0], 1);
+//        MenuEntity menuEntityTop12 = new MenuEntity(ids[2], "逐年", 1, 1, "method", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[0], 1);
 
         MenuEntity menuEntityTop2 = new MenuEntity(ids[3], "销售报表", 0, 1, "method", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[3], 1);
-        MenuEntity menuEntityTop21 = new MenuEntity(ids[4], "逐月", 1, 0, "method", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[3], 1);
-        MenuEntity menuEntityTop22 = new MenuEntity(ids[5], "逐年", 1, 1, "method", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[3], 1);
+//        MenuEntity menuEntityTop21 = new MenuEntity(ids[4], "逐月", 1, 0, "method", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[3], 1);
+//        MenuEntity menuEntityTop22 = new MenuEntity(ids[5], "逐年", 1, 1, "method", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[3], 1);
 
-        MenuEntity menuEntityLeft1 = new MenuEntity(ids[6], "系统管理", 0, 2, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[6], 1);
-        MenuEntity menuEntityLeft11 = new MenuEntity(ids[7], "人员管理", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[6], 1);
-        MenuEntity menuEntityLeft12 = new MenuEntity(ids[8], "系统状态", 1, 1, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[6], 1);
-        MenuEntity menuEntityLeft13 = new MenuEntity(ids[9], "系统日志", 1, 2, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[6], 1);
+
+        MenuEntity menuEntityLeft1 = new MenuEntity(ids[6], "管理员", 0, 2, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[6], 1);
+//        MenuEntity menuEntityLeft11 = new MenuEntity(ids[7], "管理员", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[6], 1);
+//
 
         MenuEntity menuEntityLeft2 = new MenuEntity(ids[10], "活动管理", 0, 3, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[10], 1);
-        MenuEntity menuEntityLeft21 = new MenuEntity(ids[11], "活动管理", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[10], 1);
+//        MenuEntity menuEntityLeft21 = new MenuEntity(ids[11], "活动管理", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[10], 1);
 
         MenuEntity menuEntityLeft3 = new MenuEntity(ids[12], "产品管理", 0, 4, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[12], 1);
-        MenuEntity menuEntityLeft31 = new MenuEntity(ids[13], "产品总览", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[12], 1);
+//        MenuEntity menuEntityLeft31 = new MenuEntity(ids[13], "产品总览", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[12], 1);
 
         MenuEntity menuEntityLeft4 = new MenuEntity(ids[14], "推荐管理", 0, 5, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[14], 1);
-        MenuEntity menuEntityLeft41 = new MenuEntity(ids[15], "推荐管理", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[14], 1);
+//        MenuEntity menuEntityLeft41 = new MenuEntity(ids[15], "推荐管理", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[14], 1);
 
         MenuEntity menuEntityLeft5 = new MenuEntity(ids[16], "消息管理", 0, 6, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[16], 1);
-        MenuEntity menuEntityLeft51 = new MenuEntity(ids[17], "消息管理", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[16], 1);
+//        MenuEntity menuEntityLeft51 = new MenuEntity(ids[17], "消息管理", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[16], 1);
 
         MenuEntity menuEntityLeft6 = new MenuEntity(ids[18], "皮肤管理", 0, 7, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[18], 1);
-        MenuEntity menuEntityLeft61 = new MenuEntity(ids[19], "皮肤管理", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[18], 1);
+//        MenuEntity menuEntityLeft61 = new MenuEntity(ids[19], "皮肤管理", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[18], 1);
 
         MenuEntity menuEntityLeft7 = new MenuEntity(ids[20], "链接管理", 0, 8, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[20], 1);
-        MenuEntity menuEntityLeft71 = new MenuEntity(ids[21], "链接管理", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[20], 1);
+//        MenuEntity menuEntityLeft71 = new MenuEntity(ids[21], "链接管理", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[20], 1);
 
         MenuEntity menuEntityLeft8 = new MenuEntity(ids[22], "用户管理", 0, 9, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[22], 1);
-        MenuEntity menuEntityLeft81 = new MenuEntity(ids[23], "用户列表", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[22], 1);
-        MenuEntity menuEntityLeft811 = new MenuEntity(ids[24], "订单", 2, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[23], 1);
-        MenuEntity menuEntityLeft812 = new MenuEntity(ids[25], "购物车", 2, 1, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[23], 1);
-        MenuEntity menuEntityLeft813 = new MenuEntity(ids[26], "消息", 2, 1, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[23], 1);
-        MenuEntity menuEntityLeft814 = new MenuEntity(ids[27], "账户", 2, 1, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[23], 1);
+//        MenuEntity menuEntityLeft81 = new MenuEntity(ids[23], "用户列表", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[22], 1);
+//        MenuEntity menuEntityLeft811 = new MenuEntity(ids[24], "订单", 2, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[23], 1);
+//        MenuEntity menuEntityLeft812 = new MenuEntity(ids[25], "购物车", 2, 1, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[23], 1);
+//        MenuEntity menuEntityLeft813 = new MenuEntity(ids[26], "消息", 2, 1, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[23], 1);
+//        MenuEntity menuEntityLeft814 = new MenuEntity(ids[27], "账户", 2, 1, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[23], 1);
 
-        MenuEntity menuEntityLeft9 = new MenuEntity(ids[28], "用户管理", 0, 10, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[28], 1);
-        MenuEntity menuEntityLeft91 = new MenuEntity(ids[29], "未发货", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[28], 1);
-        MenuEntity menuEntityLeft911 = new MenuEntity(ids[30], "导出发货信息", 2, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[29], 1);
-        MenuEntity menuEntityLeft912 = new MenuEntity(ids[31], "上传发货信息", 2, 1, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[29], 1);
-        MenuEntity menuEntityLeft92 = new MenuEntity(ids[32], "已发货", 1, 1, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[28], 1);
-        MenuEntity menuEntityLeft93 = new MenuEntity(ids[33], "已完成", 1, 2, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[28], 1);
-        MenuEntity menuEntityLeft94 = new MenuEntity(ids[34], "全部", 1, 3, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[28], 1);
+        MenuEntity menuEntityLeft9 = new MenuEntity(ids[28], "订单管理", 0, 10, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[28], 1);
+//        MenuEntity menuEntityLeft91 = new MenuEntity(ids[29], "未发货", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[28], 1);
+//        MenuEntity menuEntityLeft911 = new MenuEntity(ids[30], "导出发货信息", 2, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[29], 1);
+//        MenuEntity menuEntityLeft912 = new MenuEntity(ids[31], "上传发货信息", 2, 1, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[29], 1);
+//        MenuEntity menuEntityLeft92 = new MenuEntity(ids[32], "已发货", 1, 1, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[28], 1);
+//        MenuEntity menuEntityLeft93 = new MenuEntity(ids[33], "已完成", 1, 2, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[28], 1);
+//        MenuEntity menuEntityLeft94 = new MenuEntity(ids[34], "全部", 1, 3, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[28], 1);
 
         MenuEntity menuEntityLeft10 = new MenuEntity(ids[35], "预约管理", 0, 12, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[35], 1);
-        MenuEntity menuEntityLeft101 = new MenuEntity(ids[36], "未完成", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[35], 1);
-        MenuEntity menuEntityLeft102 = new MenuEntity(ids[37], "已完成", 1, 1, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[35], 1);
-        MenuEntity menuEntityLeft103 = new MenuEntity(ids[38], "失信名单", 1, 2, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[35], 1);
-        MenuEntity menuEntityLeft104 = new MenuEntity(ids[39], "添加预约", 1, 3, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[35], 1);
+//        MenuEntity menuEntityLeft101 = new MenuEntity(ids[36], "未完成", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[35], 1);
+//        MenuEntity menuEntityLeft102 = new MenuEntity(ids[37], "已完成", 1, 1, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[35], 1);
+//        MenuEntity menuEntityLeft103 = new MenuEntity(ids[38], "失信名单", 1, 2, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[35], 1);
+//        MenuEntity menuEntityLeft104 = new MenuEntity(ids[39], "添加预约", 1, 3, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[35], 1);
 
         MenuEntity menuEntityLeft111 = new MenuEntity(ids[40], "预约设置", 0, 11, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[40], 1);
-        MenuEntity menuEntityLeft1111 = new MenuEntity(ids[41], "预约设置", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[40], 1);
+//        MenuEntity menuEntityLeft1111 = new MenuEntity(ids[41], "预约设置", 1, 0, "method", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[40], 1);
 
 
+        MenuEntity menuEntityLeft12 = new MenuEntity(ids[42], "系统状态", 0, 3, "method", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[42], 1);
+        MenuEntity menuEntityLeft13 = new MenuEntity(ids[43], "系统日志", 0, 4, "method", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[43], 1);
 
         LinkedList<MenuEntity> menuEntities = new LinkedList<>();
 
         menuEntities.add(menuEntityTop1);
-        menuEntities.add(menuEntityTop11);
-        menuEntities.add(menuEntityTop12);
+//        menuEntities.add(menuEntityTop11);
+//        menuEntities.add(menuEntityTop12);
 
         menuEntities.add(menuEntityTop2);
-        menuEntities.add(menuEntityTop21);
-        menuEntities.add(menuEntityTop22);
+//        menuEntities.add(menuEntityTop21);
+//        menuEntities.add(menuEntityTop22);
 
         menuEntities.add(menuEntityLeft1);
-        menuEntities.add(menuEntityLeft11);
-        menuEntities.add(menuEntityLeft12);
-        menuEntities.add(menuEntityLeft13);
+//        menuEntities.add(menuEntityLeft11);
+//        menuEntities.add(menuEntityLeft12);
+//        menuEntities.add(menuEntityLeft13);
 
         menuEntities.add(menuEntityLeft2);
-        menuEntities.add(menuEntityLeft21);
+//        menuEntities.add(menuEntityLeft21);
 
         menuEntities.add(menuEntityLeft3);
-        menuEntities.add(menuEntityLeft31);
+//        menuEntities.add(menuEntityLeft31);
 
         menuEntities.add(menuEntityLeft4);
-        menuEntities.add(menuEntityLeft41);
+//        menuEntities.add(menuEntityLeft41);
 
         menuEntities.add(menuEntityLeft5);
-        menuEntities.add(menuEntityLeft51);
+//        menuEntities.add(menuEntityLeft51);
 
         menuEntities.add(menuEntityLeft6);
-        menuEntities.add(menuEntityLeft61);
+//        menuEntities.add(menuEntityLeft61);
 
         menuEntities.add(menuEntityLeft7);
-        menuEntities.add(menuEntityLeft71);
+//        menuEntities.add(menuEntityLeft71);
 
         menuEntities.add(menuEntityLeft8);
-        menuEntities.add(menuEntityLeft81);
-        menuEntities.add(menuEntityLeft811);
-        menuEntities.add(menuEntityLeft812);
-        menuEntities.add(menuEntityLeft813);
-        menuEntities.add(menuEntityLeft814);
+//        menuEntities.add(menuEntityLeft81);
+//        menuEntities.add(menuEntityLeft811);
+//        menuEntities.add(menuEntityLeft812);
+//        menuEntities.add(menuEntityLeft813);
+//        menuEntities.add(menuEntityLeft814);
 
         menuEntities.add(menuEntityLeft9);
-        menuEntities.add(menuEntityLeft91);
-        menuEntities.add(menuEntityLeft911);
-        menuEntities.add(menuEntityLeft912);
-        menuEntities.add(menuEntityLeft92);
-        menuEntities.add(menuEntityLeft93);
-        menuEntities.add(menuEntityLeft94);
+//        menuEntities.add(menuEntityLeft91);
+//        menuEntities.add(menuEntityLeft911);
+//        menuEntities.add(menuEntityLeft912);
+//        menuEntities.add(menuEntityLeft92);
+//        menuEntities.add(menuEntityLeft93);
+//        menuEntities.add(menuEntityLeft94);
 
         menuEntities.add(menuEntityLeft10);
-        menuEntities.add(menuEntityLeft101);
-        menuEntities.add(menuEntityLeft102);
-        menuEntities.add(menuEntityLeft103);
-        menuEntities.add(menuEntityLeft104);
+//        menuEntities.add(menuEntityLeft101);
+//        menuEntities.add(menuEntityLeft102);
+//        menuEntities.add(menuEntityLeft103);
+//        menuEntities.add(menuEntityLeft104);
 
         menuEntities.add(menuEntityLeft111);
-        menuEntities.add(menuEntityLeft1111);
+//        menuEntities.add(menuEntityLeft1111);
 
+        menuEntities.add(menuEntityLeft12);
+        menuEntities.add(menuEntityLeft13);
         return menuEntities;
 
     }
