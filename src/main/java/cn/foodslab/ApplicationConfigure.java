@@ -56,11 +56,10 @@ public class ApplicationConfigure extends JFinalConfig {
         me.addGlobalActionInterceptor(new Interceptor(){
             @Override
             public void intercept(Invocation inv) {
-                inv.getController().getResponse().setHeader("Access-Control-Allow-Origin", "http://localhost:63343");
+                inv.getController().getResponse().setHeader("Access-Control-Allow-Origin", "*");
                 inv.invoke();
             }
         });
-
     }
 
     @Override

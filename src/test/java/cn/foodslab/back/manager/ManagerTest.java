@@ -1,6 +1,6 @@
 package cn.foodslab.back.manager;
 
-import cn.foodslab.back.init.InitManager;
+import cn.foodslab.init.InitManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

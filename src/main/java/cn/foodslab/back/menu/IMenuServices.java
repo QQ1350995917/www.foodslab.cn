@@ -9,10 +9,16 @@ import cn.foodslab.back.common.IResultSet;
  */
 public interface IMenuServices {
     /**
-     *
      * @param level
      * @return
      */
     IResultSet retrieveMenusByLevel(int level);
+
+    /**
+     * 通过状态查询菜单
+     * @param status
+     * @return
+     */
+    IResultSet retrieveMenusByStatus(int status);
     IResultSet retrieveMenusByIds(String... ids);
 }

@@ -12,6 +12,11 @@ public class MenuController extends Controller implements IMenuController{
     private IMenuServices iMenuServices = new MenuServices();
     @Override
     public void index() {
-        renderJson(JSON.toJSON(iMenuServices.retrieveMenusByLevel(0)));
+        renderJson(JSON.toJSONString(iMenuServices.retrieveMenusByLevel(0)));
+    }
+
+    @Override
+    public void status() {
+        renderJson(JSON.toJSONString(iMenuServices.retrieveMenusByStatus(1)));
     }
 }

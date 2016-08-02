@@ -22,19 +22,20 @@ public class ManagerServices implements IManagerServices {
 
     @Override
     public IResultSet isExistManagerUserName(String username) {
-        List<Record> records = Db.find("manager", "username", username);
+        List<Record> records = Db.find("SELECT * FROM manager WHERE username = '" + username + "'");
         if (records.size() == 1) {
             return new ResultSet("true");
+        } else {
+            return new ResultSet("false");
         }
-        return new ResultSet("false");
     }
 
     @Override
     public IResultSet createManager(ManagerEntity managerEntity) {
         IResultSet existManagerUserName = isExistManagerUserName(managerEntity.getUsername());
-        if ("true".equals(existManagerUserName)) {
+        if ("true".equals(existManagerUserName.getData().toString())) {
             return new ResultSet(JSON.toJSONString(managerEntity), 0, "用户名已存在");
-        } else if ("false".equals(existManagerUserName)) {
+        } else if ("false".equals(existManagerUserName.getData().toString())) {
             ResultSet resultSet = new ResultSet();
             //开启事务 TODO 更新失败，并且回滚也失败了怎么办？
             boolean tx = Db.tx(new IAtom() {
@@ -79,7 +80,7 @@ public class ManagerServices implements IManagerServices {
             return resultSet;
         } else {
             //用户名重复检测结果在期望值之外的情况
-            return new ResultSet(JSON.toJSONString(managerEntity), 0, "用户名检测结果是:" + existManagerUserName.getData() + "超出预定结果范围");
+            return new ResultSet(JSON.toJSONString(managerEntity), 0, "用户名检测结果是:" + existManagerUserName + "超出预定结果范围");
         }
     }
 
@@ -103,13 +104,20 @@ public class ManagerServices implements IManagerServices {
 
     @Override
     public IResultSet retrieveManager() {
-        List<Record> records = Db.find("SELECT * FROM manager WHER WHERE managerId = pId");
+        List<Record> records = Db.find("SELECT * FROM manager ORDER BY createTime");
         List<Map> jsonMap = new LinkedList<>();
-        for (Record record:records){
-            jsonMap.add(record.getColumns());
+        for (Record record : records) {
+            Map<String, Object> columns = record.getColumns();
+            LinkedList<Map> menus = new LinkedList<>();
+            List<Record> menuRecords = Db.find("SELECT * FROM manager_menu WHERE managerId='" + columns.get("managerId") + "'");
+            for (Record menuRecord:menuRecords){
+                Map<String, Object> menuRecordColumns = menuRecord.getColumns();
+                menus.add(menuRecordColumns);
+            }
+            columns.put("menus",menus);
+            jsonMap.add(columns);
         }
-        System.out.println(JSON.toJSONString(jsonMap));
-        IResultSet resultSet = new ResultSet(JSON.toJSONString(jsonMap));
+        IResultSet resultSet = new ResultSet(jsonMap);
         return resultSet;
     }
 
@@ -135,7 +143,7 @@ public class ManagerServices implements IManagerServices {
             }
             return resultSet;
         } else {
-            resultSet.setMessage("用户名[" + managerEntity.getUsername() + "]的检测结果[" + existManagerUserName.getData() + "]超出预定结果范围");
+            resultSet.setMessage("用户名[" + managerEntity.getUsername() + "]的检测结果[" + existManagerUserName + "]超出预定结果范围");
             return resultSet;
         }
     }
@@ -185,14 +193,7 @@ public class ManagerServices implements IManagerServices {
     private IResultSet updateManagerMenusMapping(ManagerEntity managerEntity) {
         ResultSet resultSet = new ResultSet();
         //删除菜单映射
-        Record record = new Record().set("managerId", managerEntity.getManagerId());
-        boolean managerMenuDelete = Db.delete("manager_menu", record);
-        if (managerMenuDelete) {
-            resultSet.setMessage("删除[" + managerEntity.getUsername() + "]名下的菜单成功;");
-        } else {
-            resultSet.setMessage("删除[" + managerEntity.getUsername() + "]名下的菜单失败;");
-        }
-
+        Db.update("DELETE FROM manager_menu WHERE managerId='" + managerEntity.getManagerId() + "'");
         LinkedList<ManagerMenuEntity> manMenuEntities = managerEntity.getManagerMenuEntitiesMapping();
         if (manMenuEntities != null && manMenuEntities.size() > 0) {
             boolean managerMenuResult;
@@ -200,7 +201,7 @@ public class ManagerServices implements IManagerServices {
                 Record managerMenu = new Record()
                         .set("managerId", managerEntity.getManagerId())
                         .set("menuId", managerMenuEntity.getMenuId()).set("menuLabel", managerMenuEntity.getMenuLabel());
-                managerMenuResult = Db.save("manager_menu", managerMenu);
+                managerMenuResult = Db.save("manager_menu","managerId,menuId", managerMenu);
                 //对创建管理员和菜单的映射管理做记录
                 if (managerMenuResult) {
                     resultSet.setMessage(resultSet.getMessage() + "创建管理员-菜单映射[" + managerMenuEntity.getMenuLabel() + "]成功;");

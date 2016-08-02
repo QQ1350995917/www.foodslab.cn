@@ -10,4 +10,9 @@ public interface IMenuController {
      * 查询Menu列表
      */
     void index();
+
+    /**
+     * 查询Menu列表
+     */
+    void status();
 }

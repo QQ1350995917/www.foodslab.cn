@@ -1,4 +1,4 @@
-package cn.foodslab.back.init;
+package cn.foodslab.init;
 
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.druid.DruidPlugin;

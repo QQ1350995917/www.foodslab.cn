@@ -13,12 +13,14 @@ public interface IResultSet {
      */
     int getCode();
 
+    Object getData();
+
     /**
      * 返回的数据
      *
      * @return
      */
-    String getData();
+    String getJsonDataString();
 
     /**
      * 自定义结果提示
