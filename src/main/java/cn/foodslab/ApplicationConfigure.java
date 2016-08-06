@@ -3,6 +3,7 @@ package cn.foodslab;
 import cn.foodslab.back.FrameController;
 import cn.foodslab.back.manager.ManagerController;
 import cn.foodslab.back.menu.MenuController;
+import cn.foodslab.back.product.ProductController;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 import com.jfinal.config.*;
@@ -69,10 +70,10 @@ public class ApplicationConfigure extends JFinalConfig {
 
     @Override
     public void configRoute(Routes me) {
-
         me.add("/", FrameController.class);
-        me.add("/manager", ManagerController.class);
         me.add("/menus",MenuController.class);
+        me.add("/manager", ManagerController.class);
+        me.add("/product",ProductController.class);
     }
 
     @Override
@@ -80,6 +81,7 @@ public class ApplicationConfigure extends JFinalConfig {
         C3p0Plugin c3p0Plugin = new C3p0Plugin(url, username, password,driver);
         me.add(c3p0Plugin);
         ActiveRecordPlugin activeRecordPlugin = new ActiveRecordPlugin(c3p0Plugin);
+        activeRecordPlugin.setShowSql(true);
         me.add(activeRecordPlugin);
     }
 

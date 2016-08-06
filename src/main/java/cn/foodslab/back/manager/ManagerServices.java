@@ -114,7 +114,7 @@ public class ManagerServices implements IManagerServices {
                 Map<String, Object> menuRecordColumns = menuRecord.getColumns();
                 menus.add(menuRecordColumns);
             }
-            columns.put("menus",menus);
+            columns.put("managerMenuEntitiesMapping",menus);
             jsonMap.add(columns);
         }
         IResultSet resultSet = new ResultSet(jsonMap);
@@ -199,7 +199,7 @@ public class ManagerServices implements IManagerServices {
             boolean managerMenuResult;
             for (ManagerMenuEntity managerMenuEntity : manMenuEntities) {
                 Record managerMenu = new Record()
-                        .set("managerId", managerEntity.getManagerId())
+                        .set("managerId", managerEntity.getManagerId()) //这里要使用管理员对象中的ID（有可能client在提交的时候在对应关系中无managerID）
                         .set("menuId", managerMenuEntity.getMenuId()).set("menuLabel", managerMenuEntity.getMenuLabel());
                 managerMenuResult = Db.save("manager_menu","managerId,menuId", managerMenu);
                 //对创建管理员和菜单的映射管理做记录

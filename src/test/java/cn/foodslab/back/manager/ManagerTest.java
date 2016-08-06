@@ -22,15 +22,7 @@ public class ManagerTest {
 
     @Before
     public void testInsertSubManagerBefore() throws Exception {
-        URL url = new URL("http://localhost:8080/manager");
-        URLConnection urlConnection = url.openConnection();
-        InputStream inputStream = urlConnection.getInputStream();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        String line;
-        int index = -1;
-        while ((line = bufferedReader.readLine()) != null) {
-            System.out.println(line);
-        }
+
     }
 
     @Test

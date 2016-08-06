@@ -20,7 +20,7 @@ public class FormatEntity {
     private float priceDiscount;// 现价对比定价的折扣
     private String priceStart;// 折扣活动开始时间
     private String priceEnd;// 折扣活动结束时间
-    private String priceStatus;// 折扣活动所处于的状态，是否要显示
+    private int priceStatus;// 折扣活动所处于的状态，是否要显示
     private int expressCount;// 包邮需要的数量
     private String expressName;// 邮递公司名称
     private String expressStart;// 包邮活动开始时间
@@ -146,11 +146,11 @@ public class FormatEntity {
         this.priceEnd = priceEnd;
     }
 
-    public String getPriceStatus() {
+    public int getPriceStatus() {
         return priceStatus;
     }
 
-    public void setPriceStatus(String priceStatus) {
+    public void setPriceStatus(int priceStatus) {
         this.priceStatus = priceStatus;
     }
 

@@ -5,12 +5,13 @@ apply plugin: 'com.bmuschko.tomcat'
 
 version = '1.0-SNAPSHOT'
 war.baseName = 'www.foodslab.cn'
+war.archiveName = "foodslab.war"
 
 tomcat {
     httpPort = 8080
     httpsPort = 8443
     enableSSL = true
-    contextPath = "/"
+    contextPath = "/foodslab"
 }
 
 buildscript {
@@ -43,3 +44,5 @@ dependencies {
             "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
     providedCompile 'javax.servlet:javax.servlet-api:3.0.1'
 }
+
+

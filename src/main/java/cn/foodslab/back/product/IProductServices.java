@@ -9,33 +9,24 @@ import cn.foodslab.back.common.IResultSet;
  */
 public interface IProductServices {
 
-    IResultSet isExistSeriesName(String seriesName);
-
-    IResultSet isExistTypeNameInSeries(SeriesEntity seriesEntity,String typeName);
-
-    IResultSet isExistFormatNameInType(TypeEntity typeEntity,String formatName);
-
     IResultSet createSeries(SeriesEntity seriesEntity);
 
-    IResultSet createType(SeriesEntity seriesEntity,TypeEntity typeEntity);
+    IResultSet createType(TypeEntity typeEntity);
 
-    IResultSet createFormat(TypeEntity typeEntity,FormatEntity formatEntity);
+    IResultSet createFormat(FormatEntity formatEntity);
 
     IResultSet updateSeries(SeriesEntity seriesEntity);
 
-    IResultSet updateType(SeriesEntity seriesEntity,TypeEntity typeEntity);
+    IResultSet updateType(TypeEntity typeEntity);
 
-    IResultSet updateFormat(TypeEntity typeEntity,FormatEntity formatEntity);
+    IResultSet updateFormat(FormatEntity formatEntity);
 
-    IResultSet retrieveSeries();
+    IResultSet retrieve();
 
-    IResultSet retrieveType();
+    IResultSet retrieveSeries(String seriesId);
 
-    IResultSet retrieveTypeInSeries(SeriesEntity seriesEntity);
+    IResultSet retrieveType(String typeId);
 
-    IResultSet retrieveFormat();
-
-    IResultSet retrieveFormatInType(TypeEntity typeEntity);
-
+    IResultSet retrieveFormat(String formatId);
 
 }

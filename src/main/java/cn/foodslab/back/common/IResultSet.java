@@ -13,7 +13,11 @@ public interface IResultSet {
      */
     int getCode();
 
+    void setCode(int code);
+
     Object getData();
+
+    void setData(Object data);
 
     /**
      * 返回的数据
@@ -28,6 +32,8 @@ public interface IResultSet {
      * @return
      */
     String getMessage();
+
+    void setMessage(String message);
 
     /**
      * 集成另外一个IResultSet对象

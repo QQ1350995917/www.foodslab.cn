@@ -21,6 +21,10 @@ public class SeriesEntity {
         super();
     }
 
+    public SeriesEntity(String label) {
+        this.label = label;
+    }
+
     public SeriesEntity(String seriesId, String label, int queue, int status) {
         this.seriesId = seriesId;
         this.label = label;

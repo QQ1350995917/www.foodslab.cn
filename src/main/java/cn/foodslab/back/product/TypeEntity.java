@@ -26,6 +26,12 @@ public class TypeEntity {
     public TypeEntity() {
     }
 
+
+    public TypeEntity(String seriesId,String label) {
+        this.label = label;
+        this.seriesId = seriesId;
+    }
+
     public TypeEntity(String typeId, String label, String description, String detail, String crafts, int queue, int status, String seriesId) {
         this.typeId = typeId;
         this.label = label;
