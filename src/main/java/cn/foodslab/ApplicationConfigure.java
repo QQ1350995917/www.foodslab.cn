@@ -3,6 +3,7 @@ package cn.foodslab;
 import cn.foodslab.back.FrameController;
 import cn.foodslab.back.manager.ManagerController;
 import cn.foodslab.back.menu.MenuController;
+import cn.foodslab.back.meta.MetaController;
 import cn.foodslab.back.product.ProductController;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
@@ -71,6 +72,7 @@ public class ApplicationConfigure extends JFinalConfig {
     @Override
     public void configRoute(Routes me) {
         me.add("/", FrameController.class);
+        me.add("/meta", MetaController.class);
         me.add("/menus",MenuController.class);
         me.add("/manager", ManagerController.class);
         me.add("/product",ProductController.class);

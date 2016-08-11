@@ -64,6 +64,7 @@ public class ProductController extends Controller implements IProductController{
     @Override
     public void createFormat() {
         String typeId = this.getPara("typeId");
+        int status = this.getParaToInt("status");
         String label = this.getPara("label");
         String meta = this.getPara("meta");
         int amount = this.getParaToInt("amount");
@@ -73,8 +74,27 @@ public class ProductController extends Controller implements IProductController{
         float postage = this.getParaToInt("postage");
         String postageMeta = this.getPara("postageMeta");
 
+        int priceStatus = this.getParaToInt("priceStatus");
+        float priceDiscount = this.getParaToInt("priceDiscount");
+        float price = this.getParaToInt("price");
+        String priceStart = this.getPara("priceStart");
+        String priceEnd = this.getPara("priceEnd");
+
+        int expressStatus = this.getParaToInt("expressStatus");
+        int expressCount = this.getParaToInt("expressCount");
+        String expressName = this.getPara("expressName");
+        String expressStart = this.getPara("expressStart");
+        String expressEnd = this.getPara("expressEnd");
+
+        int giftStatus = this.getParaToInt("giftStatus");
+        int giftCount = this.getParaToInt("giftCount");
+        String giftLabel = this.getPara("giftLabel");
+        String giftStart = this.getPara("giftStart");
+        String giftEnd = this.getPara("giftEnd");
+
         FormatEntity formatEntity = new FormatEntity();
         formatEntity.setTypeId(typeId);
+        formatEntity.setStatus(status);
         formatEntity.setLabel(label);
         formatEntity.setMeta(meta);
         formatEntity.setAmount(amount);
@@ -83,6 +103,24 @@ public class ProductController extends Controller implements IProductController{
         formatEntity.setPricingMeta(pricingMeta);
         formatEntity.setPostage(postage);
         formatEntity.setPostageMeta(postageMeta);
+
+        formatEntity.setPriceStatus(priceStatus);
+        formatEntity.setPriceDiscount(priceDiscount);
+        formatEntity.setPrice(price);
+        formatEntity.setPriceStart(priceStart);
+        formatEntity.setPriceEnd(priceEnd);
+
+        formatEntity.setExpressStatus(expressStatus);
+        formatEntity.setExpressCount(expressCount);
+        formatEntity.setExpressName(expressName);
+        formatEntity.setExpressStart(expressStart);
+        formatEntity.setExpressEnd(expressEnd);
+
+        formatEntity.setGiftStatus(giftStatus);
+        formatEntity.setGiftCount(giftCount);
+        formatEntity.setGiftLabel(giftLabel);
+        formatEntity.setGiftStart(giftStart);
+        formatEntity.setGiftEnd(giftEnd);
 
         IResultSet resultSet = iProductServices.createFormat(formatEntity);
         renderJson(JSON.toJSONString(resultSet));

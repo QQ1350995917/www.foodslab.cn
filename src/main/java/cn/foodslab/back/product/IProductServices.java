@@ -19,6 +19,10 @@ public interface IProductServices {
 
     IResultSet updateType(TypeEntity typeEntity);
 
+    IResultSet updateTypeDescription(TypeEntity typeEntity);
+
+    IResultSet updateTypeImage(TypeEntity typeEntity);
+
     IResultSet updateFormat(FormatEntity formatEntity);
 
     IResultSet retrieve();
@@ -28,5 +32,7 @@ public interface IProductServices {
     IResultSet retrieveType(String typeId);
 
     IResultSet retrieveFormat(String formatId);
+
+
 
 }
