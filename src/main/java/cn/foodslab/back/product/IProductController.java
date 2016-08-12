@@ -44,6 +44,11 @@ public interface IProductController {
     void createType();
 
     /**
+     * 更新类型的描述
+     */
+    void updateTypeDetail();
+
+    /**
      * 创建规格
      */
     void createFormat();

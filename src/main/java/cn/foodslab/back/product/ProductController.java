@@ -49,7 +49,15 @@ public class ProductController extends Controller implements IProductController{
 
     @Override
     public void updateSeries() {
-
+        String seriesId = this.getPara("seriesId");
+        String label = this.getPara("label");
+        int status = this.getParaToInt("status");
+        SeriesEntity seriesEntity = new SeriesEntity();
+        seriesEntity.setSeriesId(seriesId);
+        seriesEntity.setLabel(label);
+        seriesEntity.setStatus(status);
+        IResultSet resultSet = iProductServices.updateSeries(seriesEntity);
+        renderJson(JSON.toJSONString(resultSet));
     }
 
     @Override
@@ -58,6 +66,19 @@ public class ProductController extends Controller implements IProductController{
         String typeLabel = this.getPara("label");
         TypeEntity typeEntity = new TypeEntity(seriesId,typeLabel);
         IResultSet resultSet = iProductServices.createType(typeEntity);
+        renderJson(JSON.toJSONString(resultSet));
+    }
+
+    @Override
+    public void updateTypeDetail() {
+        String typeId = this.getPara("typeId");
+        String description = this.getPara("description");
+        String detail = this.getPara("detail");
+        TypeEntity typeEntity = new TypeEntity();
+        typeEntity.setTypeId(typeId);
+        typeEntity.setDescription(description);
+        typeEntity.setDetail(detail);
+        IResultSet resultSet = iProductServices.updateTypeDescription(typeEntity);
         renderJson(JSON.toJSONString(resultSet));
     }
 

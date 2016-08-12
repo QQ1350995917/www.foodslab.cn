@@ -3,10 +3,8 @@ package cn.foodslab.back.product;
 import cn.foodslab.back.common.IResultSet;
 import cn.foodslab.back.common.ResultSet;
 import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -31,6 +29,7 @@ public class ProductServices implements IProductServices {
             HashMap<String, String> series = new HashMap<>();
             series.put("seriesId", seriesId);
             series.put("label", seriesEntity.getLabel());
+            series.put("status", "1");
             resultSet.setData(series);
         } else {
             resultSet.setCode(501);
@@ -117,7 +116,16 @@ public class ProductServices implements IProductServices {
 
     @Override
     public IResultSet updateSeries(SeriesEntity seriesEntity) {
-        return null;
+        IResultSet resultSet = isExistSeriesName(seriesEntity.getLabel(), seriesEntity.getSeriesId());
+        int update = Db.update("UPDATE product_series SET label = ? , status = ? WHERE seriesId = ? ", seriesEntity.getLabel(),seriesEntity.getStatus(), seriesEntity.getSeriesId());
+        if (update == 1) {
+            resultSet.setCode(200);
+            resultSet.setMessage("更新成功");
+        } else {
+            resultSet.setCode(500);
+            resultSet.setMessage("更新失败");
+        }
+        return resultSet;
     }
 
     @Override
@@ -127,13 +135,16 @@ public class ProductServices implements IProductServices {
 
     @Override
     public IResultSet updateTypeDescription(TypeEntity typeEntity) {
-        boolean succeed = Db.tx(new IAtom(){
-            public boolean run() throws SQLException {
-                int count = Db.update("update account set cash = cash - ? where id = ?", 100, 123);
-                int count2 = Db.update("update account set cash = cash + ? where id = ?", 100, 456);
-                return count == 1 && count2 == 1;
-            }});
-        return null;
+        int update = Db.update("UPDATE product_type SET description = ? ,detail = ? where typeId = ? ", typeEntity.getDescription(), typeEntity.getDetail(), typeEntity.getTypeId());
+        IResultSet resultSet = new ResultSet();
+        if (update == 1) {
+            resultSet.setCode(200);
+            resultSet.setMessage("更新成功");
+        } else {
+            resultSet.setCode(500);
+            resultSet.setMessage("更新失败");
+        }
+        return resultSet;
     }
 
     @Override
@@ -149,7 +160,7 @@ public class ProductServices implements IProductServices {
     @Override
     public IResultSet retrieve() {
         LinkedList<Map> seriesList = new LinkedList<>();
-        List<Record> seriesRecords = Db.find("SELECT * FROM product_series");
+        List<Record> seriesRecords = Db.find("SELECT * FROM product_series WHERE status != -1");
         for (Record seriesRecord : seriesRecords) {
             Map<String, Object> seriesMap = seriesRecord.getColumns();
             List<Record> typeRecords = Db.find("SELECT * FROM product_type WHERE seriesId='" + seriesMap.get("seriesId") + "'");
@@ -219,7 +230,15 @@ public class ProductServices implements IProductServices {
 
     private IResultSet isExistSeriesName(String seriesName) {
         List<Record> records = Db.find("SELECT * FROM product_series WHERE label = '" + seriesName + "'");
-        System.out.println("debug = " + records.size());
+        if (records.size() == 1) {
+            return new ResultSet("true");
+        } else {
+            return new ResultSet("false");
+        }
+    }
+
+    private IResultSet isExistSeriesName(String seriesName,String noSeriesId) {
+        List<Record> records = Db.find("SELECT * FROM product_series WHERE label = '" + seriesName + "' AND seriesId != '" + noSeriesId + "'");
         if (records.size() == 1) {
             return new ResultSet("true");
         } else {

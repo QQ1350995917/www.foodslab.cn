@@ -10,7 +10,6 @@ import java.util.LinkedList;
 public class SeriesEntity {
     private String seriesId;
     private String label;
-    private String description;
     private int queue;
     private int status;
     private String createTime;
@@ -32,14 +31,6 @@ public class SeriesEntity {
         this.status = status;
     }
 
-    public SeriesEntity(String seriesId, String label, String description, int queue, int status) {
-        this.seriesId = seriesId;
-        this.label = label;
-        this.description = description;
-        this.queue = queue;
-        this.status = status;
-    }
-
     public String getSeriesId() {
         return seriesId;
     }
@@ -54,14 +45,6 @@ public class SeriesEntity {
 
     public void setLabel(String label) {
         this.label = label;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public int getQueue() {
