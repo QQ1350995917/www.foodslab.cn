@@ -19,6 +19,12 @@ public class ProductController extends Controller implements IProductController{
     }
 
     @Override
+    public void convert() {
+        IResultSet resultSet = iProductServices.convert();
+        renderJson(JSON.toJSONString(resultSet));
+    }
+
+    @Override
     public void retrieveSeries() {
         String seriesId = this.getPara("seriesId");
         IResultSet resultSet = iProductServices.retrieveSeries(seriesId);
@@ -69,12 +75,30 @@ public class ProductController extends Controller implements IProductController{
         renderJson(JSON.toJSONString(resultSet));
     }
 
+
+    @Override
+    public void updateType() {
+        String seriesId = this.getPara("seriesId");
+        String typeId = this.getPara("typeId");
+        String label = this.getPara("label");
+        int status = this.getParaToInt("status");
+        TypeEntity typeEntity = new TypeEntity();
+        typeEntity.setSeriesId(seriesId);
+        typeEntity.setTypeId(typeId);
+        typeEntity.setLabel(label);
+        typeEntity.setStatus(status);
+        IResultSet resultSet = iProductServices.updateType(typeEntity);
+        renderJson(JSON.toJSONString(resultSet));
+    }
+
     @Override
     public void updateTypeDetail() {
+        String seriesId = this.getPara("seriesId");
         String typeId = this.getPara("typeId");
         String description = this.getPara("description");
         String detail = this.getPara("detail");
         TypeEntity typeEntity = new TypeEntity();
+        typeEntity.setSeriesId(seriesId);
         typeEntity.setTypeId(typeId);
         typeEntity.setDescription(description);
         typeEntity.setDetail(detail);
@@ -148,7 +172,13 @@ public class ProductController extends Controller implements IProductController{
     }
 
     @Override
-    public void update() {
-
+    public void updateWeight() {
+        String formatId = this.getPara("formatId");
+        int weight = this.getParaToInt("weight");
+        FormatEntity formatEntity = new FormatEntity();
+        formatEntity.setFormatId(formatId);
+        formatEntity.setWeight(weight);
+        IResultSet resultSet = iProductServices.updateWeight(formatEntity);
+        renderJson(JSON.toJSONString(resultSet));
     }
 }

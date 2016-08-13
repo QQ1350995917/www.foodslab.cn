@@ -3,8 +3,10 @@ package cn.foodslab.back.product;
 import cn.foodslab.back.common.IResultSet;
 import cn.foodslab.back.common.ResultSet;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -117,7 +119,7 @@ public class ProductServices implements IProductServices {
     @Override
     public IResultSet updateSeries(SeriesEntity seriesEntity) {
         IResultSet resultSet = isExistSeriesName(seriesEntity.getLabel(), seriesEntity.getSeriesId());
-        int update = Db.update("UPDATE product_series SET label = ? , status = ? WHERE seriesId = ? ", seriesEntity.getLabel(),seriesEntity.getStatus(), seriesEntity.getSeriesId());
+        int update = Db.update("UPDATE product_series SET label = ? , status = ? WHERE seriesId = ? ", seriesEntity.getLabel(), seriesEntity.getStatus(), seriesEntity.getSeriesId());
         if (update == 1) {
             resultSet.setCode(200);
             resultSet.setMessage("更新成功");
@@ -130,7 +132,16 @@ public class ProductServices implements IProductServices {
 
     @Override
     public IResultSet updateType(TypeEntity typeEntity) {
-        return null;
+        IResultSet resultSet = isExistTypeNameInSeries(typeEntity.getSeriesId(), typeEntity.getLabel(), typeEntity.getTypeId());
+        int update = Db.update("UPDATE product_type SET label = ? , status = ? WHERE typeId = ? ", typeEntity.getLabel(), typeEntity.getStatus(), typeEntity.getTypeId());
+        if (update == 1) {
+            resultSet.setCode(200);
+            resultSet.setMessage("更新成功");
+        } else {
+            resultSet.setCode(500);
+            resultSet.setMessage("更新失败");
+        }
+        return resultSet;
     }
 
     @Override
@@ -163,11 +174,11 @@ public class ProductServices implements IProductServices {
         List<Record> seriesRecords = Db.find("SELECT * FROM product_series WHERE status != -1");
         for (Record seriesRecord : seriesRecords) {
             Map<String, Object> seriesMap = seriesRecord.getColumns();
-            List<Record> typeRecords = Db.find("SELECT * FROM product_type WHERE seriesId='" + seriesMap.get("seriesId") + "'");
+            List<Record> typeRecords = Db.find("SELECT * FROM product_type WHERE seriesId='" + seriesMap.get("seriesId") + "' AND status != -1");
             LinkedList<Map> typeList = new LinkedList<>();
             for (Record typeRecord : typeRecords) {
                 Map<String, Object> typeMap = typeRecord.getColumns();
-                List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE typeId='" + typeMap.get("typeId") + "'");
+                List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE typeId='" + typeMap.get("typeId") + "' AND status != -1");
                 LinkedList<Map> formatList = new LinkedList<>();
                 for (Record formatRecord : formatRecords) {
                     Map<String, Object> formatMap = formatRecord.getColumns();
@@ -180,6 +191,25 @@ public class ProductServices implements IProductServices {
             seriesList.add(seriesMap);
         }
         IResultSet resultSet = new ResultSet(seriesList);
+        return resultSet;
+    }
+
+    @Override
+    public IResultSet convert() {
+        List<Record> formatRecords = Db.find("SELECT formatId,typeId,label,meta,weight FROM product_format WHERE status != -1 order by weight ASC, updateTime DESC");
+        LinkedList<Map<String,Object>> result = new LinkedList<>();
+        for (Record formatRecord:formatRecords){
+            Map<String, Object> formatEntity = formatRecord.getColumns();
+            List<Record> typeIdRecords = Db.find("SELECT typeId,label,seriesId FROM product_type WHERE typeId = ?", formatEntity.get("typeId"));
+            Map<String, Object> typeEntity = typeIdRecords.get(0).getColumns();
+            List<Record> seriesRecords = Db.find("SELECT seriesId,label FROM product_series WHERE seriesId = ?", typeEntity.get("seriesId"));
+            Map<String, Object> seriesEntity = seriesRecords.get(0).getColumns();
+            typeEntity.put("parent",seriesEntity);
+            formatEntity.put("parent",typeEntity);
+            result.add(formatEntity);
+        }
+        IResultSet resultSet = new ResultSet(result);
+        resultSet.setCode(200);
         return resultSet;
     }
 
@@ -228,6 +258,26 @@ public class ProductServices implements IProductServices {
         return resultSet;
     }
 
+    @Override
+    public IResultSet updateWeight(FormatEntity formatEntity) {
+        boolean succeed = Db.tx(new IAtom() {
+            public boolean run() throws SQLException {
+                int updateAll = Db.update("UPDATE product_format SET weight = weight + 1");
+                int update = Db.update("UPDATE product_format SET weight = ? WHERE format = ?", formatEntity.getWeight(), formatEntity.getFormatId());
+                return updateAll > 0 && update == 1;
+            }
+        });
+        IResultSet resultSet = new ResultSet();
+        if (succeed) {
+            resultSet.setCode(200);
+            resultSet.setMessage("更新成功");
+        } else {
+            resultSet.setCode(500);
+            resultSet.setMessage("更新失败");
+        }
+        return resultSet;
+    }
+
     private IResultSet isExistSeriesName(String seriesName) {
         List<Record> records = Db.find("SELECT * FROM product_series WHERE label = '" + seriesName + "'");
         if (records.size() == 1) {
@@ -237,7 +287,7 @@ public class ProductServices implements IProductServices {
         }
     }
 
-    private IResultSet isExistSeriesName(String seriesName,String noSeriesId) {
+    private IResultSet isExistSeriesName(String seriesName, String noSeriesId) {
         List<Record> records = Db.find("SELECT * FROM product_series WHERE label = '" + seriesName + "' AND seriesId != '" + noSeriesId + "'");
         if (records.size() == 1) {
             return new ResultSet("true");
@@ -255,6 +305,14 @@ public class ProductServices implements IProductServices {
         }
     }
 
+    private IResultSet isExistTypeNameInSeries(String seriesId, String typeName, String noTypeId) {
+        List<Record> records = Db.find("SELECT * FROM product_type WHERE label = '" + typeName + "' AND seriesId = '" + seriesId + "' AND typeId != '" + noTypeId + "'");
+        if (records.size() == 1) {
+            return new ResultSet("true");
+        } else {
+            return new ResultSet("false");
+        }
+    }
 
     private IResultSet isExistFormatNameInType(String typeId, String label, String meta) {
         List<Record> records = Db.find("SELECT * FROM product_format WHERE label = '" + label + "' AND meta = '" + meta + "' AND typeId = '" + typeId + "'");
@@ -264,4 +322,6 @@ public class ProductServices implements IProductServices {
             return new ResultSet("false");
         }
     }
+
+
 }

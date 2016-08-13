@@ -33,6 +33,7 @@ public class FormatEntity {
     private String giftEnd;// 满赠活动结束时间
     private int giftStatus;// 满赠活动所处于的状态
     private int queue;// 该规格的顺序
+    private int weight;// 该规格的顺序
     private int status;// 该规格的状态
     private String typeId;// 规格的类型ID
     private String createTime;
@@ -248,6 +249,14 @@ public class FormatEntity {
 
     public void setQueue(int queue) {
         this.queue = queue;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 
     public int getStatus() {

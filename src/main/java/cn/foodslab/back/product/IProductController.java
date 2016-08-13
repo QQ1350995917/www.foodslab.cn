@@ -9,9 +9,14 @@ package cn.foodslab.back.product;
 public interface IProductController {
 
     /**
-     * 首页获取整个产品树数据
+     * 获取整个产品树数据
      */
     void index();
+
+    /**
+     * 获取整个产品树的逆转数据
+     */
+    void convert();
 
     /**
      * 获取整个系列的数据
@@ -44,6 +49,11 @@ public interface IProductController {
     void createType();
 
     /**
+     * 更新类型的名称和状态
+     */
+    void updateType();
+
+    /**
      * 更新类型的描述
      */
     void updateTypeDetail();
@@ -53,5 +63,9 @@ public interface IProductController {
      */
     void createFormat();
 
-    void update();
+    /**
+     * 更新推荐位
+     */
+    void updateWeight();
+
 }
