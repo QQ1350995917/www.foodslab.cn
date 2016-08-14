@@ -72,6 +72,7 @@ public class LinkServices implements ILinkServices {
         IResultSet resultSet = new ResultSet();
         if (update == 1) {
             resultSet.setCode(200);
+            resultSet.setData(linkEntity);
             resultSet.setMessage("更新成功");
         } else {
             resultSet.setCode(500);
