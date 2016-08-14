@@ -1,6 +1,7 @@
 package cn.foodslab;
 
 import cn.foodslab.back.FrameController;
+import cn.foodslab.back.link.LinkController;
 import cn.foodslab.back.manager.ManagerController;
 import cn.foodslab.back.menu.MenuController;
 import cn.foodslab.back.meta.MetaController;
@@ -76,6 +77,7 @@ public class ApplicationConfigure extends JFinalConfig {
         me.add("/menus",MenuController.class);
         me.add("/manager", ManagerController.class);
         me.add("/product",ProductController.class);
+        me.add("/link",LinkController.class);
     }
 
     @Override
