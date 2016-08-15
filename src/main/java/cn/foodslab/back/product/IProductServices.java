@@ -17,6 +17,8 @@ public interface IProductServices {
 
     IResultSet updateWeight(FormatEntity formatEntity);
 
+    IResultSet swapWeight(FormatEntity formatEntity1,FormatEntity formatEntity2);
+
     IResultSet updateSeries(SeriesEntity seriesEntity);
 
     IResultSet updateType(TypeEntity typeEntity);

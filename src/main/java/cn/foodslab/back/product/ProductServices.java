@@ -197,15 +197,15 @@ public class ProductServices implements IProductServices {
     @Override
     public IResultSet convert() {
         List<Record> formatRecords = Db.find("SELECT formatId,typeId,label,meta,weight FROM product_format WHERE status != -1 order by weight ASC, updateTime DESC");
-        LinkedList<Map<String,Object>> result = new LinkedList<>();
-        for (Record formatRecord:formatRecords){
+        LinkedList<Map<String, Object>> result = new LinkedList<>();
+        for (Record formatRecord : formatRecords) {
             Map<String, Object> formatEntity = formatRecord.getColumns();
             List<Record> typeIdRecords = Db.find("SELECT typeId,label,seriesId FROM product_type WHERE typeId = ?", formatEntity.get("typeId"));
             Map<String, Object> typeEntity = typeIdRecords.get(0).getColumns();
             List<Record> seriesRecords = Db.find("SELECT seriesId,label FROM product_series WHERE seriesId = ?", typeEntity.get("seriesId"));
             Map<String, Object> seriesEntity = seriesRecords.get(0).getColumns();
-            typeEntity.put("parent",seriesEntity);
-            formatEntity.put("parent",typeEntity);
+            typeEntity.put("parent", seriesEntity);
+            formatEntity.put("parent", typeEntity);
             result.add(formatEntity);
         }
         IResultSet resultSet = new ResultSet(result);
@@ -263,8 +263,27 @@ public class ProductServices implements IProductServices {
         boolean succeed = Db.tx(new IAtom() {
             public boolean run() throws SQLException {
                 int updateAll = Db.update("UPDATE product_format SET weight = weight + 1");
-                int update = Db.update("UPDATE product_format SET weight = ? WHERE format = ?", formatEntity.getWeight(), formatEntity.getFormatId());
+                int update = Db.update("UPDATE product_format SET weight = ? WHERE formatId = ?", formatEntity.getWeight(), formatEntity.getFormatId());
                 return updateAll > 0 && update == 1;
+            }
+        });
+        if (succeed) {
+            return convert();
+        } else {
+            IResultSet resultSet = new ResultSet();
+            resultSet.setCode(500);
+            resultSet.setMessage("更新失败");
+            return resultSet;
+        }
+    }
+
+    @Override
+    public IResultSet swapWeight(FormatEntity formatEntity1, FormatEntity formatEntity2) {
+        boolean succeed = Db.tx(new IAtom() {
+            public boolean run() throws SQLException {
+                int update1 = Db.update("UPDATE product_format SET weight = ? WHERE formatId = ?", formatEntity1.getWeight(), formatEntity2.getFormatId());
+                int update2 = Db.update("UPDATE product_format SET weight = ? WHERE formatId = ?", formatEntity2.getWeight(), formatEntity1.getFormatId());
+                return update1 > 0 && update2 == 1;
             }
         });
         IResultSet resultSet = new ResultSet();
@@ -277,6 +296,7 @@ public class ProductServices implements IProductServices {
         }
         return resultSet;
     }
+
 
     private IResultSet isExistSeriesName(String seriesName) {
         List<Record> records = Db.find("SELECT * FROM product_series WHERE label = '" + seriesName + "'");

@@ -68,4 +68,9 @@ public interface IProductController {
      */
     void updateWeight();
 
+    /**
+     * 交换推荐位
+     */
+    void swapWeight();
+
 }

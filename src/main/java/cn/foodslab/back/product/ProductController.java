@@ -181,4 +181,22 @@ public class ProductController extends Controller implements IProductController{
         IResultSet resultSet = iProductServices.updateWeight(formatEntity);
         renderJson(JSON.toJSONString(resultSet));
     }
+
+    @Override
+    public void swapWeight() {
+        String formatId1 = this.getPara("formatId1");
+        int weight1 = this.getParaToInt("weight1");
+        FormatEntity formatEntity1 = new FormatEntity();
+        formatEntity1.setFormatId(formatId1);
+        formatEntity1.setWeight(weight1);
+
+        String formatId2 = this.getPara("formatId2");
+        int weight2 = this.getParaToInt("weight2");
+        FormatEntity formatEntity2 = new FormatEntity();
+        formatEntity2.setFormatId(formatId2);
+        formatEntity2.setWeight(weight2);
+
+        IResultSet resultSet = iProductServices.swapWeight(formatEntity1, formatEntity2);
+        renderJson(JSON.toJSONString(resultSet));
+    }
 }
