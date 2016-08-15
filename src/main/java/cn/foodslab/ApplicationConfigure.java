@@ -5,6 +5,7 @@ import cn.foodslab.back.link.LinkController;
 import cn.foodslab.back.manager.ManagerController;
 import cn.foodslab.back.menu.MenuController;
 import cn.foodslab.back.meta.MetaController;
+import cn.foodslab.back.poster.PosterController;
 import cn.foodslab.back.product.ProductController;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
@@ -78,6 +79,7 @@ public class ApplicationConfigure extends JFinalConfig {
         me.add("/manager", ManagerController.class);
         me.add("/product",ProductController.class);
         me.add("/link",LinkController.class);
+        me.add("/poster",PosterController.class);
     }
 
     @Override
