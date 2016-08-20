@@ -1,6 +1,6 @@
 package cn.foodslab.back.link;
 
-import cn.foodslab.back.common.IResultSet;
+import cn.foodslab.common.response.IResultSet;
 
 /**
  * Created by Pengwei Ding on 2016-08-13 18:26.

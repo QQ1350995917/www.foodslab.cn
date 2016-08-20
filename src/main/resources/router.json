@@ -1,0 +1,28 @@
+{
+  "styleSheets": {
+    "index": [],
+    "ps": [],
+    "pd": [],
+    "pb": [],
+    "pc": [],
+    "po": [],
+    "pe": [],
+    "pr": [],
+    "pl": [],
+    "pp": [],
+    "ppr": []
+  },
+  "javaScripts": {
+    "index": ["<script type=\"text/javascript\" src=\"%s/webapp/asserts/index.js\"></script>"],
+    "ps": [],
+    "pd": [],
+    "pb": [],
+    "pc": [],
+    "po": [],
+    "pe": [],
+    "pr": [],
+    "pl": [],
+    "pp": [],
+    "ppr": []
+  }
+}

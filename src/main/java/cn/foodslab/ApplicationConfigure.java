@@ -1,17 +1,18 @@
 package cn.foodslab;
 
-import cn.foodslab.back.FrameController;
 import cn.foodslab.back.link.LinkController;
 import cn.foodslab.back.manager.ManagerController;
 import cn.foodslab.back.menu.MenuController;
-import cn.foodslab.back.meta.MetaController;
 import cn.foodslab.back.poster.PosterController;
 import cn.foodslab.back.product.ProductController;
 import cn.foodslab.back.users.UsersController;
+import cn.foodslab.common.meta.*;
+import cn.foodslab.front.PageController;
 import cn.foodslab.front.user.UserController;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 import com.jfinal.config.*;
+import com.jfinal.config.Constants;
 import com.jfinal.ext.handler.ContextPathHandler;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.c3p0.C3p0Plugin;
@@ -30,7 +31,8 @@ public class ApplicationConfigure extends JFinalConfig {
     private static String username;
     private static String password;
     private static String driver;
-    static{
+
+    static {
         try {
             Properties prop = new Properties();
             prop.load(ApplicationConfigure.class.getClassLoader().getResourceAsStream("db.properties"));
@@ -49,8 +51,9 @@ public class ApplicationConfigure extends JFinalConfig {
     @Override
     public void configConstant(Constants me) {
         me.setDevMode(true);
+        me.setViewType(ViewType.FREE_MARKER);
+        me.setFreeMarkerViewExtension(".html");
         me.setEncoding("utf-8");
-        me.setViewType(ViewType.JSP);
         me.setError401View("");
         me.setError403View("");
         me.setError404View("");
@@ -59,7 +62,7 @@ public class ApplicationConfigure extends JFinalConfig {
 
     @Override
     public void configInterceptor(Interceptors me) {
-        me.addGlobalActionInterceptor(new Interceptor(){
+        me.addGlobalActionInterceptor(new Interceptor() {
             @Override
             public void intercept(Invocation inv) {
                 inv.getController().getResponse().setHeader("Access-Control-Allow-Origin", "*");
@@ -71,28 +74,35 @@ public class ApplicationConfigure extends JFinalConfig {
     @Override
     public void configHandler(Handlers me) {
         me.add(new ContextPathHandler("basePath"));
+
     }
 
     @Override
     public void configRoute(Routes me) {
-        me.add("/", FrameController.class);
+        me.add("/", PageController.class);
+        me.add("/data", PageController.class);
         me.add("/meta", MetaController.class);
-        me.add("/menus",MenuController.class);
+        me.add("/menus", MenuController.class);
         me.add("/manager", ManagerController.class);
-        me.add("/product",ProductController.class);
-        me.add("/link",LinkController.class);
-        me.add("/poster",PosterController.class);
-        me.add("/user",UserController.class);
-        me.add("/users",UsersController.class);
+        me.add("/product", ProductController.class);
+        me.add("/link", LinkController.class);
+        me.add("/poster", PosterController.class);
+        me.add("/user", UserController.class);
+        me.add("/users", UsersController.class);
     }
 
     @Override
     public void configPlugin(Plugins me) {
-        C3p0Plugin c3p0Plugin = new C3p0Plugin(url, username, password,driver);
+        C3p0Plugin c3p0Plugin = new C3p0Plugin(url, username, password, driver);
         me.add(c3p0Plugin);
         ActiveRecordPlugin activeRecordPlugin = new ActiveRecordPlugin(c3p0Plugin);
         activeRecordPlugin.setShowSql(true);
         me.add(activeRecordPlugin);
+    }
+
+    @Override
+    public void afterJFinalStart() {
+        super.afterJFinalStart();
     }
 
     @Override

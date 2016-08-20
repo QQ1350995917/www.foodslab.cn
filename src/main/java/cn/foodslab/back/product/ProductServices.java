@@ -1,7 +1,7 @@
 package cn.foodslab.back.product;
 
-import cn.foodslab.back.common.IResultSet;
-import cn.foodslab.back.common.ResultSet;
+import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.common.response.ResultSet;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
@@ -15,6 +15,54 @@ import java.util.*;
  * Description: @TODO
  */
 public class ProductServices implements IProductServices {
+
+    @Override
+    public IResultSet series(String seriesId) {
+        LinkedList<Map> seriesList = new LinkedList<>();
+        List<Record> seriesRecords = Db.find("SELECT seriesId,label FROM product_series WHERE status != -1");
+        for (Record seriesRecord : seriesRecords) {
+            Map<String, Object> seriesMap = seriesRecord.getColumns();
+            if (seriesMap.get("seriesId").equals(seriesId)){
+                List<Record> typeRecords = Db.find("SELECT typeId,label,seriesId FROM product_type WHERE seriesId='" + seriesMap.get("seriesId") + "' AND status != -1");
+                LinkedList<Map> typeList = new LinkedList<>();
+                for (Record typeRecord : typeRecords) {
+                    Map<String, Object> typeMap = typeRecord.getColumns();
+                    List<Record> formatRecords = Db.find("SELECT formatId,label,meta,price,pricingMeta FROM product_format WHERE typeId='" + typeMap.get("typeId") + "' AND status != -1");
+                    LinkedList<Map> formatList = new LinkedList<>();
+                    for (Record formatRecord : formatRecords) {
+                        Map<String, Object> formatMap = formatRecord.getColumns();
+                        formatList.add(formatMap);
+                    }
+                    typeMap.put("children", formatList);
+                    typeList.add(typeMap);
+                }
+                seriesMap.put("children", typeList);
+            }
+            seriesList.add(seriesMap);
+        }
+        IResultSet resultSet = new ResultSet(seriesList);
+        resultSet.setCode(200);
+        return resultSet;
+    }
+
+    @Override
+    public IResultSet recommend() {
+        List<Record> formatRecords = Db.find("SELECT formatId,label,meta,price,pricingMeta,typeId FROM product_format WHERE status = 1 AND weight < 8 order by weight ASC");
+        LinkedList<Map<String, Object>> result = new LinkedList<>();
+        for (Record formatRecord : formatRecords) {
+            Map<String, Object> formatEntity = formatRecord.getColumns();
+            List<Record> typeIdRecords = Db.find("SELECT typeId,label,seriesId FROM product_type WHERE typeId = ?", formatEntity.get("typeId"));
+            Map<String, Object> typeEntity = typeIdRecords.get(0).getColumns();
+            List<Record> seriesRecords = Db.find("SELECT seriesId,label FROM product_series WHERE seriesId = ?", typeEntity.get("seriesId"));
+            Map<String, Object> seriesEntity = seriesRecords.get(0).getColumns();
+            typeEntity.put("parent", seriesEntity);
+            formatEntity.put("parent", typeEntity);
+            result.add(formatEntity);
+        }
+        IResultSet resultSet = new ResultSet(result);
+        resultSet.setCode(200);
+        return resultSet;
+    }
 
     @Override
     public IResultSet createSeries(SeriesEntity seriesEntity) {

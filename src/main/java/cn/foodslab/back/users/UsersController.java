@@ -1,6 +1,6 @@
 package cn.foodslab.back.users;
 
-import cn.foodslab.back.common.IResultSet;
+import cn.foodslab.common.response.IResultSet;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 

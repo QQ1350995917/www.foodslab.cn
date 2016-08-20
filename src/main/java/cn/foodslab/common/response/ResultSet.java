@@ -1,4 +1,4 @@
-package cn.foodslab.back.common;
+package cn.foodslab.common.response;
 
 import com.alibaba.fastjson.annotation.JSONField;
 

@@ -1,6 +1,6 @@
 package cn.foodslab.back.product;
 
-import cn.foodslab.back.common.IResultSet;
+import cn.foodslab.common.response.IResultSet;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
@@ -14,6 +14,23 @@ public class ProductController extends Controller implements IProductController{
 
     @Override
     public void index() {
+        renderJson("error url");
+    }
+
+    @Override
+    public void series() {
+        IResultSet resultSet = iProductServices.series(this.getPara("seriesId"));
+        renderJson(JSON.toJSONString(resultSet));
+    }
+
+    @Override
+    public void recommend() {
+        IResultSet resultSet = iProductServices.recommend();
+        renderJson(JSON.toJSONString(resultSet));
+    }
+
+    @Override
+    public void retrieve() {
         IResultSet resultSet = iProductServices.retrieve();
         renderJson(JSON.toJSONString(resultSet));
     }

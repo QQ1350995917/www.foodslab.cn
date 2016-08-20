@@ -1,4 +1,4 @@
-package cn.foodslab.back.common;
+package cn.foodslab.common.response;
 
 /**
  * Created by Pengwei Ding on 2016-07-30 10:14.

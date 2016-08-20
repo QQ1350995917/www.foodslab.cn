@@ -1,13 +1,32 @@
 package cn.foodslab.back.product;
 
-import cn.foodslab.back.common.IResultSet;
+import cn.foodslab.common.response.IResultSet;
 
 /**
  * Created by Pengwei Ding on 2016-07-30 21:28.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
- * Description: @TODO
+ * Description: 产品管数据服务层
  */
 public interface IProductServices {
+
+    /**
+     * 获取产品所有系列和参数指定的系列ID下的产品树
+     * @param seriesId 系列ID,可为空
+     * @return
+     */
+    IResultSet series(String seriesId);
+
+    /**
+     * 获取所有的推荐产品
+     * @return
+     */
+    IResultSet recommend();
+
+    /**
+     * 获取所有的产品树数据
+     * @return
+     */
+    IResultSet retrieve();
 
     IResultSet createSeries(SeriesEntity seriesEntity);
 
@@ -29,7 +48,7 @@ public interface IProductServices {
 
     IResultSet updateFormat(FormatEntity formatEntity);
 
-    IResultSet retrieve();
+
 
     /**
      * 反转读取，从规格开始逆向读取数据，该接口适用于推荐功能

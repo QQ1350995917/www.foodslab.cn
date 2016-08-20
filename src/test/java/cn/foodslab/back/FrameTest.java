@@ -1,7 +1,7 @@
 package cn.foodslab.back;
 
 
-import cn.foodslab.back.common.ResultSet;
+import cn.foodslab.common.response.ResultSet;
 import com.alibaba.fastjson.JSON;
 
 import java.util.HashMap;

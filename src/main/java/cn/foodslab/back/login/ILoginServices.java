@@ -1,6 +1,6 @@
 package cn.foodslab.back.login;
 
-import cn.foodslab.back.common.IResultSet;
+import cn.foodslab.common.response.IResultSet;
 
 /**
  * Created by Pengwei Ding on 2016-07-30 11:11.

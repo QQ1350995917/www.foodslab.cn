@@ -1,7 +1,7 @@
 package cn.foodslab.back.users;
 
-import cn.foodslab.back.common.IResultSet;
-import cn.foodslab.back.common.ResultSet;
+import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.common.response.ResultSet;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 

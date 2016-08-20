@@ -1,7 +1,7 @@
 package cn.foodslab.back.link;
 
-import cn.foodslab.back.common.IResultSet;
-import cn.foodslab.back.common.ResultSet;
+import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.common.response.ResultSet;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
@@ -20,7 +20,7 @@ public class LinkServices implements ILinkServices {
     @Override
     public IResultSet retrieve() {
         LinkedList<Map> linkList = new LinkedList<>();
-        List<Record> linkRecords = Db.find("SELECT * FROM link WHERE linkId = pid");
+        List<Record> linkRecords = Db.find("SELECT * FROM link WHERE linkId = pid ORDER BY queue");
         for (Record linkRecord : linkRecords) {
             Map<String, Object> linkEntity = linkRecord.getColumns();
             LinkedList<Map> subLinkList = new LinkedList<>();

@@ -5,13 +5,32 @@ package cn.foodslab.back.product;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: 产品管理流程控制层
  * 该控制器对外进行流程控制，以及提供API服务
+ * 名词释义：产品树 产品的数据结构是树形数据结构，产品树指的是产品的树形数据结构
  */
 public interface IProductController {
 
     /**
-     * 获取整个产品树数据
+     * 默认接口
      */
     void index();
+
+    /**
+     * 获取产品所有系列（前台接口）
+     * 该接口接受的参数是一个系列的ID或者零个参数
+     * 1：当接口中有seriesId参数，表示获取所有系列的同时也获取指定系列下的产品树
+     * 2：当接口中有没有参数，表示获取所有系列
+     */
+    void series();
+
+    /**
+     * 获取所有的推荐产品（前台接口）
+     */
+    void recommend();
+
+    /**
+     * 获取整个产品树（后台接口）
+     */
+    void retrieve();
 
     /**
      * 获取整个产品树的逆转数据
