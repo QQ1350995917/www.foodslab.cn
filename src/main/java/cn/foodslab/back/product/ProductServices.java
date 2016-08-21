@@ -17,26 +17,31 @@ import java.util.*;
 public class ProductServices implements IProductServices {
 
     @Override
-    public IResultSet series(String seriesId) {
+    public IResultSet series(String flag,String seriesId) {
         LinkedList<Map> seriesList = new LinkedList<>();
         List<Record> seriesRecords = Db.find("SELECT seriesId,label FROM product_series WHERE status != -1");
-        for (Record seriesRecord : seriesRecords) {
-            Map<String, Object> seriesMap = seriesRecord.getColumns();
-            if (seriesMap.get("seriesId").equals(seriesId)){
-                List<Record> typeRecords = Db.find("SELECT typeId,label,seriesId FROM product_type WHERE seriesId='" + seriesMap.get("seriesId") + "' AND status != -1");
-                LinkedList<Map> typeList = new LinkedList<>();
-                for (Record typeRecord : typeRecords) {
-                    Map<String, Object> typeMap = typeRecord.getColumns();
-                    List<Record> formatRecords = Db.find("SELECT formatId,label,meta,price,pricingMeta FROM product_format WHERE typeId='" + typeMap.get("typeId") + "' AND status != -1");
-                    LinkedList<Map> formatList = new LinkedList<>();
-                    for (Record formatRecord : formatRecords) {
-                        Map<String, Object> formatMap = formatRecord.getColumns();
-                        formatList.add(formatMap);
-                    }
-                    typeMap.put("children", formatList);
-                    typeList.add(typeMap);
+        for (int index = 0; index < seriesRecords.size(); index++) {
+            Map<String, Object> seriesMap = seriesRecords.get(index).getColumns();
+            if (flag != null && !flag.trim().equals("")){
+                if ((seriesId == null) && index == 0) {
+                    seriesId = seriesMap.get("seriesId").toString();
                 }
-                seriesMap.put("children", typeList);
+                if (seriesMap.get("seriesId").toString().equals(seriesId)) {
+                    List<Record> typeRecords = Db.find("SELECT typeId,label,seriesId FROM product_type WHERE seriesId='" + seriesMap.get("seriesId") + "' AND status != -1");
+                    LinkedList<Map> typeList = new LinkedList<>();
+                    for (Record typeRecord : typeRecords) {
+                        Map<String, Object> typeMap = typeRecord.getColumns();
+                        List<Record> formatRecords = Db.find("SELECT formatId,label,meta,price,pricingMeta FROM product_format WHERE typeId='" + typeMap.get("typeId") + "' AND status != -1");
+                        LinkedList<Map> formatList = new LinkedList<>();
+                        for (Record formatRecord : formatRecords) {
+                            Map<String, Object> formatMap = formatRecord.getColumns();
+                            formatList.add(formatMap);
+                        }
+                        typeMap.put("children", formatList);
+                        typeList.add(typeMap);
+                    }
+                    seriesMap.put("children", typeList);
+                }
             }
             seriesList.add(seriesMap);
         }

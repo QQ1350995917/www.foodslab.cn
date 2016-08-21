@@ -26,8 +26,13 @@ public class PageController extends Controller implements IPageController {
     @Override
     public void ps() {
         this.setAttr("title", "食坊-系列");
+        String seriesId = this.getPara("seriesId");
+        if (seriesId != null){
+            this.setAttr("metaId","seriesId");
+            this.setAttr("metaValue",seriesId);
+        }
         LinkedList<String> javaScripts = new LinkedList<>();
-        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/series.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");
     }

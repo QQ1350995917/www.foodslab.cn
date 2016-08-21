@@ -11,10 +11,11 @@ public interface IProductServices {
 
     /**
      * 获取产品所有系列和参数指定的系列ID下的产品树
+     * @param flag
      * @param seriesId 系列ID,可为空
      * @return
      */
-    IResultSet series(String seriesId);
+    IResultSet series(String flag,String seriesId);
 
     /**
      * 获取所有的推荐产品
