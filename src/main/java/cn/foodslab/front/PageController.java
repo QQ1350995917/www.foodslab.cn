@@ -41,7 +41,7 @@ public class PageController extends Controller implements IPageController {
     public void pd() {
         this.setAttr("title", "食坊-详情");
         LinkedList<String> javaScripts = new LinkedList<>();
-        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/detail.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");
     }

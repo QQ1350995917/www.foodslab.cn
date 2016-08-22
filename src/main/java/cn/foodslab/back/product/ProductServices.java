@@ -51,6 +51,37 @@ public class ProductServices implements IProductServices {
     }
 
     @Override
+    public IResultSet type(String typeId) {
+        List<Record> typeRecords = Db.find("SELECT typeId,label,description,detail,seriesId FROM product_type WHERE typeId = ? AND status = 1", typeId);
+        Record typeRecord = typeRecords.get(0);
+        Map<String, Object> typeEntity = typeRecord.getColumns();
+
+        List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE typeId = ? AND status = 1", typeId);
+        LinkedList<Map> formatList = new LinkedList<>();
+        for (Record formatRecord : formatRecords) {
+            Map<String, Object> formatMap = formatRecord.getColumns();
+            formatList.add(formatMap);
+        }
+        typeEntity.put("children",formatList);
+
+        List<Record> imageRecords = Db.find("SELECT * FROM image WHERE trunkId = ? AND status = 1", typeId);
+        LinkedList<Map> imageList = new LinkedList<>();
+        for (Record imageRecord : imageRecords) {
+            Map<String, Object> formatMap = imageRecord.getColumns();
+            imageList.add(formatMap);
+        }
+        typeEntity.put("images",imageList);
+
+        List<Record> seriesRecords = Db.find("SELECT seriesId,label FROM product_series WHERE seriesId = ? AND status = 1", typeRecord.get("seriesId").toString());
+        Map<String, Object> seriesEntity = seriesRecords.get(0).getColumns();
+        seriesEntity.put("child",typeEntity);
+
+        IResultSet resultSet = new ResultSet(seriesEntity);
+        resultSet.setCode(200);
+        return resultSet;
+    }
+
+    @Override
     public IResultSet recommend() {
         List<Record> formatRecords = Db.find("SELECT formatId,label,meta,price,pricingMeta,typeId FROM product_format WHERE status = 1 AND weight < 8 order by weight ASC");
         LinkedList<Map<String, Object>> result = new LinkedList<>();

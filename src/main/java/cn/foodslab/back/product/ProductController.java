@@ -19,8 +19,13 @@ public class ProductController extends Controller implements IProductController{
 
     @Override
     public void series() {
-
         IResultSet resultSet = iProductServices.series(this.getPara("flag"),this.getPara("seriesId"));
+        renderJson(JSON.toJSONString(resultSet));
+    }
+
+    @Override
+    public void type() {
+        IResultSet resultSet = iProductServices.type(this.getPara("typeId"));
         renderJson(JSON.toJSONString(resultSet));
     }
 

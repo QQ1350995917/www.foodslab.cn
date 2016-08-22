@@ -18,10 +18,19 @@ public interface IProductServices {
     IResultSet series(String flag,String seriesId);
 
     /**
+     * 获取指定的型号的产品树
+     * @param typeId
+     * @return
+     */
+    IResultSet type(String typeId);
+
+    /**
      * 获取所有的推荐产品
      * @return
      */
     IResultSet recommend();
+
+
 
     /**
      * 获取所有的产品树数据

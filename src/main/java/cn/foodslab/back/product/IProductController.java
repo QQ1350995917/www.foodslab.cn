@@ -23,9 +23,17 @@ public interface IProductController {
     void series();
 
     /**
+     * 通过类型的ID获取产品树
+     */
+    void type();
+
+    /**
      * 获取所有的推荐产品（前台接口）
      */
     void recommend();
+
+
+
 
     /**
      * 获取整个产品树（后台接口）
