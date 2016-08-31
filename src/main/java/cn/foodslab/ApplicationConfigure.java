@@ -1,18 +1,18 @@
 package cn.foodslab;
 
-import cn.foodslab.back.link.LinkController;
-import cn.foodslab.back.manager.ManagerController;
-import cn.foodslab.back.menu.MenuController;
-import cn.foodslab.back.poster.PosterController;
-import cn.foodslab.back.product.ProductController;
-import cn.foodslab.back.users.UsersController;
-import cn.foodslab.common.meta.*;
-import cn.foodslab.front.PageController;
-import cn.foodslab.front.user.UserController;
+import cn.foodslab.common.meta.MetaController;
+import cn.foodslab.link.LinkController;
+import cn.foodslab.manager.ManagerController;
+import cn.foodslab.menu.MenuController;
+import cn.foodslab.order.OrderController;
+import cn.foodslab.page.PageController;
+import cn.foodslab.poster.PosterController;
+import cn.foodslab.product.ProductController;
+import cn.foodslab.receiver.ReceiverController;
+import cn.foodslab.user.UserController;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 import com.jfinal.config.*;
-import com.jfinal.config.Constants;
 import com.jfinal.ext.handler.ContextPathHandler;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.plugin.c3p0.C3p0Plugin;
@@ -74,13 +74,11 @@ public class ApplicationConfigure extends JFinalConfig {
     @Override
     public void configHandler(Handlers me) {
         me.add(new ContextPathHandler("basePath"));
-
     }
 
     @Override
     public void configRoute(Routes me) {
         me.add("/", PageController.class);
-        me.add("/data", PageController.class);
         me.add("/meta", MetaController.class);
         me.add("/menus", MenuController.class);
         me.add("/manager", ManagerController.class);
@@ -88,7 +86,8 @@ public class ApplicationConfigure extends JFinalConfig {
         me.add("/link", LinkController.class);
         me.add("/poster", PosterController.class);
         me.add("/user", UserController.class);
-        me.add("/users", UsersController.class);
+        me.add("/order", OrderController.class);
+        me.add("/receiver", ReceiverController.class);
     }
 
     @Override
