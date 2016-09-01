@@ -93,6 +93,7 @@ public class PageController extends Controller implements IPageController {
         LinkedList<String> javaScripts = new LinkedList<>();
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/billing.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/receiver.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/payment.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");
     }
@@ -136,8 +137,24 @@ public class PageController extends Controller implements IPageController {
     @Override
     public void pq() {
         this.setAttr("title", "食坊-订单查询");
+
+        String orderId = this.getPara("orderId");
+        LinkedList<Map<String,String>> metas = new LinkedList<>();
+        if (orderId != null){
+            LinkedHashMap<String, String> formatMap = new LinkedHashMap<>();
+            formatMap.put("metaId","orderId");
+            formatMap.put("metaValue", orderId);
+            metas.add(formatMap);
+        }
+        this.setAttr("metas", metas);
+
+        LinkedList<String> styleSheets = new LinkedList<>();
+        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/query.css\">");
+        this.setAttr("styleSheets", styleSheets);
+
         LinkedList<String> javaScripts = new LinkedList<>();
-        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/toast.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/query.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");
     }

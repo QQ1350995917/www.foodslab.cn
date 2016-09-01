@@ -9,4 +9,5 @@ import cn.foodslab.common.response.IResultSet;
  */
 public interface IReceiverService {
     IResultSet create(ReceiverEntity receiverEntity);
+    IResultSet retrieve(String receiverId);
 }

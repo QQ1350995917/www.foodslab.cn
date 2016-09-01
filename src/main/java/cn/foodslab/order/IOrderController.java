@@ -7,4 +7,6 @@ package cn.foodslab.order;
  */
 public interface IOrderController {
     void create();
+
+    void retrieve();
 }

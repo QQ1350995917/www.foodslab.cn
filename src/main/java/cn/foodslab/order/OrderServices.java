@@ -5,6 +5,9 @@ import cn.foodslab.common.response.ResultSet;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by Pengwei Ding on 2016-08-31 14:21.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
@@ -35,6 +38,16 @@ public class OrderServices implements IOrderServices {
             resultSet.setData(orderEntity);
             resultSet.setMessage("创建失败");
         }
+        return resultSet;
+    }
+
+
+    @Override
+    public IResultSet retrieve(String orderId) {
+        List<Record> records = Db.find("SELECT orderId,senderName,senderPhone,receiverId,expressLabel,expressNumber,createTime FROM user_order WHERE orderId = ?", orderId);
+        Map<String, Object> receiverEntity = records.get(0).getColumns();
+        IResultSet resultSet = new ResultSet(receiverEntity);
+        resultSet.setCode(200);
         return resultSet;
     }
 }

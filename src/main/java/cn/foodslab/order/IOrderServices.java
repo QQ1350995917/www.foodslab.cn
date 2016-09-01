@@ -11,4 +11,6 @@ public interface IOrderServices {
 
     IResultSet create(OrderEntity orderEntity);
 
+    IResultSet retrieve(String orderId);
+
 }

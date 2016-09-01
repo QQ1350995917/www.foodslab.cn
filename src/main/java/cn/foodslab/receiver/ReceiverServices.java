@@ -5,6 +5,9 @@ import cn.foodslab.common.response.ResultSet;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by Pengwei Ding on 2016-08-31 14:42.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
@@ -39,6 +42,15 @@ public class ReceiverServices implements IReceiverService {
             resultSet.setData(receiverEntity);
             resultSet.setMessage("创建失败");
         }
+        return resultSet;
+    }
+
+    @Override
+    public IResultSet retrieve(String receiverId) {
+        List<Record> records = Db.find("SELECT province,city,county,town,village,append,name,phone0,phone1 FROM user_receiver WHERE receiverId = ?", receiverId);
+        Map<String, Object> receiverEntity = records.get(0).getColumns();
+        IResultSet resultSet = new ResultSet(receiverEntity);
+        resultSet.setCode(200);
         return resultSet;
     }
 }

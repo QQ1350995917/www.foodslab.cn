@@ -19,7 +19,7 @@ public class MetaServices implements IMetaServices {
     @Override
     public IResultSet retrieveUnit() {
         List<Record> unitRecords = Db.find("SELECT * FROM meta_unit");
-        List<Map> jsonMap = new LinkedList<>();
+        List<Map<String, Object>> jsonMap = new LinkedList<>();
         for (Record record : unitRecords) {
             Map<String, Object> columns = record.getColumns();
             jsonMap.add(columns);

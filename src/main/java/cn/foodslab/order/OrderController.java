@@ -1,6 +1,7 @@
 package cn.foodslab.order;
 
 import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.common.response.ResultSet;
 import cn.foodslab.receiver.IReceiverService;
 import cn.foodslab.receiver.ReceiverEntity;
 import cn.foodslab.receiver.ReceiverServices;
@@ -49,7 +50,7 @@ public class OrderController extends Controller implements IOrderController {
             IResultSet orderResultSet = iOrderServices.create(orderEntity);
             if (orderResultSet.getCode() == 200) {
                 LinkedList<FormatMappingEntity> formatMappingEntities = new LinkedList<>();
-                formatMappingEntities.add(new FormatMappingEntity(UUID.randomUUID().toString(),orderId,formatId));
+                formatMappingEntities.add(new FormatMappingEntity(UUID.randomUUID().toString(), orderId, formatId));
                 IResultSet mappingResultSet = iFormatMappingServices.create(formatMappingEntities);
                 if (mappingResultSet.getCode() == 200) {
                     renderJson(JSON.toJSONString(orderResultSet));
@@ -70,6 +71,27 @@ public class OrderController extends Controller implements IOrderController {
             receiverResultSet.setData(paraMap);
             receiverResultSet.setMessage("创建收货人失败");
             renderJson(JSON.toJSONString(receiverResultSet));
+        }
+    }
+
+    @Override
+    public void retrieve() {
+        String orderId = getPara("orderId");
+        if (orderId == null || orderId.trim().equals("")) {
+            IResultSet resultSet = new ResultSet();
+            resultSet.setCode(404);
+            renderJson(JSON.toJSONString(resultSet));
+        } else {
+            IResultSet orderResultSet = iOrderServices.retrieve(orderId);
+            Object data = orderResultSet.getData();
+            if (data != null) {
+                Map<String, Object> orderEntity = (Map<String, Object>) data;
+                IResultSet receiverResultSet = iReceiverService.retrieve(orderEntity.get("receiverId").toString());
+                Map<String, Object> receiverEntity = (Map<String, Object>)receiverResultSet.getData();
+                orderEntity.putAll(receiverEntity);
+                orderResultSet.setData(orderEntity);
+            }
+            renderJson(JSON.toJSONString(orderResultSet));
         }
     }
 }
