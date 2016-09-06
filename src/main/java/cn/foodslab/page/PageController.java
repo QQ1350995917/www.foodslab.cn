@@ -69,6 +69,7 @@ public class PageController extends Controller implements IPageController {
 
         LinkedList<String> javaScripts = new LinkedList<>();
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/detail.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/mask.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");
     }
@@ -101,8 +102,12 @@ public class PageController extends Controller implements IPageController {
     @Override
     public void pc() {
         this.setAttr("title", "食坊-购物车");
+        LinkedList<String> styleSheets = new LinkedList<>();
+        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/cart.css\">");
+        this.setAttr("styleSheets", styleSheets);
+
         LinkedList<String> javaScripts = new LinkedList<>();
-        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/cart.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");
     }

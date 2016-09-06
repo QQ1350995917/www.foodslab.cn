@@ -3,6 +3,11 @@ cd src/main/webapp/webapp/asserts
 rm *.css
 rm *.js
 
+
+echo "=============================toast============================="
+echo "toast.js"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/toast.js
+
 echo "=============================relaese============================="
 echo "relaese.css"
 curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/release/webapp/asserts/frame-all-release.css
@@ -32,6 +37,8 @@ echo "detail.css"
 curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/detail.css
 echo "detail.js"
 curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/detail.js
+echo "mask.js"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/mask.js
 
 echo "=============================billing============================="
 echo "billing.css"
@@ -59,10 +66,11 @@ echo "query.js"
 curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/query.js
 
 
-echo "=============================toast============================="
-echo "toast.js"
-curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/toast.js
-
+echo "=============================cart============================="
+echo "cart.css"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/cart.css
+echo "cart.js"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/cart.js
 
 
 
