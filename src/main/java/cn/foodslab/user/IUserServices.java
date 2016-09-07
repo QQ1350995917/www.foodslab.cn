@@ -9,20 +9,32 @@ import cn.foodslab.common.response.IResultSet;
  */
 public interface IUserServices {
 
+
     /**
-     * 创建账户
+     * 读取账户
+     * 管理员接口
+     */
+    IResultSet retrieve();
+
+    /**
+     * 创建新的账户
      * 同时创建用户ID
      * @param accountEntity
-     * @return
      */
-    IResultSet createAccount(AccountEntity accountEntity);
+    IResultSet create(AccountEntity accountEntity);
 
     /**
      * 更新账户
-     * @param accountEntity
-     * @return
+
      */
-    IResultSet updateAccount(AccountEntity accountEntity);
+    IResultSet update(AccountEntity accountEntity);
+
+    /**
+     * 禁用账户
+     * 管理员接口
+     * @param accountEntity
+     */
+    IResultSet block(AccountEntity accountEntity);
 
     /**
      * 绑定账户
@@ -31,13 +43,5 @@ public interface IUserServices {
      * @param accountEntity
      * @return
      */
-    IResultSet bindAccount(UserEntity userEntity,AccountEntity accountEntity);
-
-    IResultSet createReceiver(AccountEntity accountEntity,ReceiverEntity receiverEntity);
-
-    IResultSet updateReceiver(ReceiverEntity receiverEntity);
-
-    IResultSet retrieveAccount(UserEntity userEntity);
-
-    IResultSet retrieveReceiver(AccountEntity accountEntity);
+    IResultSet bind(UserEntity userEntity,AccountEntity accountEntity);
 }

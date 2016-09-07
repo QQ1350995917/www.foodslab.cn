@@ -72,5 +72,15 @@ public interface IPageController {
      */
     void ppr();
 
+    /**
+     * 管理员登录
+     */
+    void login();
+
+    /**
+     * 管理员界面
+     */
+    void frame();
+
 
 }

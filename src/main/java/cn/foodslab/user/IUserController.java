@@ -7,21 +7,33 @@ package cn.foodslab.user;
  */
 public interface IUserController {
 
-
     void index();
 
-    void createAccount();
+    /**
+     * 读取账户
+     * 管理员接口
+     */
+    void retrieve();
 
-    void updateAccount();
+    /**
+     * 创建新的账户
+     */
+    void create();
 
-    void bindAccount();
+    /**
+     * 更新账户
+     */
+    void update();
 
-    void createReceiver();
+    /**
+     * 禁用账户
+     * 管理员接口
+     */
+    void block();
 
-    void updateReceiver();
-
-    void retrieveAccount();
-
-    void retrieveReceiver();
+    /**
+     * 绑定账户
+     */
+    void bind();
 
 }

@@ -107,6 +107,7 @@ public class PageController extends Controller implements IPageController {
         this.setAttr("styleSheets", styleSheets);
 
         LinkedList<String> javaScripts = new LinkedList<>();
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/toast.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/cart.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");
@@ -180,5 +181,15 @@ public class PageController extends Controller implements IPageController {
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");
+    }
+
+    @Override
+    public void login() {
+        this.render("/webapp/widgets/login.html");
+    }
+
+    @Override
+    public void frame() {
+        this.render("/webapp/widgets/frame.html");
     }
 }

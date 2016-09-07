@@ -8,7 +8,6 @@ package cn.foodslab.user;
 public class AccountEntity {
     private String accountId;
     private String telephone;
-    private String password;
     private String name;
     private int gender;
     private String address;
@@ -23,10 +22,9 @@ public class AccountEntity {
         super();
     }
 
-    public AccountEntity(String accountId, String telephone, String password, String name, int gender, String address, String portrait, String birthday, int source, String userId) {
+    public AccountEntity(String accountId, String telephone, String name, int gender, String address, String portrait, String birthday, int source, String userId) {
         this.accountId = accountId;
         this.telephone = telephone;
-        this.password = password;
         this.name = name;
         this.gender = gender;
         this.address = address;
@@ -50,14 +48,6 @@ public class AccountEntity {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getName() {

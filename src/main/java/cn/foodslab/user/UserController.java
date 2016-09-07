@@ -19,20 +19,24 @@ public class UserController extends Controller implements IUserController {
     }
 
     @Override
-    public void createAccount() {
-        String telephone = this.getPara("telephone");
-        String password = this.getPara("password");
-        AccountEntity accountEntity = new AccountEntity(UUID.randomUUID().toString(), telephone, password, null, 0, null, null, null, 0, UUID.randomUUID().toString());
-        IResultSet resultSet = userServices.createAccount(accountEntity);
+    public void retrieve() {
+        IResultSet resultSet = userServices.retrieve();
         renderJson(JSON.toJSONString(resultSet));
     }
 
     @Override
-    public void updateAccount() {
+    public void create() {
+        String telephone = this.getPara("telephone");
+        AccountEntity accountEntity = new AccountEntity(UUID.randomUUID().toString(), telephone, null, 0, null, null, null, 0, UUID.randomUUID().toString());
+        IResultSet resultSet = userServices.create(accountEntity);
+        renderJson(JSON.toJSONString(resultSet));
+    }
+
+    @Override
+    public void update() {
         String userId = this.getPara("userId");
         String accountId = this.getPara("accountId");
         String telephone = this.getPara("telephone");
-        String password = this.getPara("password");
         String name = this.getPara("name");
         String address = this.getPara("address");
         int gender = -1;
@@ -40,33 +44,19 @@ public class UserController extends Controller implements IUserController {
             gender = this.getParaToInt("gender");
         }
         String birthday = this.getPara("birthday");
-        AccountEntity accountEntity = new AccountEntity(accountId, telephone, password, name, gender, address, null, birthday, 0, userId);
-        IResultSet resultSet = userServices.updateAccount(accountEntity);
+        AccountEntity accountEntity = new AccountEntity(accountId, telephone, name, gender, address, null, birthday, 0, userId);
+        IResultSet resultSet = userServices.update(accountEntity);
         renderJson(JSON.toJSONString(resultSet));
     }
 
     @Override
-    public void bindAccount() {
+    public void block() {
 
     }
 
     @Override
-    public void createReceiver() {
+    public void bind() {
 
     }
 
-    @Override
-    public void updateReceiver() {
-
-    }
-
-    @Override
-    public void retrieveAccount() {
-
-    }
-
-    @Override
-    public void retrieveReceiver() {
-
-    }
 }

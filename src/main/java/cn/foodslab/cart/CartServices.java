@@ -90,7 +90,7 @@ public class CartServices implements ICartServices {
             public boolean run() throws SQLException {
                 boolean result = true;
                 for (CartEntity cartEntity : cartEntities) {
-                    int count = Db.update("DELETE FROM user_product WHERE accountId = ? AND mappingId = ?", cartEntity.getAccountId(), cartEntity.getMappingId());
+                    int count = Db.update("DELETE FROM user_product WHERE mappingId = ?", cartEntity.getMappingId());
                     result = count == 1 && result;
                 }
                 return result;
