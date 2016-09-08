@@ -83,6 +83,10 @@ echo "mine_receiver.css"
 curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/mine_receiver.css
 echo "mine_receiver.js"
 curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/mine_receiver.js
+echo "mine.css"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/mine.css
+echo "mine.js"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/mine.js
 
 echo "=============================login============================="
 echo "login.css"

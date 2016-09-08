@@ -1,7 +1,5 @@
 package cn.foodslab.order;
 
-import cn.foodslab.common.response.IResultSet;
-import cn.foodslab.common.response.ResultSet;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
@@ -14,15 +12,15 @@ import java.util.List;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-public class FormatMappingServices implements IFormatMappingServices {
+public class OrderProductMappingServices implements IOrderProductMappingServices {
 
     @Override
-    public IResultSet create(List<FormatMappingEntity> formatMappingEntities) {
+    public List<OrderProductMappingEntity> create(List<OrderProductMappingEntity> formatMappingEntities) {
 
         boolean succeed = Db.tx(new IAtom() {
             public boolean run() throws SQLException {
                 boolean result = true;
-                for (FormatMappingEntity formatMappingEntity : formatMappingEntities){
+                for (OrderProductMappingEntity formatMappingEntity : formatMappingEntities){
                     Record record = new Record()
                             .set("mappingId", formatMappingEntity.getMappingId())
                             .set("orderId", formatMappingEntity.getOrderId())
@@ -36,17 +34,10 @@ public class FormatMappingServices implements IFormatMappingServices {
             }
         });
 
-        IResultSet resultSet = new ResultSet();
-
         if (succeed) {
-            resultSet.setCode(200);
-            resultSet.setData(formatMappingEntities);
-            resultSet.setMessage("创建成功");
+            return formatMappingEntities;
         } else {
-            resultSet.setCode(500);
-            resultSet.setData(formatMappingEntities);
-            resultSet.setMessage("创建失败");
+            return null;
         }
-        return resultSet;
     }
 }

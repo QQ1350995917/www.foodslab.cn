@@ -1,7 +1,5 @@
 package cn.foodslab.order;
 
-import cn.foodslab.common.response.IResultSet;
-
 import java.util.List;
 
 /**
@@ -9,6 +7,6 @@ import java.util.List;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-public interface IFormatMappingServices {
-    IResultSet create(List<FormatMappingEntity> formatMappingEntities);
+public interface IOrderProductMappingServices {
+    List<OrderProductMappingEntity> create(List<OrderProductMappingEntity> formatMappingEntities);
 }

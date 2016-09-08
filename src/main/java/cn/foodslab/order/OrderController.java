@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public class OrderController extends Controller implements IOrderController {
     private IAccountServices iAccountServices = new AccountServices();
     private IOrderServices iOrderServices = new OrderServices();
     private IReceiverService iReceiverService = new ReceiverServices();
-    private IFormatMappingServices iFormatMappingServices = new FormatMappingServices();
+    private IOrderProductMappingServices iFormatMappingServices = new OrderProductMappingServices();
 
     @Override
     public void retrieve() {
@@ -63,33 +64,36 @@ public class OrderController extends Controller implements IOrderController {
         String phone1 = getPara("phone1");
         ReceiverEntity receiverEntity = new ReceiverEntity(receiverId, province, city, county, town, village, append, name, phone0, phone1, 1, accountId);
         ReceiverEntity resultReceiver = iReceiverService.create(receiverEntity);
-        if (receiverResultSet.getCode() == 200) {
+        IResultSet resultSet = new ResultSet();
+        if (resultReceiver != null) {
             String orderId = UUID.randomUUID().toString();
             OrderEntity orderEntity = new OrderEntity(orderId, accountId, senderName, senderPhone, receiverEntity.getReceiverId(), cost, postage, 1);
             OrderEntity resultOrder = iOrderServices.create(orderEntity);
-            if (result != null) {
-                LinkedList<FormatMappingEntity> formatMappingEntities = new LinkedList<>();
-                formatMappingEntities.add(new FormatMappingEntity(UUID.randomUUID().toString(), orderId, formatId));
-                IResultSet mappingResultSet = iFormatMappingServices.create(formatMappingEntities);
-                if (mappingResultSet.getCode() == 200) {
-                    renderJson(JSON.toJSONString(orderResultSet));
+            if (resultOrder != null) {
+                LinkedList<OrderProductMappingEntity> formatMappingEntities = new LinkedList<>();
+                formatMappingEntities.add(new OrderProductMappingEntity(UUID.randomUUID().toString(), orderId, formatId));
+                List<OrderProductMappingEntity> orderProductMappingEntities = iFormatMappingServices.create(formatMappingEntities);
+                if (orderProductMappingEntities != null) {
+                    resultSet.setCode(200);
+                    resultSet.setData(resultOrder);
+                    renderJson(JSON.toJSONString(resultSet));
                 } else {
                     Map<String, String[]> paraMap = this.getParaMap();
-                    orderResultSet.setData(paraMap);
-                    orderResultSet.setMessage("创建订单失败");
-                    renderJson(JSON.toJSONString(orderResultSet));
+                    resultSet.setData(paraMap);
+                    resultSet.setMessage("创建订单失败");
+                    renderJson(JSON.toJSONString(resultSet));
                 }
             } else {
                 Map<String, String[]> paraMap = this.getParaMap();
-                orderResultSet.setData(paraMap);
-                orderResultSet.setMessage("创建订单失败");
-                renderJson(JSON.toJSONString(orderResultSet));
+                resultSet.setData(paraMap);
+                resultSet.setMessage("创建订单失败");
+                renderJson(JSON.toJSONString(resultSet));
             }
         } else {
             Map<String, String[]> paraMap = this.getParaMap();
-            receiverResultSet.setData(paraMap);
-            receiverResultSet.setMessage("创建收货人失败");
-            renderJson(JSON.toJSONString(receiverResultSet));
+            resultSet.setData(paraMap);
+            resultSet.setMessage("创建收货人失败");
+            renderJson(JSON.toJSONString(resultSet));
         }
     }
 

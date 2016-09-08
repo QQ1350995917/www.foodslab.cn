@@ -8,6 +8,5 @@ import java.util.LinkedList;
  * Description: @TODO
  */
 public interface IReceiverService {
-    LinkedList<ReceiverEntity> retrieve(String receiverId);
     ReceiverEntity create(ReceiverEntity receiverEntity);
 }

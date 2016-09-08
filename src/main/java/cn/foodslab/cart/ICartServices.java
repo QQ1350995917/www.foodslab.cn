@@ -1,8 +1,8 @@
 package cn.foodslab.cart;
 
-import cn.foodslab.common.response.IResultSet;
-
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Pengwei Ding on 2016-09-05 11:26.
@@ -11,14 +11,14 @@ import java.util.List;
  */
 public interface ICartServices {
 
-    IResultSet retrieve();
+    LinkedList<Map<String,Object>> retrieve();
 
-    IResultSet create(CartEntity cartEntity);
+    CartEntity create(CartEntity cartEntity);
 
-    IResultSet update(CartEntity cartEntity);
+    CartEntity update(CartEntity cartEntity);
 
-    IResultSet delete(List<CartEntity> cartEntities);
+    List<CartEntity> delete(List<CartEntity> cartEntities);
 
-    IResultSet isExist(CartEntity cartEntity);
+    CartEntity isExist(CartEntity cartEntity);
 }
 

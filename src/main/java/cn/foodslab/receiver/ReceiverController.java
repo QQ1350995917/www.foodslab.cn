@@ -1,6 +1,7 @@
 package cn.foodslab.receiver;
 
 import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.common.response.ResultSet;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
@@ -29,7 +30,10 @@ public class ReceiverController extends Controller implements IReceiverControlle
         String phone1 = getPara("phone1");
         String accountId = getPara("accountId");
         ReceiverEntity receiverEntity = new ReceiverEntity(receiverId, province, city, county, town, village, append, name, phone0, phone1, 1, accountId);
-        IResultSet resultSet = iReceiverService.create(receiverEntity);
+        ReceiverEntity receiverEntityResult = iReceiverService.create(receiverEntity);
+        IResultSet resultSet = new ResultSet();
+        resultSet.setCode(200);
+        resultSet.setData(receiverEntityResult);
         renderJson(JSON.toJSONString(resultSet));
     }
 }

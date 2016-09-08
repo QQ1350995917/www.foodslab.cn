@@ -5,7 +5,7 @@ package cn.foodslab.order;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-public class FormatMappingEntity {
+public class OrderProductMappingEntity {
 
     private String mappingId;
     private String orderId;
@@ -13,11 +13,11 @@ public class FormatMappingEntity {
     private String createTime;
     private String updateTime;
 
-    public FormatMappingEntity() {
+    public OrderProductMappingEntity() {
         super();
     }
 
-    public FormatMappingEntity(String mappingId, String orderId, String formatId, String createTime, String updateTime) {
+    public OrderProductMappingEntity(String mappingId, String orderId, String formatId, String createTime, String updateTime) {
         this.mappingId = mappingId;
         this.orderId = orderId;
         this.formatId = formatId;
@@ -25,7 +25,7 @@ public class FormatMappingEntity {
         this.updateTime = updateTime;
     }
 
-    public FormatMappingEntity(String mappingId, String orderId, String formatId) {
+    public OrderProductMappingEntity(String mappingId, String orderId, String formatId) {
         this.mappingId = mappingId;
         this.orderId = orderId;
         this.formatId = formatId;

@@ -1,7 +1,6 @@
 package cn.foodslab.cart;
 
-import cn.foodslab.common.response.IResultSet;
-import cn.foodslab.common.response.ResultSet;
+import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
@@ -19,36 +18,33 @@ import java.util.Map;
 public class CartServices implements ICartServices {
 
     @Override
-    public IResultSet retrieve() {
+    public LinkedList<Map<String,Object>> retrieve() {
+        LinkedList<Map<String,Object>> result = new LinkedList<>();
         List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE status = 1");
-        IResultSet resultSet = new ResultSet();
-        LinkedList<Map<String,Object>> resultData = new LinkedList<>();
+
         for (Record record:records){
-            Map<String, Object> cartEntity = record.getColumns();
+            Map<String, Object> cartMap = record.getColumns();
 
-            Record formatRecord = Db.find("SELECT * FROM product_format WHERE formatId = ?", cartEntity.get("formatId")).get(0);
-            Map<String, Object> formatEntity = formatRecord.getColumns();
+            Record formatRecord = Db.find("SELECT * FROM product_format WHERE formatId = ?", cartMap.get("formatId")).get(0);
+            Map<String, Object> formatMap = formatRecord.getColumns();
 
-            Record typeRecord = Db.find("SELECT * FROM product_type WHERE typeId = ?", formatEntity.get("typeId")).get(0);
-            Map<String, Object> typeEntity = typeRecord.getColumns();
+            Record typeRecord = Db.find("SELECT * FROM product_type WHERE typeId = ?", formatMap.get("typeId")).get(0);
+            Map<String, Object> typeMap = typeRecord.getColumns();
 
-            Record seriesRecord = Db.find("SELECT * FROM product_series WHERE seriesId = ?", typeEntity.get("seriesId")).get(0);
-            Map<String, Object> seriesEntity = seriesRecord.getColumns();
+            Record seriesRecord = Db.find("SELECT * FROM product_series WHERE seriesId = ?", typeMap.get("seriesId")).get(0);
+            Map<String, Object> seriesMap = seriesRecord.getColumns();
 
-            typeEntity.put("parent",seriesEntity);
-            formatEntity.put("parent",typeEntity);
-            cartEntity.put("product",formatEntity);
+            typeMap.put("parent", seriesMap);
+            formatMap.put("parent", typeMap);
+            cartMap.put("product", formatMap);
 
-            resultData.add(cartEntity);
+            result.add(cartMap);
         }
-        resultSet.setCode(200);
-        resultSet.setData(resultData);
-        return resultSet;
+        return result;
     }
 
     @Override
-    public IResultSet create(CartEntity cartEntity) {
-        IResultSet resultSet = new ResultSet();
+    public CartEntity create(CartEntity cartEntity) {
         Record record = new Record()
                 .set("mappingId", cartEntity.getMappingId())
                 .set("formatId", cartEntity.getFormatId())
@@ -56,36 +52,24 @@ public class CartServices implements ICartServices {
                 .set("accountId", cartEntity.getAccountId());
         boolean save = Db.save("user_cart", record);
         if (save) {
-            resultSet.setCode(200);
-            resultSet.setData(cartEntity);
-            resultSet.setMessage("创建成功");
+            return cartEntity;
         } else {
-            cartEntity.setMappingId(null);
-            resultSet.setCode(500);
-            resultSet.setData(cartEntity);
-            resultSet.setMessage("创建失败");
+            return null;
         }
-        return resultSet;
     }
 
     @Override
-    public IResultSet update(CartEntity cartEntity) {
-        IResultSet resultSet = new ResultSet();
+    public CartEntity update(CartEntity cartEntity) {
         int update = Db.update("UPDATE user_cart SET amount = ? WHERE mappingId = ?", cartEntity.getAmount(), cartEntity.getMappingId());
         if (update == 1) {
-            resultSet.setCode(200);
-            resultSet.setData(cartEntity);
-            resultSet.setMessage("更新成功");
+            return cartEntity;
         } else {
-            resultSet.setCode(500);
-            resultSet.setData(cartEntity);
-            resultSet.setMessage("更新失败");
+            return null;
         }
-        return resultSet;
     }
 
     @Override
-    public IResultSet delete(List<CartEntity> cartEntities) {
+    public List<CartEntity> delete(List<CartEntity> cartEntities) {
         boolean succeed = Db.tx(new IAtom() {
             public boolean run() throws SQLException {
                 boolean result = true;
@@ -97,30 +81,20 @@ public class CartServices implements ICartServices {
             }
         });
 
-        IResultSet resultSet = new ResultSet();
         if (succeed) {
-            resultSet.setCode(200);
-            resultSet.setData(cartEntities);
-            resultSet.setMessage("删除成功");
+           return cartEntities;
         } else {
-            resultSet.setCode(500);
-            resultSet.setData(cartEntities);
-            resultSet.setMessage("删除失败");
+            return null;
         }
-        return resultSet;
     }
 
     @Override
-    public IResultSet isExist(CartEntity cartEntity) {
-        IResultSet resultSet = new ResultSet();
+    public CartEntity isExist(CartEntity cartEntity) {
         List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE status = 1 AND accountId = ? AND formatId = ?", cartEntity.getAccountId(), cartEntity.getFormatId());
         if (records == null || records.size() == 0) {
-            resultSet.setCode(200);
-            resultSet.setData(false);
+            return cartEntity;
         } else {
-            resultSet.setCode(300);
-            resultSet.setData(records.get(0).getColumns());
+            return null;
         }
-        return resultSet;
     }
 }
