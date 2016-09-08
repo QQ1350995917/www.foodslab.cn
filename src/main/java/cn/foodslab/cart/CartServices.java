@@ -20,7 +20,7 @@ public class CartServices implements ICartServices {
 
     @Override
     public IResultSet retrieve() {
-        List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_product WHERE status = 1");
+        List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE status = 1");
         IResultSet resultSet = new ResultSet();
         LinkedList<Map<String,Object>> resultData = new LinkedList<>();
         for (Record record:records){
@@ -54,7 +54,7 @@ public class CartServices implements ICartServices {
                 .set("formatId", cartEntity.getFormatId())
                 .set("amount", cartEntity.getAmount())
                 .set("accountId", cartEntity.getAccountId());
-        boolean save = Db.save("user_product", record);
+        boolean save = Db.save("user_cart", record);
         if (save) {
             resultSet.setCode(200);
             resultSet.setData(cartEntity);
@@ -71,7 +71,7 @@ public class CartServices implements ICartServices {
     @Override
     public IResultSet update(CartEntity cartEntity) {
         IResultSet resultSet = new ResultSet();
-        int update = Db.update("UPDATE user_product SET amount = ? WHERE mappingId = ?", cartEntity.getAmount(), cartEntity.getMappingId());
+        int update = Db.update("UPDATE user_cart SET amount = ? WHERE mappingId = ?", cartEntity.getAmount(), cartEntity.getMappingId());
         if (update == 1) {
             resultSet.setCode(200);
             resultSet.setData(cartEntity);
@@ -90,7 +90,7 @@ public class CartServices implements ICartServices {
             public boolean run() throws SQLException {
                 boolean result = true;
                 for (CartEntity cartEntity : cartEntities) {
-                    int count = Db.update("DELETE FROM user_product WHERE mappingId = ?", cartEntity.getMappingId());
+                    int count = Db.update("DELETE FROM user_cart WHERE mappingId = ?", cartEntity.getMappingId());
                     result = count == 1 && result;
                 }
                 return result;
@@ -113,7 +113,7 @@ public class CartServices implements ICartServices {
     @Override
     public IResultSet isExist(CartEntity cartEntity) {
         IResultSet resultSet = new ResultSet();
-        List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_product WHERE status = 1 AND accountId = ? AND formatId = ?", cartEntity.getAccountId(), cartEntity.getFormatId());
+        List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE status = 1 AND accountId = ? AND formatId = ?", cartEntity.getAccountId(), cartEntity.getFormatId());
         if (records == null || records.size() == 0) {
             resultSet.setCode(200);
             resultSet.setData(false);

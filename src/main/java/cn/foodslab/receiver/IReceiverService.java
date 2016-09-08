@@ -1,6 +1,6 @@
 package cn.foodslab.receiver;
 
-import cn.foodslab.common.response.IResultSet;
+import java.util.LinkedList;
 
 /**
  * Created by Pengwei Ding on 2016-08-31 14:34.
@@ -8,6 +8,6 @@ import cn.foodslab.common.response.IResultSet;
  * Description: @TODO
  */
 public interface IReceiverService {
-    IResultSet create(ReceiverEntity receiverEntity);
-    IResultSet retrieve(String receiverId);
+    LinkedList<ReceiverEntity> retrieve(String receiverId);
+    ReceiverEntity create(ReceiverEntity receiverEntity);
 }

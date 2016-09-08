@@ -1,6 +1,7 @@
 package cn.foodslab.user;
 
 import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.common.response.ResultSet;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
@@ -11,8 +12,9 @@ import java.util.UUID;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-public class UserController extends Controller implements IUserController {
-    IUserServices userServices = new UserServices();
+public class AccountController extends Controller implements IAccountController {
+    IAccountServices userServices = new AccountServices();
+
     @Override
     public void index() {
 
@@ -20,7 +22,16 @@ public class UserController extends Controller implements IUserController {
 
     @Override
     public void retrieve() {
-        IResultSet resultSet = userServices.retrieve();
+        String phone = this.getPara("phone");
+        AccountEntity retrieve = userServices.retrieve(phone);
+        IResultSet resultSet = new ResultSet();
+        if (retrieve != null) {
+            resultSet.setCode(200);
+            resultSet.setData(retrieve);
+        } else {
+            resultSet.setCode(500);
+            resultSet.setMessage("不存在该用户");
+        }
         renderJson(JSON.toJSONString(resultSet));
     }
 
@@ -28,7 +39,15 @@ public class UserController extends Controller implements IUserController {
     public void create() {
         String telephone = this.getPara("telephone");
         AccountEntity accountEntity = new AccountEntity(UUID.randomUUID().toString(), telephone, null, 0, null, null, null, 0, UUID.randomUUID().toString());
-        IResultSet resultSet = userServices.create(accountEntity);
+        AccountEntity result = userServices.create(accountEntity);
+        IResultSet resultSet = new ResultSet();
+        if (result != null) {
+            resultSet.setCode(200);
+            resultSet.setData(result);
+        } else {
+            resultSet.setCode(500);
+            resultSet.setMessage("创建账户失败");
+        }
         renderJson(JSON.toJSONString(resultSet));
     }
 
@@ -40,12 +59,20 @@ public class UserController extends Controller implements IUserController {
         String name = this.getPara("name");
         String address = this.getPara("address");
         int gender = -1;
-        if (isParaExists("gender")){
+        if (isParaExists("gender")) {
             gender = this.getParaToInt("gender");
         }
         String birthday = this.getPara("birthday");
         AccountEntity accountEntity = new AccountEntity(accountId, telephone, name, gender, address, null, birthday, 0, userId);
-        IResultSet resultSet = userServices.update(accountEntity);
+        AccountEntity result = userServices.update(accountEntity);
+        IResultSet resultSet = new ResultSet();
+        if (result != null) {
+            resultSet.setCode(200);
+            resultSet.setData(result);
+        } else {
+            resultSet.setCode(500);
+            resultSet.setMessage("更新失败");
+        }
         renderJson(JSON.toJSONString(resultSet));
     }
 

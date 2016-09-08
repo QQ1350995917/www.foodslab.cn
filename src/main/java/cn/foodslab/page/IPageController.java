@@ -31,12 +31,6 @@ public interface IPageController {
     void pb();
 
     /**
-     * short of Page Cart
-     * 跳转到购物车页面
-     */
-    void pc();
-
-    /**
      * short of Page Order
      * 跳转到订单页面
      */
@@ -61,10 +55,10 @@ public interface IPageController {
     void pq();
 
     /**
-     * short of Page Person
+     * short of Page Mine
      * 跳转到用户信息页面
      */
-    void pp();
+    void pm();
 
     /**
      * short of Page Protocol

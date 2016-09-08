@@ -6,7 +6,14 @@ package cn.foodslab.order;
  * Description: @TODO
  */
 public interface IOrderController {
-    void create();
 
+    /**
+     * 用户读取自己的订单列表
+     */
     void retrieve();
+
+    /**
+     * 用户创建一个订单
+     */
+    void create();
 }

@@ -100,20 +100,6 @@ public class PageController extends Controller implements IPageController {
     }
 
     @Override
-    public void pc() {
-        this.setAttr("title", "食坊-购物车");
-        LinkedList<String> styleSheets = new LinkedList<>();
-        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/cart.css\">");
-        this.setAttr("styleSheets", styleSheets);
-
-        LinkedList<String> javaScripts = new LinkedList<>();
-        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/toast.js\"></script>");
-        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/cart.js\"></script>");
-        this.setAttr("javaScripts", javaScripts);
-        this.render("/webapp/widgets/index.html");
-    }
-
-    @Override
     public void po() {
         this.setAttr("title", "食坊-订单");
         LinkedList<String> javaScripts = new LinkedList<>();
@@ -166,11 +152,46 @@ public class PageController extends Controller implements IPageController {
     }
 
     @Override
-    public void pp() {
+    public void pm() {
+        String dir = this.getPara("dir");
+        String account = this.getPara("account");
+        if (dir == null){
+            dir = "cart";
+        }
+
+        LinkedList<Map<String,String>> metas = new LinkedList<>();
+
+        LinkedHashMap<String, String> dirMap = new LinkedHashMap<>();
+        dirMap.put("metaId","dir");
+        dirMap.put("metaValue", dir);
+        metas.add(dirMap);
+
+        LinkedHashMap<String, String> accountMap = new LinkedHashMap<>();
+        accountMap.put("metaId","account");
+        accountMap.put("metaValue", account);
+        metas.add(accountMap);
+
+        this.setAttr("metas", metas);
+
         this.setAttr("title", "食坊-我的");
+
+        LinkedList<String> styleSheets = new LinkedList<>();
+        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/cart.css\">");
+        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/order.css\">");
+        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/account.css\">");
+        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/receiver.css\">");
+        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/mine.css\">");
+        this.setAttr("styleSheets", styleSheets);
+
         LinkedList<String> javaScripts = new LinkedList<>();
-        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/toast.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/cart.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/order.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/account.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/receiver.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/mine.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
+
         this.render("/webapp/widgets/index.html");
     }
 

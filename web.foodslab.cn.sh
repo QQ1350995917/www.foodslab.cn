@@ -66,13 +66,27 @@ echo "query.js"
 curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/query.js
 
 
-echo "=============================cart============================="
-echo "cart.css"
-curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/cart.css
-echo "cart.js"
-curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/cart.js
+echo "=============================mine============================="
+echo "mine_cart.css"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/mine_cart.css
+echo "mine_cart.js"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/mine_cart.js
+echo "mine_order.css"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/mine_order.css
+echo "mine_order.js"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/mine_order.js
+echo "mine_account.css"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/mine_account.css
+echo "mine_account.js"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/mine_account.js
+echo "mine_receiver.css"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/mine_receiver.css
+echo "mine_receiver.js"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/mine_receiver.js
 
-
+echo "=============================login============================="
+echo "login.css"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/backend/login/login.css
 
 #cd ../widgets/
 #rm frame.html

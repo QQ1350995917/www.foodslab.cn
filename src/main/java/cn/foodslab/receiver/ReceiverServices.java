@@ -5,6 +5,7 @@ import cn.foodslab.common.response.ResultSet;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ import java.util.Map;
 public class ReceiverServices implements IReceiverService {
 
     @Override
-    public IResultSet create(ReceiverEntity receiverEntity) {
+    public ReceiverEntity create(ReceiverEntity receiverEntity) {
         IResultSet resultSet = new ResultSet();
         Record record = new Record()
                 .set("receiverId", receiverEntity.getReceiverId())
@@ -46,7 +47,7 @@ public class ReceiverServices implements IReceiverService {
     }
 
     @Override
-    public IResultSet retrieve(String receiverId) {
+    public LinkedList<ReceiverEntity> retrieve(String receiverId) {
         List<Record> records = Db.find("SELECT province,city,county,town,village,append,name,phone0,phone1 FROM user_receiver WHERE receiverId = ?", receiverId);
         Map<String, Object> receiverEntity = records.get(0).getColumns();
         IResultSet resultSet = new ResultSet(receiverEntity);

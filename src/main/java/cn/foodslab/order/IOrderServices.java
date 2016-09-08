@@ -1,6 +1,6 @@
 package cn.foodslab.order;
 
-import cn.foodslab.common.response.IResultSet;
+import java.util.LinkedList;
 
 /**
  * Created by Pengwei Ding on 2016-08-31 13:53.
@@ -9,8 +9,12 @@ import cn.foodslab.common.response.IResultSet;
  */
 public interface IOrderServices {
 
-    IResultSet create(OrderEntity orderEntity);
+    /**
+     * 读取用户名下所有账户的订单
+     * @return
+     */
+    LinkedList<OrderEntity> retrieve(String userId);
 
-    IResultSet retrieve(String orderId);
+    OrderEntity create(OrderEntity orderEntity);
 
 }

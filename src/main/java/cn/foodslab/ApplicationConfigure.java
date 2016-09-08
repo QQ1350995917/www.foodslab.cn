@@ -10,7 +10,7 @@ import cn.foodslab.page.PageController;
 import cn.foodslab.poster.PosterController;
 import cn.foodslab.product.ProductController;
 import cn.foodslab.receiver.ReceiverController;
-import cn.foodslab.user.UserController;
+import cn.foodslab.user.AccountController;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 import com.jfinal.config.*;
@@ -86,7 +86,7 @@ public class ApplicationConfigure extends JFinalConfig {
         me.add("/product", ProductController.class);
         me.add("/link", LinkController.class);
         me.add("/poster", PosterController.class);
-        me.add("/user", UserController.class);
+        me.add("/account", AccountController.class);
         me.add("/cart", CartController.class);
         me.add("/order", OrderController.class);
         me.add("/receiver", ReceiverController.class);

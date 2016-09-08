@@ -5,6 +5,9 @@ import cn.foodslab.common.response.ResultSet;
 import cn.foodslab.receiver.IReceiverService;
 import cn.foodslab.receiver.ReceiverEntity;
 import cn.foodslab.receiver.ReceiverServices;
+import cn.foodslab.user.AccountServices;
+import cn.foodslab.user.IAccountServices;
+import cn.foodslab.user.UserEntity;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
@@ -18,9 +21,25 @@ import java.util.UUID;
  * Description: @TODO
  */
 public class OrderController extends Controller implements IOrderController {
+    private IAccountServices iAccountServices = new AccountServices();
     private IOrderServices iOrderServices = new OrderServices();
     private IReceiverService iReceiverService = new ReceiverServices();
     private IFormatMappingServices iFormatMappingServices = new FormatMappingServices();
+
+    @Override
+    public void retrieve() {
+        String accountId = getPara("accountId");
+        UserEntity userEntity = iAccountServices.retrieveUserByAccountId(accountId);
+        IResultSet resultSet = new ResultSet();
+        if (userEntity != null) {
+            LinkedList<OrderEntity> orderEntities = iOrderServices.retrieve(userEntity.getUserId());
+            resultSet.setCode(200);
+            resultSet.setData(orderEntities);
+        } else {
+            resultSet.setCode(500);
+        }
+        renderJson(JSON.toJSONString(resultSet));
+    }
 
     @Override
     public void create() {
@@ -43,12 +62,12 @@ public class OrderController extends Controller implements IOrderController {
         String phone0 = getPara("phone0");
         String phone1 = getPara("phone1");
         ReceiverEntity receiverEntity = new ReceiverEntity(receiverId, province, city, county, town, village, append, name, phone0, phone1, 1, accountId);
-        IResultSet receiverResultSet = iReceiverService.create(receiverEntity);
+        ReceiverEntity resultReceiver = iReceiverService.create(receiverEntity);
         if (receiverResultSet.getCode() == 200) {
             String orderId = UUID.randomUUID().toString();
             OrderEntity orderEntity = new OrderEntity(orderId, accountId, senderName, senderPhone, receiverEntity.getReceiverId(), cost, postage, 1);
-            IResultSet orderResultSet = iOrderServices.create(orderEntity);
-            if (orderResultSet.getCode() == 200) {
+            OrderEntity resultOrder = iOrderServices.create(orderEntity);
+            if (result != null) {
                 LinkedList<FormatMappingEntity> formatMappingEntities = new LinkedList<>();
                 formatMappingEntities.add(new FormatMappingEntity(UUID.randomUUID().toString(), orderId, formatId));
                 IResultSet mappingResultSet = iFormatMappingServices.create(formatMappingEntities);
@@ -74,24 +93,5 @@ public class OrderController extends Controller implements IOrderController {
         }
     }
 
-    @Override
-    public void retrieve() {
-        String orderId = getPara("orderId");
-        if (orderId == null || orderId.trim().equals("")) {
-            IResultSet resultSet = new ResultSet();
-            resultSet.setCode(404);
-            renderJson(JSON.toJSONString(resultSet));
-        } else {
-            IResultSet orderResultSet = iOrderServices.retrieve(orderId);
-            Object data = orderResultSet.getData();
-            if (data != null) {
-                Map<String, Object> orderEntity = (Map<String, Object>) data;
-                IResultSet receiverResultSet = iReceiverService.retrieve(orderEntity.get("receiverId").toString());
-                Map<String, Object> receiverEntity = (Map<String, Object>)receiverResultSet.getData();
-                orderEntity.putAll(receiverEntity);
-                orderResultSet.setData(orderEntity);
-            }
-            renderJson(JSON.toJSONString(orderResultSet));
-        }
-    }
+
 }
