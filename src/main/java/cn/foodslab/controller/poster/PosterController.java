@@ -1,6 +1,10 @@
-package cn.foodslab.service.poster;
+package cn.foodslab.controller.poster;
 
 import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.controller.poster.IPostController;
+import cn.foodslab.service.poster.IPosterServices;
+import cn.foodslab.service.poster.PosterEntity;
+import cn.foodslab.service.poster.PosterServices;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 

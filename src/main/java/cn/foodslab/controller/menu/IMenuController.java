@@ -1,4 +1,4 @@
-package cn.foodslab.service.menu;
+package cn.foodslab.controller.menu;
 
 /**
  * Created by Pengwei Ding on 2016-07-30 14:32.

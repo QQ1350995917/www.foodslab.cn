@@ -1,4 +1,4 @@
-package cn.foodslab.view.page;
+package cn.foodslab.controller.page;
 
 import com.jfinal.core.Controller;
 
@@ -96,11 +96,11 @@ public class PageController extends Controller implements IPageController {
             }
 
         } else {
-            String formatIds = this.getPara("formatIds");
-            if (formatIds != null) {
+            String formatId = this.getPara("formatId");
+            if (formatId != null) {
                 LinkedHashMap<String, String> formatMap = new LinkedHashMap<>();
                 formatMap.put("metaId", "productIds");
-                formatMap.put("metaValue", formatIds);
+                formatMap.put("metaValue", formatId);
                 metas.add(formatMap);
             } else {
                 /**
@@ -115,13 +115,13 @@ public class PageController extends Controller implements IPageController {
         this.setAttr("title", "食坊-支付");
         LinkedList<String> styleSheets = new LinkedList<>();
         styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/billing.css\">");
-        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/receiver.css\">");
+        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/billing_receiver.css\">");
         this.setAttr("styleSheets", styleSheets);
 
         LinkedList<String> javaScripts = new LinkedList<>();
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/billing.js\"></script>");
-        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/receiver.js\"></script>");
-        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/payment.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/billing_receiver.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/billing_payment.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");
     }

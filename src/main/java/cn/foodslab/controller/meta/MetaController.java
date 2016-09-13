@@ -1,5 +1,7 @@
-package cn.foodslab.common.meta;
+package cn.foodslab.controller.meta;
 
+import cn.foodslab.service.meta.IMetaServices;
+import cn.foodslab.service.meta.MetaServices;
 import cn.foodslab.common.response.IResultSet;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
@@ -9,7 +11,7 @@ import com.jfinal.core.Controller;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: 元数据
  */
-public class MetaController extends Controller implements IMetaController{
+public class MetaController extends Controller implements IMetaController {
 
     private IMetaServices metaServices = new MetaServices();
 

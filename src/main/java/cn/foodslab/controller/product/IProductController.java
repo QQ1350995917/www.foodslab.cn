@@ -1,4 +1,4 @@
-package cn.foodslab.service.product;
+package cn.foodslab.controller.product;
 
 /**
  * Created by Pengwei Ding on 2016-07-30 21:28.

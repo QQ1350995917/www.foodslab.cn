@@ -1,4 +1,4 @@
-package cn.foodslab.view.page;
+package cn.foodslab.controller.page;
 
 import com.jfinal.core.Controller;
 

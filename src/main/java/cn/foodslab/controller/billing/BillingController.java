@@ -13,8 +13,8 @@ import cn.foodslab.service.receiver.ReceiverEntity;
 import cn.foodslab.service.receiver.ReceiverServices;
 import cn.foodslab.service.user.AccountServices;
 import cn.foodslab.service.user.IAccountServices;
-import cn.foodslab.view.billing.BillingPageEntity;
-import cn.foodslab.view.billing.BillingProductEntity;
+import cn.foodslab.model.billing.BillingPageEntity;
+import cn.foodslab.model.billing.BillingProductEntity;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 

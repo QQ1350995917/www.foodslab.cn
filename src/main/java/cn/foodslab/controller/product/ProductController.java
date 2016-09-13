@@ -1,6 +1,8 @@
-package cn.foodslab.service.product;
+package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.controller.product.IProductController;
+import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
@@ -9,7 +11,7 @@ import com.jfinal.core.Controller;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-public class ProductController extends Controller implements IProductController{
+public class ProductController extends Controller implements IProductController {
     IProductServices iProductServices = new ProductServices();
 
     @Override

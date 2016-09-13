@@ -1,6 +1,11 @@
-package cn.foodslab.service.manager;
+package cn.foodslab.controller.manager;
 
 import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.controller.manager.IManagerController;
+import cn.foodslab.service.manager.IManagerServices;
+import cn.foodslab.service.manager.ManagerEntity;
+import cn.foodslab.service.manager.ManagerMenuEntity;
+import cn.foodslab.service.manager.ManagerServices;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
@@ -11,7 +16,7 @@ import java.util.LinkedList;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: 管理员业务逻辑流程控制器
  */
-public class ManagerController extends Controller implements IManagerController{
+public class ManagerController extends Controller implements IManagerController {
 
     private IManagerServices iManagerServices = new ManagerServices();
 

@@ -1,4 +1,4 @@
-package cn.foodslab.view.page;
+package cn.foodslab.controller.page;
 
 /**
  * Created by Pengwei Ding on 2016-07-28 11:19.

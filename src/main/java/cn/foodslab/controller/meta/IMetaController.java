@@ -1,4 +1,4 @@
-package cn.foodslab.common.meta;
+package cn.foodslab.controller.meta;
 
 /**
  * Created by Pengwei Ding on 2016-08-19 11:39.

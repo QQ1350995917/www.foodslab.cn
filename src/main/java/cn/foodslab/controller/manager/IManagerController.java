@@ -1,4 +1,4 @@
-package cn.foodslab.service.manager;
+package cn.foodslab.controller.manager;
 
 /**
  * Created by Pengwei Ding on 2016-07-30 10:03.

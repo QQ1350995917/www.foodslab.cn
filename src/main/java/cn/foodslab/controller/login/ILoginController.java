@@ -1,4 +1,4 @@
-package cn.foodslab.service.login;
+package cn.foodslab.controller.login;
 
 /**
  * Created by Pengwei Ding on 2016-07-30 11:10.

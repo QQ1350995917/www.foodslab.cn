@@ -1,5 +1,8 @@
-package cn.foodslab.service.login;
+package cn.foodslab.controller.login;
 
+import cn.foodslab.controller.login.ILoginController;
+import cn.foodslab.service.login.ILoginServices;
+import cn.foodslab.service.login.LoginServices;
 import com.jfinal.core.Controller;
 
 /**
@@ -7,7 +10,7 @@ import com.jfinal.core.Controller;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: 登录流程控制层
  */
-public class LoginController extends Controller implements ILoginController{
+public class LoginController extends Controller implements ILoginController {
 
     private ILoginServices iLoginServices = new LoginServices();
 

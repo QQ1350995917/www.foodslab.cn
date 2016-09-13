@@ -1,4 +1,4 @@
-package cn.foodslab.common.meta;
+package cn.foodslab.service.meta;
 
 import cn.foodslab.common.response.IResultSet;
 

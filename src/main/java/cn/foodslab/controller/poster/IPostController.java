@@ -1,15 +1,16 @@
-package cn.foodslab.service.link;
+package cn.foodslab.controller.poster;
 
 /**
- * Created by Pengwei Ding on 2016-08-13 18:26.
+ * Created by Pengwei Ding on 2016-08-15 15:57.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-public interface ILinkController {
+public interface IPostController {
 
     void index();
 
     void create();
 
     void update();
+
 }
