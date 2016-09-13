@@ -45,12 +45,12 @@ echo "billing.css"
 curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/billing.css
 echo "billing.js"
 curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/billing.js
-echo "receiver.css"
-curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/receiver.css
-echo "receiver.js"
-curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/receiver.js
-echo "payment.js"
-curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/payment.js
+echo "billing_receiver.css"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/billing_receiver.css
+echo "billing_receiver.js"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/billing_receiver.js
+echo "billing_payment.js"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/billing_payment.js
 
 echo "=============================receiver============================="
 echo "receiver.css"

@@ -1,16 +1,17 @@
 package cn.foodslab;
 
-import cn.foodslab.cart.CartController;
+import cn.foodslab.controller.billing.BillingController;
+import cn.foodslab.controller.cart.CartController;
 import cn.foodslab.common.meta.MetaController;
-import cn.foodslab.link.LinkController;
-import cn.foodslab.manager.ManagerController;
-import cn.foodslab.menu.MenuController;
-import cn.foodslab.order.OrderController;
-import cn.foodslab.page.PageController;
-import cn.foodslab.poster.PosterController;
-import cn.foodslab.product.ProductController;
-import cn.foodslab.receiver.ReceiverController;
-import cn.foodslab.user.AccountController;
+import cn.foodslab.service.link.LinkController;
+import cn.foodslab.service.manager.ManagerController;
+import cn.foodslab.service.menu.MenuController;
+import cn.foodslab.controller.order.OrderController;
+import cn.foodslab.view.page.PageController;
+import cn.foodslab.service.poster.PosterController;
+import cn.foodslab.service.product.ProductController;
+import cn.foodslab.controller.receiver.ReceiverController;
+import cn.foodslab.controller.user.AccountController;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 import com.jfinal.config.*;
@@ -88,6 +89,7 @@ public class ApplicationConfigure extends JFinalConfig {
         me.add("/poster", PosterController.class);
         me.add("/account", AccountController.class);
         me.add("/cart", CartController.class);
+        me.add("/billing", BillingController.class);
         me.add("/order", OrderController.class);
         me.add("/receiver", ReceiverController.class);
     }

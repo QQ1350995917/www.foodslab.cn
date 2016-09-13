@@ -1,5 +1,6 @@
 package cn.foodslab.product;
 
+import cn.foodslab.service.product.FormatEntity;
 import com.alibaba.fastjson.JSON;
 
 /**

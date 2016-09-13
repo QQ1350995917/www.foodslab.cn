@@ -1,6 +1,6 @@
 package cn.foodslab.init;
 
-import cn.foodslab.menu.MenuEntity;
+import cn.foodslab.service.menu.MenuEntity;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
