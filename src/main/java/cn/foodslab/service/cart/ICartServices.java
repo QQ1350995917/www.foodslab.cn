@@ -13,6 +13,8 @@ public interface ICartServices {
 
     LinkedList<Map<String,Object>> retrieve();
 
+    CartEntity retrieveById(String mappingId);
+
     CartEntity create(CartEntity cartEntity);
 
     CartEntity update(CartEntity cartEntity);

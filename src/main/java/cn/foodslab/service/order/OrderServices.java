@@ -48,6 +48,13 @@ public class OrderServices implements IOrderServices {
     }
 
     @Override
+    public OrderEntity retrieveById(String orderId) {
+        List<Record> records = Db.find("SELECT * FROM user_order WHERE orderId = ? ", orderId);
+        OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), OrderEntity.class);
+        return orderEntity;
+    }
+
+    @Override
     public OrderEntity create(OrderEntity orderEntity) {
         Record record = new Record()
                 .set("orderId", orderEntity.getOrderId())

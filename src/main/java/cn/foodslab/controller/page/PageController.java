@@ -119,6 +119,7 @@ public class PageController extends Controller implements IPageController {
         this.setAttr("styleSheets", styleSheets);
 
         LinkedList<String> javaScripts = new LinkedList<>();
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/toast.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/billing.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/billing_receiver.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/billing_payment.js\"></script>");
@@ -181,7 +182,7 @@ public class PageController extends Controller implements IPageController {
     @Override
     public void pm() {
         String dir = this.getPara("dir");
-        String account = this.getPara("account");
+        String account = this.getPara("accountId");
         if (dir == null) {
             dir = "cart";
         }

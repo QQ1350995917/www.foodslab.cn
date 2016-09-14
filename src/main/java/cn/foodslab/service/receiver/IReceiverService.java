@@ -13,6 +13,8 @@ public interface IReceiverService {
 
     LinkedList<ReceiverEntity> retrieve(UserEntity userEntity);
 
+    ReceiverEntity retrieveById(String receiverId);
+
     ReceiverEntity create(ReceiverEntity receiverEntity);
 
 }

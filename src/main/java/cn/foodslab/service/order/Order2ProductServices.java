@@ -39,6 +39,7 @@ public class Order2ProductServices implements IOrder2ProductServices {
                     Record record = new Record()
                             .set("mappingId", formatMappingEntity.getMappingId())
                             .set("orderId", formatMappingEntity.getOrderId())
+                            .set("amount", formatMappingEntity.getAmount())
                             .set("formatId", formatMappingEntity.getFormatId());
                     result = result && Db.save("user_order_product", record);
                     if (!result){

@@ -36,6 +36,13 @@ public class ReceiverServices implements IReceiverService {
     }
 
     @Override
+    public ReceiverEntity retrieveById(String receiverId) {
+        List<Record> receiverRecords = Db.find("SELECT * FROM user_receiver WHERE receiverId = ? ", receiverId);
+        ReceiverEntity receiverEntity = JSON.parseObject(JSON.toJSONString(receiverRecords.get(0).getColumns()), ReceiverEntity.class);
+        return receiverEntity;
+    }
+
+    @Override
     public ReceiverEntity create(ReceiverEntity receiverEntity) {
         Record record = new Record()
                 .set("receiverId", receiverEntity.getReceiverId())

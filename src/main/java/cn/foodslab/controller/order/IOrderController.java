@@ -16,4 +16,9 @@ public interface IOrderController {
      * 用户创建一个订单
      */
     void create();
+
+    /**
+     * 匿名用户订单查询
+     */
+    void query();
 }

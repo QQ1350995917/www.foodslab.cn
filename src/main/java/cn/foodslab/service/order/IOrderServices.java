@@ -15,6 +15,10 @@ public interface IOrderServices {
      */
     LinkedList<OrderEntity> retrieve(String userId);
 
+    OrderEntity retrieveById(String orderId);
+
     OrderEntity create(OrderEntity orderEntity);
+
+
 
 }

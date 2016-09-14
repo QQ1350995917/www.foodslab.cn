@@ -1,5 +1,6 @@
 package cn.foodslab.service.cart;
 
+import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
@@ -40,6 +41,12 @@ public class CartServices implements ICartServices {
             result.add(cartMap);
         }
         return result;
+    }
+
+    @Override
+    public CartEntity retrieveById(String mappingId) {
+        List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE status = 1 AND mappingId = ?",mappingId);
+        return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), CartEntity.class);
     }
 
     @Override
@@ -90,8 +97,8 @@ public class CartServices implements ICartServices {
     @Override
     public CartEntity isExist(CartEntity cartEntity) {
         List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE status = 1 AND accountId = ? AND formatId = ?", cartEntity.getAccountId(), cartEntity.getFormatId());
-        if (records == null || records.size() == 0) {
-            return cartEntity;
+        if (records == null || records.size() != 0) {
+            return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), CartEntity.class);
         } else {
             return null;
         }

@@ -2,9 +2,11 @@ package cn.foodslab.controller.billing;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.service.order.IOrder2ProductServices;
-import cn.foodslab.service.order.Order2ProductEntity;
-import cn.foodslab.service.order.Order2ProductServices;
+import cn.foodslab.model.billing.BillingPageEntity;
+import cn.foodslab.model.billing.BillingProductEntity;
+import cn.foodslab.service.cart.CartEntity;
+import cn.foodslab.service.cart.CartServices;
+import cn.foodslab.service.cart.ICartServices;
 import cn.foodslab.service.product.FormatEntity;
 import cn.foodslab.service.product.IProductServices;
 import cn.foodslab.service.product.ProductServices;
@@ -13,8 +15,6 @@ import cn.foodslab.service.receiver.ReceiverEntity;
 import cn.foodslab.service.receiver.ReceiverServices;
 import cn.foodslab.service.user.AccountServices;
 import cn.foodslab.service.user.IAccountServices;
-import cn.foodslab.model.billing.BillingPageEntity;
-import cn.foodslab.model.billing.BillingProductEntity;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
@@ -28,7 +28,7 @@ import java.util.LinkedList;
 public class BillingController extends Controller implements IBillingController {
     private IAccountServices iAccountServices = new AccountServices();
     private IReceiverService iReceiverService = new ReceiverServices();
-    private IOrder2ProductServices iOrder2ProductServices = new Order2ProductServices();
+    private ICartServices iCartServices = new CartServices();
     private IProductServices iProductServices = new ProductServices();
 
     @Override
@@ -41,23 +41,21 @@ public class BillingController extends Controller implements IBillingController 
             if (productIds != null) {
                 String[] split = productIds.split(",");
                 for(String productId : split){
-                    LinkedList<Order2ProductEntity> order2ProductEntities = iOrder2ProductServices.retrieve(productId);
-                    for (Order2ProductEntity order2ProductEntity : order2ProductEntities) {
-                        BillingProductEntity billingProductEntity = new BillingProductEntity();
+                    BillingProductEntity billingProductEntity = new BillingProductEntity();
+                    CartEntity cartEntity = iCartServices.retrieveById(productId);
 
-                        FormatEntity formatEntity = iProductServices.retrieveTreeByFormatId(order2ProductEntity.getFormatId());
+                    FormatEntity formatEntity = iProductServices.retrieveTreeByFormatId(cartEntity.getFormatId());
 //                    billingProductEntity.setIcon(formatEntity.getParent().getImageEntities().get(0).getFilePath());
-                        billingProductEntity.setSeriesName(formatEntity.getParent().getParent().getLabel());
-                        billingProductEntity.setTypeName(formatEntity.getParent().getLabel());
-                        billingProductEntity.setFormatName(formatEntity.getLabel());
-                        billingProductEntity.setFormatMeta(formatEntity.getMeta());
-                        billingProductEntity.setPricing(formatEntity.getPricing());
-                        billingProductEntity.setPriceMeta(formatEntity.getPriceMeta());
-                        billingProductEntity.setAmount(order2ProductEntity.getAmount());
-                        billingProductEntity.setFormatId(formatEntity.getFormatId());
+                    billingProductEntity.setSeriesName(formatEntity.getParent().getParent().getLabel());
+                    billingProductEntity.setTypeName(formatEntity.getParent().getLabel());
+                    billingProductEntity.setFormatName(formatEntity.getLabel());
+                    billingProductEntity.setFormatMeta(formatEntity.getMeta());
+                    billingProductEntity.setPricing(formatEntity.getPricing());
+                    billingProductEntity.setPriceMeta(formatEntity.getPriceMeta());
+                    billingProductEntity.setAmount(cartEntity.getAmount());
+                    billingProductEntity.setFormatId(formatEntity.getFormatId());
 
-                        billingProductEntities.add(billingProductEntity);
-                    }
+                    billingProductEntities.add(billingProductEntity);
                 }
             }
             BillingPageEntity billingPageEntity = new BillingPageEntity(receiverEntities, billingProductEntities);

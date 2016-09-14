@@ -49,8 +49,9 @@ public class CartController extends Controller implements ICartController {
             resultSet.setData(updateResult);
             renderJson(JSON.toJSONString(resultSet));
         } else {
-            resultSet.setCode(500);
-            renderJson(JSON.toJSONString(resultSet));
+            CartEntity createResult = iCartServices.create(cartEntity);
+            resultSet.setCode(200);
+            renderJson(JSON.toJSONString(createResult));
         }
     }
 
