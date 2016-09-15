@@ -95,6 +95,26 @@ public class CartServices implements ICartServices {
     }
 
     @Override
+    public String[] deleteByIds(String... mappingIds) {
+        boolean succeed = Db.tx(new IAtom() {
+            public boolean run() throws SQLException {
+                boolean result = true;
+                for (String mappingId : mappingIds) {
+                    int count = Db.update("DELETE FROM user_cart WHERE mappingId = ?", mappingId);
+                    result = count == 1 && result;
+                }
+                return result;
+            }
+        });
+
+        if (succeed) {
+            return mappingIds;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public CartEntity isExist(CartEntity cartEntity) {
         List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE status = 1 AND accountId = ? AND formatId = ?", cartEntity.getAccountId(), cartEntity.getFormatId());
         if (records == null || records.size() != 0) {

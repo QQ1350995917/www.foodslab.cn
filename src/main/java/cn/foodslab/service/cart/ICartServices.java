@@ -21,6 +21,8 @@ public interface ICartServices {
 
     List<CartEntity> delete(List<CartEntity> cartEntities);
 
+    String[] deleteByIds(String... mappingIds);
+
     CartEntity isExist(CartEntity cartEntity);
 }
 

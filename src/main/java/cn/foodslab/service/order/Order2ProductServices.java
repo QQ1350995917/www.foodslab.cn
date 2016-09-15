@@ -31,7 +31,6 @@ public class Order2ProductServices implements IOrder2ProductServices {
 
     @Override
     public LinkedList<Order2ProductEntity> create(LinkedList<Order2ProductEntity> formatMappingEntities) {
-
         boolean succeed = Db.tx(new IAtom() {
             public boolean run() throws SQLException {
                 boolean result = true;
@@ -40,6 +39,7 @@ public class Order2ProductServices implements IOrder2ProductServices {
                             .set("mappingId", formatMappingEntity.getMappingId())
                             .set("orderId", formatMappingEntity.getOrderId())
                             .set("amount", formatMappingEntity.getAmount())
+                            .set("totalPrice", formatMappingEntity.getTotalPrice())
                             .set("formatId", formatMappingEntity.getFormatId());
                     result = result && Db.save("user_order_product", record);
                     if (!result){

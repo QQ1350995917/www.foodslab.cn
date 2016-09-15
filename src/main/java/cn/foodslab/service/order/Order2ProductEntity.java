@@ -11,6 +11,7 @@ public class Order2ProductEntity {
     private String orderId;
     private String formatId;
     private int amount;
+    private float totalPrice;
     private String createTime;
     private String updateTime;
 
@@ -18,11 +19,12 @@ public class Order2ProductEntity {
         super();
     }
 
-    public Order2ProductEntity(String mappingId, String orderId, String formatId,int amount, String createTime, String updateTime) {
+    public Order2ProductEntity(String mappingId, String orderId, String formatId, int amount, float totalPrice, String createTime, String updateTime) {
         this.mappingId = mappingId;
         this.orderId = orderId;
         this.formatId = formatId;
         this.amount = amount;
+        this.totalPrice = totalPrice;
         this.createTime = createTime;
         this.updateTime = updateTime;
     }
@@ -63,6 +65,14 @@ public class Order2ProductEntity {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    public float getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(float totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public String getCreateTime() {
