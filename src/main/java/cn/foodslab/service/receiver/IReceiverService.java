@@ -17,4 +17,8 @@ public interface IReceiverService {
 
     ReceiverEntity create(ReceiverEntity receiverEntity);
 
+    ReceiverEntity update(ReceiverEntity receiverEntity);
+
+    boolean deleteById(String accountId,String receiverId);
+
 }

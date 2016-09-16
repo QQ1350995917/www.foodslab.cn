@@ -89,6 +89,4 @@ public class LinkServices implements ILinkServices {
             return new ResultSet("false");
         }
     }
-
-
 }

@@ -7,6 +7,12 @@ package cn.foodslab.controller.receiver;
  */
 public interface IReceiverController {
 
+    void retrieve();
+
     void create();
+
+    void update();
+
+    void delete();
 
 }
