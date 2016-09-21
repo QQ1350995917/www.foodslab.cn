@@ -19,10 +19,16 @@ import java.util.UUID;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
+
 public class ReceiverController extends Controller implements IReceiverController {
 
     private IAccountServices iAccountServices = new AccountServices();
     private IReceiverService iReceiverService = new ReceiverServices();
+
+    @Override
+    public void index() {
+
+    }
 
     @Override
     public void retrieve() {
@@ -90,11 +96,16 @@ public class ReceiverController extends Controller implements IReceiverControlle
         String accountId = getPara("accountId");
         String receiverId = getPara("receiverId");
         if (accountId != null) {
-            boolean result = iReceiverService.deleteById(accountId, receiverId);
+            ReceiverEntity receiverEntity = iReceiverService.deleteById(receiverId);
             IResultSet resultSet = new ResultSet();
             resultSet.setCode(200);
-            resultSet.setData(result);
+            resultSet.setData(receiverEntity);
             renderJson(JSON.toJSONString(resultSet));
         }
+    }
+
+    @Override
+    public void king() {
+
     }
 }

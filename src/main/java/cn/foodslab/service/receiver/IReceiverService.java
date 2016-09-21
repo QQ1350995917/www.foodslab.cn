@@ -19,6 +19,10 @@ public interface IReceiverService {
 
     ReceiverEntity update(ReceiverEntity receiverEntity);
 
-    boolean deleteById(String accountId,String receiverId);
+    ReceiverEntity deleteById(String receiverId);
+
+    LinkedList<ReceiverEntity> deleteByIds(String... receiverIds);
+
+    ReceiverEntity kingReceiverInUser(String receiverId,String userId);
 
 }

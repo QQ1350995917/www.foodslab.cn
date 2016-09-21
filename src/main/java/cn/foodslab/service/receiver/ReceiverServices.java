@@ -37,6 +37,7 @@ public class ReceiverServices implements IReceiverService {
         return result;
     }
 
+
     @Override
     public ReceiverEntity retrieveById(String receiverId) {
         List<Record> receiverRecords = Db.find("SELECT * FROM user_receiver WHERE receiverId = ? ", receiverId);
@@ -86,8 +87,19 @@ public class ReceiverServices implements IReceiverService {
     }
 
     @Override
-    public boolean deleteById(String accountId, String receiverId) {
-        int update = Db.update("DELETE FROM user_receiver WHERE receiverId = ? AND accountId = ? ", receiverId, accountId);
-        return update == 1;
+    public ReceiverEntity deleteById(String receiverId) {
+        ReceiverEntity receiverEntity = this.retrieveById(receiverId);
+        int update = Db.update("DELETE FROM user_receiver WHERE receiverId = ? ", receiverId);
+        return update == 1 ? receiverEntity : null;
+    }
+
+    @Override
+    public LinkedList<ReceiverEntity> deleteByIds(String... receiverIds) {
+        return null;
+    }
+
+    @Override
+    public ReceiverEntity kingReceiverInUser(String receiverId, String userId) {
+        return null;
     }
 }

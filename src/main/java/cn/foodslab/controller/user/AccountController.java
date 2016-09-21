@@ -89,4 +89,18 @@ public class AccountController extends Controller implements IAccountController 
 
     }
 
+    @Override
+    public void exist() {
+
+    }
+
+    @Override
+    public void password() {
+
+    }
+
+    @Override
+    public void portrait() {
+
+    }
 }

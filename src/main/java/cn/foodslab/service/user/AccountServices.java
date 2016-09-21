@@ -17,7 +17,7 @@ public class AccountServices implements IAccountServices {
 
     @Override
     public AccountEntity retrieve(String phoneNumber) {
-        List<Record> accountRecords = Db.find("SELECT * FROM user_account WHERE telephone = ? ", phoneNumber);
+        List<Record> accountRecords = Db.find("SELECT * FROM user_account WHERE identity = ? ", phoneNumber);
         Map<String, Object> accountMap = accountRecords.get(0).getColumns();
         AccountEntity accountEntity = JSON.parseObject(JSON.toJSONString(accountMap), AccountEntity.class);
         return accountEntity;
@@ -52,7 +52,7 @@ public class AccountServices implements IAccountServices {
                 .set("status", 1);
         Record userAccountRecord = new Record()
                 .set("accountId", accountEntity.getAccountId())
-                .set("telephone", accountEntity.getTelephone())
+                .set("identity", accountEntity.getTelephone())
                 .set("userId", accountEntity.getUserId());
         boolean user = Db.save("user", userRecord);
         boolean account = Db.save("user_account", userAccountRecord);
@@ -104,25 +104,5 @@ public class AccountServices implements IAccountServices {
     public UserEntity block(UserEntity userEntity) {
         return null;
     }
-//    @Override
-//    public IResultSet retrieve() {
-//        List<Record> userRecords = Db.find("SELECT * FROM user");
-//        LinkedList<Map<String, Object>> users = new LinkedList<>();
-//        for (Record userRecord : userRecords) {
-//            Map<String, Object> userEntity = userRecord.getColumns();
-//            List<Record> accountRecords = Db.find("SELECT * FROM user_account");
-//            LinkedList<Map<String, Object>> accounts = new LinkedList<>();
-//            for (Record accountRecord : accountRecords) {
-//                Map<String, Object> accountEntity = accountRecord.getColumns();
-//                accounts.add(accountEntity);
-//            }
-//            userEntity.put("children",accounts);
-//            users.add(userEntity);
-//        }
-//
-//        IResultSet resultSet = new ResultSet();
-//        resultSet.setCode(200);
-//        resultSet.setData(users);
-//        return resultSet;
-//    }
+
 }

@@ -7,7 +7,7 @@ package cn.foodslab.service.user;
  */
 public class AccountEntity {
     private String accountId;
-    private String telephone;
+    private String identity;
     private String name;
     private int gender;
     private String address;
@@ -24,7 +24,7 @@ public class AccountEntity {
 
     public AccountEntity(String accountId, String telephone, String name, int gender, String address, String portrait, String birthday, int source, String userId) {
         this.accountId = accountId;
-        this.telephone = telephone;
+        this.identity = telephone;
         this.name = name;
         this.gender = gender;
         this.address = address;
@@ -43,11 +43,11 @@ public class AccountEntity {
     }
 
     public String getTelephone() {
-        return telephone;
+        return identity;
     }
 
     public void setTelephone(String telephone) {
-        this.telephone = telephone;
+        this.identity = telephone;
     }
 
     public String getName() {

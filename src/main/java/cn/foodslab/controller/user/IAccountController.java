@@ -10,12 +10,12 @@ public interface IAccountController {
     void index();
 
     /**
-     * 通过用户的电话号码读取账户
+     * 用户登录接口
      */
     void retrieve();
 
     /**
-     * 创建新的账户同时创建用户ID
+     * 用户创建账户接口
      */
     void create();
 
@@ -31,8 +31,24 @@ public interface IAccountController {
     void block();
 
     /**
-     * 把两个账户绑定到同一个用户
+     * 绑定或解绑账户
      */
     void bind();
+
+    /**
+     * 检测账号的标记是否已经注册
+     * 账号标记：网站用户指的是电话号码，微信用户指的是微信的ID，QQ用户指的是QQ的ID
+     */
+    void exist();
+
+    /**
+     * 忘记密码接口
+     */
+    void password();
+
+    /**
+     * 用户修改头像
+     */
+    void portrait();
 
 }
