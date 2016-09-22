@@ -15,6 +15,12 @@ public class ResultSet implements IResultSet {
     public ResultSet() {
     }
 
+    public ResultSet(int code, Object data, String message) {
+        this.data = data;
+        this.code = code;
+        this.message = message;
+    }
+
     public ResultSet(Object data) {
         this.data = data;
     }
@@ -25,7 +31,7 @@ public class ResultSet implements IResultSet {
         this.message = message;
     }
 
-    @JSONField(name="data")
+    @JSONField(name = "data")
     public Object getData() {
         return data;
     }
@@ -34,7 +40,7 @@ public class ResultSet implements IResultSet {
         this.data = data;
     }
 
-    @JSONField(name="code")
+    @JSONField(name = "code")
     public int getCode() {
         return code;
     }
@@ -43,7 +49,7 @@ public class ResultSet implements IResultSet {
         this.code = code;
     }
 
-    @JSONField(name="message")
+    @JSONField(name = "message")
     public String getMessage() {
         return message;
     }
@@ -53,7 +59,7 @@ public class ResultSet implements IResultSet {
     }
 
     @Override
-    @JSONField(serialize=false)
+    @JSONField(serialize = false)
     public String getJsonDataString() {
         return null;
     }

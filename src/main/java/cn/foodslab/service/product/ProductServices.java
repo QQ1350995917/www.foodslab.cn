@@ -272,7 +272,7 @@ public class ProductServices implements IProductServices {
 
     @Override
     public IResultSet updateTypeDescription(TypeEntity typeEntity) {
-        int update = Db.update("UPDATE product_type SET description = ? ,detail = ? where typeId = ? ", typeEntity.getDescription(), typeEntity.getDetail(), typeEntity.getTypeId());
+        int update = Db.update("UPDATE product_type SET summary = ? ,directions = ? where typeId = ? ", typeEntity.getSummary(), typeEntity.getDirections(), typeEntity.getTypeId());
         IResultSet resultSet = new ResultSet();
         if (update == 1) {
             resultSet.setCode(200);

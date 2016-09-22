@@ -14,8 +14,6 @@ public interface IProductController {
      */
     void index();
 
-
-
     /**
      * 获取产品所有系列（前台接口）
      * 该接口接受的参数是一个系列的ID或者零个参数

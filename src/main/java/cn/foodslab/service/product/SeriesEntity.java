@@ -10,8 +10,8 @@ import java.util.LinkedList;
 public class SeriesEntity {
     private String seriesId;
     private String label;
-    private int queue;
-    private int status;
+    private int queue = 0;
+    private int status = -2;
     private String createTime;
     private String updateTime;
     private LinkedList<TypeEntity> children;
@@ -21,6 +21,11 @@ public class SeriesEntity {
     }
 
     public SeriesEntity(String label) {
+        this.label = label;
+    }
+
+    public SeriesEntity(String seriesId, String label) {
+        this.seriesId = seriesId;
         this.label = label;
     }
 

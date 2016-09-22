@@ -10,14 +10,13 @@ import java.util.LinkedList;
  * Description: @TODO
  */
 public class TypeEntity {
+    private String seriesId;
     private String typeId;
     private String label;
-    private String description;
-    private String detail;
-    private String crafts;
+    private String summary;
+    private String directions;
     private int queue;
     private int status;
-    private String seriesId;
     private String createTime;
     private String updateTime;
     private LinkedList<ImageEntity> imageEntities;
@@ -27,21 +26,25 @@ public class TypeEntity {
     public TypeEntity() {
     }
 
-
     public TypeEntity(String seriesId,String label) {
         this.label = label;
         this.seriesId = seriesId;
     }
 
-    public TypeEntity(String typeId, String label, String description, String detail, String crafts, int queue, int status, String seriesId) {
+    public TypeEntity(String seriesId,String typeId,String label) {
+        this.seriesId = seriesId;
         this.typeId = typeId;
         this.label = label;
-        this.description = description;
-        this.detail = detail;
-        this.crafts = crafts;
+    }
+
+    public TypeEntity(String seriesId, String typeId, String label, String summary, String directions, int queue, int status) {
+        this.seriesId = seriesId;
+        this.typeId = typeId;
+        this.label = label;
+        this.summary = summary;
+        this.directions = directions;
         this.queue = queue;
         this.status = status;
-        this.seriesId = seriesId;
     }
 
     public String getTypeId() {
@@ -60,28 +63,20 @@ public class TypeEntity {
         this.label = label;
     }
 
-    public String getDescription() {
-        return description;
+    public String getSummary() {
+        return summary;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
-    public String getDetail() {
-        return detail;
+    public String getDirections() {
+        return directions;
     }
 
-    public void setDetail(String detail) {
-        this.detail = detail;
-    }
-
-    public String getCrafts() {
-        return crafts;
-    }
-
-    public void setCrafts(String crafts) {
-        this.crafts = crafts;
+    public void setDirections(String directions) {
+        this.directions = directions;
     }
 
     public int getQueue() {

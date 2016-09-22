@@ -1,7 +1,6 @@
 package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
-import cn.foodslab.controller.product.IProductController;
 import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
@@ -133,8 +132,8 @@ public class ProductController extends Controller implements IProductController 
         TypeEntity typeEntity = new TypeEntity();
         typeEntity.setSeriesId(seriesId);
         typeEntity.setTypeId(typeId);
-        typeEntity.setDescription(description);
-        typeEntity.setDetail(detail);
+        typeEntity.setSummary(description);
+        typeEntity.setDirections(detail);
         IResultSet resultSet = iProductServices.updateTypeDescription(typeEntity);
         renderJson(JSON.toJSONString(resultSet));
     }
