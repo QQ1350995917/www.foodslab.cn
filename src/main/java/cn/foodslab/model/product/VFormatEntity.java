@@ -1,12 +1,15 @@
-package cn.foodslab.service.product;
+package cn.foodslab.model.product;
+
+import cn.foodslab.service.product.FormatEntity;
 
 /**
- * Created by Pengwei Ding on 2016-07-30 21:39.
+ * Created by Pengwei Ding on 2016-09-23 11:22.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-public class FormatEntity {
-
+public class VFormatEntity {
+    private String sessionId;
+    private String typeId;// 规格的类型ID
     private String formatId;
     private String label;// 规格的量 比如 1，100，500，2，3，4
     private String meta;// 规格的单位 比如 kg, mk，L，盒，包，瓶
@@ -32,16 +35,61 @@ public class FormatEntity {
     private String giftStart;// 满赠活动开始时间
     private String giftEnd;// 满赠活动结束时间
     private int giftStatus;// 满赠活动所处于的状态
-    private int queue;// 该规格的顺序
     private int weight;// 该规格的顺序
-    private int status;// 该规格的状态
-    private String typeId;// 规格的类型ID
-    private String createTime;
-    private String updateTime;
-    private TypeEntity typeEntity;
+    private int queue;
+    private int status = -2;
+    private VTypeEntity parent;
 
-    public FormatEntity() {
+    public VFormatEntity() {
         super();
+    }
+
+    public VFormatEntity(FormatEntity formatEntity) {
+        this.typeId = formatEntity.getTypeId();
+        this.formatId = formatEntity.getFormatId();
+        this.label = formatEntity.getLabel();
+        this.meta = formatEntity.getMeta();
+        this.amount = formatEntity.getAmount();
+        this.amountMeta = formatEntity.getAmountMeta();
+        this.price = formatEntity.getPrice();
+        this.priceMeta = formatEntity.getPriceMeta();
+        this.postage = formatEntity.getPostage();
+        this.postageMeta = formatEntity.getPostageMeta();
+        this.pricing = formatEntity.getPricing();
+        this.pricingDiscount = formatEntity.getPricingDiscount();
+        this.pricingStart = formatEntity.getPricingStart();
+        this.pricingEnd = formatEntity.getPricingEnd();
+        this.pricingStatus = formatEntity.getPricingStatus();
+        this.expressCount = formatEntity.getExpressCount();
+        this.expressName = formatEntity.getExpressName();
+        this.expressStart = formatEntity.getExpressStart();
+        this.expressEnd = formatEntity.getExpressEnd();
+        this.expressStatus = formatEntity.getExpressStatus();
+        this.giftCount = formatEntity.getGiftCount();
+        this.giftLabel = formatEntity.getGiftLabel();
+        this.giftId = formatEntity.getGiftId();
+        this.giftStart = formatEntity.getGiftStart();
+        this.giftEnd = formatEntity.getGiftEnd();
+        this.giftStatus = formatEntity.getGiftStatus();
+        this.weight = formatEntity.getWeight();
+        this.queue = formatEntity.getQueue();
+        this.status = formatEntity.getStatus();
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public String getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(String typeId) {
+        this.typeId = typeId;
     }
 
     public String getFormatId() {
@@ -244,20 +292,20 @@ public class FormatEntity {
         this.giftStatus = giftStatus;
     }
 
-    public int getQueue() {
-        return queue;
-    }
-
-    public void setQueue(int queue) {
-        this.queue = queue;
-    }
-
     public int getWeight() {
         return weight;
     }
 
     public void setWeight(int weight) {
         this.weight = weight;
+    }
+
+    public int getQueue() {
+        return queue;
+    }
+
+    public void setQueue(int queue) {
+        this.queue = queue;
     }
 
     public int getStatus() {
@@ -268,35 +316,45 @@ public class FormatEntity {
         this.status = status;
     }
 
-    public String getTypeId() {
-        return typeId;
+    public VTypeEntity getParent() {
+        return parent;
     }
 
-    public void setTypeId(String typeId) {
-        this.typeId = typeId;
+    public void setParent(VTypeEntity parent) {
+        this.parent = parent;
     }
 
-    public String getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(String updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public TypeEntity getTypeEntity() {
-        return typeEntity;
-    }
-
-    public void setTypeEntity(TypeEntity typeEntity) {
-        this.typeEntity = typeEntity;
+    public FormatEntity getFormatEntity(){
+        FormatEntity formatEntity = new FormatEntity();
+        formatEntity.setTypeId(this.getTypeId());
+        formatEntity.setFormatId(this.getFormatId());
+        formatEntity.setLabel(this.getLabel());
+        formatEntity.setMeta(this.getMeta());
+        formatEntity.setAmount(this.getAmount());
+        formatEntity.setAmountMeta(this.getAmountMeta());
+        formatEntity.setPrice(this.getPrice());
+        formatEntity.setPriceMeta(this.getPriceMeta());
+        formatEntity.setPostage(this.getPostage());
+        formatEntity.setPostageMeta(this.getPostageMeta());
+        formatEntity.setPricing(this.getPricing());
+        formatEntity.setPricingDiscount(this.getPricingDiscount());
+        formatEntity.setPricingStart(this.getPricingStart());
+        formatEntity.setPricingEnd(this.getPricingEnd());
+        formatEntity.setPricingStatus(this.getPricingStatus());
+        formatEntity.setExpressCount(this.getExpressCount());
+        formatEntity.setExpressName(this.getExpressName());
+        formatEntity.setExpressStart(this.getExpressStart());
+        formatEntity.setExpressEnd(this.getExpressEnd());
+        formatEntity.setExpressStatus(this.getExpressStatus());
+        formatEntity.setGiftCount(this.getGiftCount());
+        formatEntity.setGiftLabel(this.getGiftLabel());
+        formatEntity.setGiftId(this.getGiftId());
+        formatEntity.setGiftStart(this.getGiftStart());
+        formatEntity.setGiftEnd(this.getGiftEnd());
+        formatEntity.setGiftStatus(this.getStatus());
+        formatEntity.setWeight(this.getWeight());
+        formatEntity.setQueue(this.getQueue());
+        formatEntity.setStatus(this.getStatus());
+        return formatEntity;
     }
 }

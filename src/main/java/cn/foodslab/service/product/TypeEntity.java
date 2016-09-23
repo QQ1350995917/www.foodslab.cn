@@ -20,8 +20,8 @@ public class TypeEntity {
     private String createTime;
     private String updateTime;
     private LinkedList<ImageEntity> imageEntities;
-    private LinkedList<FormatEntity> children;
-    private SeriesEntity parent;
+    private LinkedList<FormatEntity> formatEntities;
+    private SeriesEntity seriesEntity;
 
     public TypeEntity() {
     }
@@ -127,19 +127,19 @@ public class TypeEntity {
         this.imageEntities = imageEntities;
     }
 
-    public LinkedList<FormatEntity> getChildren() {
-        return children;
+    public LinkedList<FormatEntity> getFormatEntities() {
+        return formatEntities;
     }
 
-    public void setChildren(LinkedList<FormatEntity> children) {
-        this.children = children;
+    public void setFormatEntities(LinkedList<FormatEntity> formatEntities) {
+        this.formatEntities = formatEntities;
     }
 
-    public SeriesEntity getParent() {
-        return parent;
+    public SeriesEntity getSeriesEntity() {
+        return seriesEntity;
     }
 
-    public void setParent(SeriesEntity parent) {
-        this.parent = parent;
+    public void setSeriesEntity(SeriesEntity seriesEntity) {
+        this.seriesEntity = seriesEntity;
     }
 }

@@ -1,5 +1,9 @@
 package cn.foodslab.model.product;
 
+import cn.foodslab.service.product.TypeEntity;
+
+import java.util.LinkedList;
+
 /**
  * Created by Pengwei Ding on 2016-09-22 18:49.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
@@ -14,9 +18,20 @@ public class VTypeEntity {
     private String directions;
     private int queue;
     private int status = -2;
+    private LinkedList<VFormatEntity> children;
+    private VSeriesEntity parent;
 
     public VTypeEntity() {
         super();
+    }
+
+    public VTypeEntity(TypeEntity typeEntity) {
+        this.seriesId = typeEntity.getSeriesId();
+        this.typeId = typeEntity.getTypeId();
+        this.label = typeEntity.getLabel();
+        this.summary = typeEntity.getSummary();
+        this.directions = typeEntity.getDirections();
+        this.status = typeEntity.getStatus();
     }
 
     public VTypeEntity(String sessionId, String seriesId, String typeId, String label, String summary, String directions, int queue, int status) {
@@ -92,5 +107,21 @@ public class VTypeEntity {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public LinkedList<VFormatEntity> getChildren() {
+        return children;
+    }
+
+    public void setChildren(LinkedList<VFormatEntity> children) {
+        this.children = children;
+    }
+
+    public VSeriesEntity getParent() {
+        return parent;
+    }
+
+    public void setParent(VSeriesEntity parent) {
+        this.parent = parent;
     }
 }

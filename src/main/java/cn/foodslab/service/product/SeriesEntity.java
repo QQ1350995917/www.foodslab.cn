@@ -14,7 +14,7 @@ public class SeriesEntity {
     private int status = -2;
     private String createTime;
     private String updateTime;
-    private LinkedList<TypeEntity> children;
+    private LinkedList<TypeEntity> typeEntities;
 
     public SeriesEntity() {
         super();
@@ -84,11 +84,11 @@ public class SeriesEntity {
         this.updateTime = updateTime;
     }
 
-    public LinkedList<TypeEntity> getChildren() {
-        return children;
+    public LinkedList<TypeEntity> getTypeEntities() {
+        return typeEntities;
     }
 
-    public void setChildren(LinkedList<TypeEntity> children) {
-        this.children = children;
+    public void setTypeEntities(LinkedList<TypeEntity> typeEntities) {
+        this.typeEntities = typeEntities;
     }
 }

@@ -19,21 +19,36 @@ public interface IFormatController {
     /**
      * 创建
      */
-    void create();
+    void mCreate();
 
     /**
      * 更新
      */
-    void update();
+    void mUpdate();
 
     /**
      * 状态
      */
-    void mark();
+    void mMark();
+
+    /**
+     * 读取
+     */
+    void mRetrieve();
 
     /**
      * 读取
      */
     @Clear(Session.class)
     void retrieve();
+
+    /**
+     * 标记权重
+     */
+    void mKingWeight();
+
+    /**
+     * 交换权重
+     */
+    void mSwapWeight();
 }

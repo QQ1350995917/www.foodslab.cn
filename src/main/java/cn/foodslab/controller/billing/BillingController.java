@@ -7,7 +7,6 @@ import cn.foodslab.model.billing.BillingProductEntity;
 import cn.foodslab.service.cart.CartEntity;
 import cn.foodslab.service.cart.CartServices;
 import cn.foodslab.service.cart.ICartServices;
-import cn.foodslab.service.product.FormatEntity;
 import cn.foodslab.service.product.IProductServices;
 import cn.foodslab.service.product.ProductServices;
 import cn.foodslab.service.receiver.IReceiverService;
@@ -44,18 +43,18 @@ public class BillingController extends Controller implements IBillingController 
                     BillingProductEntity billingProductEntity = new BillingProductEntity();
                     CartEntity cartEntity = iCartServices.retrieveById(productId);
 
-                    FormatEntity formatEntity = iProductServices.retrieveTreeByFormatId(cartEntity.getFormatId());
-//                    billingProductEntity.setIcon(formatEntity.getParent().getImageEntities().get(0).getFilePath());
-                    billingProductEntity.setSeriesName(formatEntity.getParent().getParent().getLabel());
-                    billingProductEntity.setTypeName(formatEntity.getParent().getLabel());
-                    billingProductEntity.setFormatName(formatEntity.getLabel());
-                    billingProductEntity.setFormatMeta(formatEntity.getMeta());
-                    billingProductEntity.setPricing(formatEntity.getPricing());
-                    billingProductEntity.setPriceMeta(formatEntity.getPriceMeta());
-                    billingProductEntity.setAmount(cartEntity.getAmount());
-                    billingProductEntity.setFormatId(formatEntity.getFormatId());
-
-                    billingProductEntities.add(billingProductEntity);
+//                    FormatEntity formatEntity = iProductServices.retrieveTreeByFormatId(cartEntity.getFormatId());
+////                    billingProductEntity.setIcon(formatEntity.getParent().getImageEntities().get(0).getFilePath());
+//                    billingProductEntity.setSeriesName(formatEntity.getParent().getParent().getLabel());
+//                    billingProductEntity.setTypeName(formatEntity.getParent().getLabel());
+//                    billingProductEntity.setFormatName(formatEntity.getLabel());
+//                    billingProductEntity.setFormatMeta(formatEntity.getMeta());
+//                    billingProductEntity.setPricing(formatEntity.getPricing());
+//                    billingProductEntity.setPriceMeta(formatEntity.getPriceMeta());
+//                    billingProductEntity.setAmount(cartEntity.getAmount());
+//                    billingProductEntity.setFormatId(formatEntity.getFormatId());
+//
+//                    billingProductEntities.add(billingProductEntity);
                 }
             }
             BillingPageEntity billingPageEntity = new BillingPageEntity(receiverEntities, billingProductEntities);
@@ -71,17 +70,17 @@ public class BillingController extends Controller implements IBillingController 
             } else {
                 LinkedList<BillingProductEntity> billingProductEntities = new LinkedList<>();
                 BillingProductEntity billingProductEntity = new BillingProductEntity();
-                FormatEntity formatEntity = iProductServices.retrieveTreeByFormatId(productIds);
-//                    billingProductEntity.setIcon(formatEntity.getParent().getImageEntities().get(0).getFilePath());
-                billingProductEntity.setSeriesName(formatEntity.getParent().getParent().getLabel());
-                billingProductEntity.setTypeName(formatEntity.getParent().getLabel());
-                billingProductEntity.setFormatName(formatEntity.getLabel());
-                billingProductEntity.setFormatMeta(formatEntity.getMeta());
-                billingProductEntity.setPricing(formatEntity.getPricing());
-                billingProductEntity.setPriceMeta(formatEntity.getPriceMeta());
-                billingProductEntity.setAmount(1);
-                billingProductEntity.setFormatId(formatEntity.getFormatId());
-                billingProductEntities.add(billingProductEntity);
+//                FormatEntity formatEntity = iProductServices.retrieveTreeByFormatId(productIds);
+////                    billingProductEntity.setIcon(formatEntity.getParent().getImageEntities().get(0).getFilePath());
+//                billingProductEntity.setSeriesName(formatEntity.getParent().getParent().getLabel());
+//                billingProductEntity.setTypeName(formatEntity.getParent().getLabel());
+//                billingProductEntity.setFormatName(formatEntity.getLabel());
+//                billingProductEntity.setFormatMeta(formatEntity.getMeta());
+//                billingProductEntity.setPricing(formatEntity.getPricing());
+//                billingProductEntity.setPriceMeta(formatEntity.getPriceMeta());
+//                billingProductEntity.setAmount(1);
+//                billingProductEntity.setFormatId(formatEntity.getFormatId());
+//                billingProductEntities.add(billingProductEntity);
 
                 BillingPageEntity billingPageEntity = new BillingPageEntity(null, billingProductEntities);
                 IResultSet iResultSet = new ResultSet(billingPageEntity);

@@ -37,7 +37,8 @@ public class SeriesController extends Controller implements ISeriesController {
             IResultSet iResultSet = new ResultSet(3000,vSeriesEntity,"fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,result,"success");
+            vSeriesEntity.setSeriesId(result.getSeriesId());
+            IResultSet iResultSet = new ResultSet(3050,vSeriesEntity,"success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -52,7 +53,7 @@ public class SeriesController extends Controller implements ISeriesController {
             IResultSet iResultSet = new ResultSet(3000,vSeriesEntity,"fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,result,"success");
+            IResultSet iResultSet = new ResultSet(3050,vSeriesEntity,"success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -67,31 +68,46 @@ public class SeriesController extends Controller implements ISeriesController {
             IResultSet iResultSet = new ResultSet(3000,vSeriesEntity,"fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,result,"success");
+            IResultSet iResultSet = new ResultSet(3050,vSeriesEntity,"success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
 
     @Override
     public void retrieves() {
-        LinkedList<SeriesEntity> retrieves = iSeriesServices.retrieves();
-        if (retrieves == null) {
+        String params = this.getPara("p");
+        VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
+        LinkedList<SeriesEntity> seriesEntities = iSeriesServices.retrieves();
+        if (seriesEntities == null) {
             IResultSet iResultSet = new ResultSet(3000,null,"fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,retrieves,"success");
+            LinkedList<VSeriesEntity> vSeriesEntities = new LinkedList<>();
+            for (SeriesEntity seriesEntity:seriesEntities){
+                String sessionId = vSeriesEntity == null ? null : vSeriesEntity.getSessionId();
+                Integer status = vSeriesEntity == null ? -2 : vSeriesEntity.getStatus();
+                vSeriesEntities.add(new VSeriesEntity(sessionId,seriesEntity.getSeriesId(),seriesEntity.getLabel(),status));
+            }
+            IResultSet iResultSet = new ResultSet(3050,vSeriesEntities,"success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
 
     @Override
     public void mRetrieves() {
-        LinkedList<SeriesEntity> retrieves = iSeriesServices.mRetrieves();
-        if (retrieves == null) {
+        String params = this.getPara("p");
+        VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
+        LinkedList<SeriesEntity> seriesEntities = iSeriesServices.mRetrieves();
+        if (seriesEntities == null) {
             IResultSet iResultSet = new ResultSet(3000,null,"fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,retrieves,"success");
+            LinkedList<VSeriesEntity> vSeriesEntities = new LinkedList<>();
+            for (SeriesEntity seriesEntity:seriesEntities){
+                String sessionId = vSeriesEntity == null ? null : vSeriesEntity.getSessionId();
+                vSeriesEntities.add(new VSeriesEntity(sessionId,seriesEntity.getSeriesId(),seriesEntity.getLabel(),seriesEntity.getStatus()));
+            }
+            IResultSet iResultSet = new ResultSet(3050,vSeriesEntities,"success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }

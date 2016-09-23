@@ -243,4 +243,8 @@ public class PageController extends Controller implements IPageController {
     public void frame() {
         this.render("/webapp/widgets/frame.html");
     }
+
+    public void api(){
+        this.render("/webapp/widgets/api.html");
+    }
 }

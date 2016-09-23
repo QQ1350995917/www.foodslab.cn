@@ -1,5 +1,9 @@
 package cn.foodslab.model.product;
 
+import cn.foodslab.service.product.SeriesEntity;
+
+import java.util.LinkedList;
+
 /**
  * Created by Pengwei Ding on 2016-09-22 17:15.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
@@ -10,9 +14,21 @@ public class VSeriesEntity {
     private String seriesId;
     private String label;
     private int status = -2;
+    private LinkedList<VTypeEntity> children;
 
     public VSeriesEntity() {
         super();
+    }
+
+    public VSeriesEntity(SeriesEntity seriesEntity) {
+        this.seriesId = seriesEntity.getSeriesId();
+        this.label = seriesEntity.getLabel();
+    }
+
+    public VSeriesEntity(String sessionId, String seriesId, String label) {
+        this.sessionId = sessionId;
+        this.seriesId = seriesId;
+        this.label = label;
     }
 
     public VSeriesEntity(String sessionId, String seriesId, String label, int status) {
@@ -52,5 +68,13 @@ public class VSeriesEntity {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public LinkedList<VTypeEntity> getChildren() {
+        return children;
+    }
+
+    public void setChildren(LinkedList<VTypeEntity> children) {
+        this.children = children;
     }
 }

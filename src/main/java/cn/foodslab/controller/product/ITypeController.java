@@ -17,32 +17,44 @@ public interface ITypeController {
     void index();
 
     /**
+     * 后台接口
      * 创建
      */
     void mCreate();
 
     /**
+     * 后台接口
      * 更新
      */
     void mUpdate();
 
     /**
+     * 后台接口
      * 更新状态
      */
     void mMark();
 
     /**
+     * 后台接口
      * 更新简介
      */
     void mSummary();
 
     /**
+     * 后台接口
      * 更新说明
      */
     void mDirections();
 
     /**
-     * 读取
+     * 后台接口
+     * 根据产品类型的ID读取
+     */
+    void mRetrieve();
+
+    /**
+     * 前台接口
+     * 根据产品类型的ID读取
      */
     @Clear(Session.class)
     void retrieve();

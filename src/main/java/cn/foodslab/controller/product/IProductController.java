@@ -11,96 +11,56 @@ public interface IProductController {
 
     /**
      * 默认接口
+     * 导向404
      */
     void index();
 
     /**
-     * 获取产品所有系列（前台接口）
-     * 该接口接受的参数是一个系列的ID或者零个参数
-     * 1：当接口中有seriesId参数，表示获取所有系列的同时也获取指定系列下的产品树
-     * 2：当接口中有没有参数，表示获取所有系列
+     * 后台接口
+     * 读取所有产品树信息
      */
-    void series();
+    void mRetrieves();
 
     /**
-     * 通过类型的ID获取产品树
+     * 后台接口
+     * 根据系列ID读取一棵产品树信息
      */
-    void type();
-
+    void mRetrieveBys();
 
     /**
-     * 通过规格的ID获取产品树
+     * 后台接口
+     * 根据类型ID读取一棵产品树信息
      */
-    void format();
+    void mRetrieveByt();
 
     /**
-     * 获取所有的推荐产品（前台接口）
+     * 后台接口
+     * 根据规格ID读取一棵产品树信息
+     */
+    void mRetrieveByf();
+
+    /**
+     * 前台接口
+     * 根据规格ID读取一棵产品树
+     */
+    void retrieveBys();
+
+    /**
+     * 前台接口
+     * 根据类型ID读取一棵产品树
+     */
+    void retrieveByt();
+
+    /**
+     * 前台接口
+     * 根据规格ID读取一棵产品树
+     */
+    void retrieveByf();
+
+    /**
+     * 前台接口
+     * 获取所有的推荐产品
      */
     void recommend();
-
-    /**
-     * 获取整个产品树（后台接口）
-     */
-    void retrieve();
-
-    /**
-     * 获取整个产品树的逆转数据
-     */
-    void convert();
-
-    /**
-     * 获取整个系列的数据
-     */
-    void retrieveSeries();
-
-    /**
-     * 获取整个型号的数据
-     */
-    void retrieveType();
-
-    /**
-     * 获取整个规格的数据
-     */
-    void retrieveFormat();
-
-    /**
-     * 创建系列
-     */
-    void createSeries();
-
-    /**
-     * 更新系列
-     */
-    void updateSeries();
-
-    /**
-     * 创建类型
-     */
-    void createType();
-
-    /**
-     * 更新类型的名称和状态
-     */
-    void updateType();
-
-    /**
-     * 更新类型的描述
-     */
-    void updateTypeDetail();
-
-    /**
-     * 创建规格
-     */
-    void createFormat();
-
-    /**
-     * 更新推荐位
-     */
-    void updateWeight();
-
-    /**
-     * 交换推荐位
-     */
-    void swapWeight();
 
 }

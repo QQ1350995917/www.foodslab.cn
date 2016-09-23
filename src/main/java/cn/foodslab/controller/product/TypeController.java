@@ -30,30 +30,36 @@ public class TypeController extends Controller implements ITypeController {
         VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
         String typeId = UUID.randomUUID().toString();
         TypeEntity typeEntity = new TypeEntity(vTypeEntity.getSeriesId(), typeId, vTypeEntity.getLabel());
-        TypeEntity result = iTypeServices.create(typeEntity);
+        TypeEntity result = iTypeServices.mCreate(typeEntity);
         if (result == null) {
             vTypeEntity.setTypeId(null);
             IResultSet iResultSet = new ResultSet(3000,vTypeEntity,"fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,result,"success");
+            vTypeEntity.setTypeId(typeEntity.getTypeId());
+            IResultSet iResultSet = new ResultSet(3050,vTypeEntity,"success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
 
+    /**
+     * 更新产品类型名称
+     * 在同一个系列下不能出现相同的类型名称
+     */
     @Override
     public void mUpdate() {
         String params = this.getPara("p");
         VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
         TypeEntity typeEntity = new TypeEntity();
+        typeEntity.setSeriesId(vTypeEntity.getSeriesId());
         typeEntity.setTypeId(vTypeEntity.getTypeId());
         typeEntity.setLabel(vTypeEntity.getLabel());
-        TypeEntity result = iTypeServices.update(typeEntity);
+        TypeEntity result = iTypeServices.mUpdate(typeEntity);
         if (result == null) {
             IResultSet iResultSet = new ResultSet(3000,vTypeEntity,"fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,result,"success");
+            IResultSet iResultSet = new ResultSet(3050,vTypeEntity,"success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -65,12 +71,12 @@ public class TypeController extends Controller implements ITypeController {
         TypeEntity typeEntity = new TypeEntity();
         typeEntity.setTypeId(vTypeEntity.getTypeId());
         typeEntity.setStatus(vTypeEntity.getStatus());
-        TypeEntity result = iTypeServices.updateStatus(typeEntity);
+        TypeEntity result = iTypeServices.mUpdateStatus(typeEntity);
         if (result == null) {
             IResultSet iResultSet = new ResultSet(3000,vTypeEntity,"fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,result,"success");
+            IResultSet iResultSet = new ResultSet(3050,vTypeEntity,"success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -82,12 +88,12 @@ public class TypeController extends Controller implements ITypeController {
         TypeEntity typeEntity = new TypeEntity();
         typeEntity.setTypeId(vTypeEntity.getTypeId());
         typeEntity.setSummary(vTypeEntity.getSummary());
-        TypeEntity result = iTypeServices.updateSummary(typeEntity);
+        TypeEntity result = iTypeServices.mUpdateSummary(typeEntity);
         if (result == null) {
             IResultSet iResultSet = new ResultSet(3000,vTypeEntity,"fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,result,"success");
+            IResultSet iResultSet = new ResultSet(3050,vTypeEntity,"success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -99,14 +105,19 @@ public class TypeController extends Controller implements ITypeController {
         TypeEntity typeEntity = new TypeEntity();
         typeEntity.setTypeId(vTypeEntity.getTypeId());
         typeEntity.setDirections(vTypeEntity.getDirections());
-        TypeEntity result = iTypeServices.updateDirections(typeEntity);
+        TypeEntity result = iTypeServices.mUpdateDirections(typeEntity);
         if (result == null) {
             IResultSet iResultSet = new ResultSet(3000,vTypeEntity,"fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,result,"success");
+            IResultSet iResultSet = new ResultSet(3050,vTypeEntity,"success");
             renderJson(JSON.toJSONString(iResultSet));
         }
+    }
+
+    @Override
+    public void mRetrieve() {
+
     }
 
     @Override

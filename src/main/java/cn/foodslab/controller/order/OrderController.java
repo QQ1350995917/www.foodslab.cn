@@ -3,11 +3,9 @@ package cn.foodslab.controller.order;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
 import cn.foodslab.model.query.QueryPageEntity;
-import cn.foodslab.service.cart.CartEntity;
 import cn.foodslab.service.cart.CartServices;
 import cn.foodslab.service.cart.ICartServices;
 import cn.foodslab.service.order.*;
-import cn.foodslab.service.product.FormatEntity;
 import cn.foodslab.service.product.IProductServices;
 import cn.foodslab.service.product.ProductServices;
 import cn.foodslab.service.receiver.IReceiverService;
@@ -110,18 +108,18 @@ public class OrderController extends Controller implements IOrderController {
             LinkedList<Order2ProductEntity> order2ProductEntities = new LinkedList<>();
             String[] split = productIds.split(",");
             for (String productId : split) {
-                CartEntity cartEntity = iCartServices.retrieveById(productId);
-                FormatEntity formatEntity = iProductServices.retrieveTreeByFormatId(cartEntity.getFormatId());
-                Order2ProductEntity order2ProductEntity = new Order2ProductEntity();
-                String mappingId = UUID.randomUUID().toString();
-                order2ProductEntity.setMappingId(mappingId);
-                order2ProductEntity.setOrderId(orderId);
-                order2ProductEntity.setFormatId(formatEntity.getFormatId());
-                order2ProductEntity.setAmount(cartEntity.getAmount());
-                float productTotalPrice = cartEntity.getAmount() * formatEntity.getPricing();
-                order2ProductEntity.setTotalPrice(productTotalPrice);
-                orderTotalPrice = orderTotalPrice + productTotalPrice;
-                order2ProductEntities.add(order2ProductEntity);
+//                CartEntity cartEntity = iCartServices.retrieveById(productId);
+//                FormatEntity formatEntity = iProductServices.retrieveTreeByFormatId(cartEntity.getFormatId());
+//                Order2ProductEntity order2ProductEntity = new Order2ProductEntity();
+//                String mappingId = UUID.randomUUID().toString();
+//                order2ProductEntity.setMappingId(mappingId);
+//                order2ProductEntity.setOrderId(orderId);
+//                order2ProductEntity.setFormatId(formatEntity.getFormatId());
+//                order2ProductEntity.setAmount(cartEntity.getAmount());
+//                float productTotalPrice = cartEntity.getAmount() * formatEntity.getPricing();
+//                order2ProductEntity.setTotalPrice(productTotalPrice);
+//                orderTotalPrice = orderTotalPrice + productTotalPrice;
+//                order2ProductEntities.add(order2ProductEntity);
             }
 
             if (iOrder2ProductServices.create(order2ProductEntities) != null) {

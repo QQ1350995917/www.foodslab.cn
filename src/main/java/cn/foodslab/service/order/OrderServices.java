@@ -37,8 +37,8 @@ public class OrderServices implements IOrderServices {
                 for (Record productRecord:productRecords){
                     Map<String, Object> productMap = productRecord.getColumns();
                     String formatId = productMap.get("formatId").toString();
-                    FormatEntity formatEntity = productServices.retrieveTreeByFormatId(formatId);
-                    products.add(formatEntity);
+//                    FormatEntity formatEntity = productServices.retrieveTreeByFormatId(formatId);
+//                    products.add(formatEntity);
                 }
                 orderEntity.setProducts(products);
                 result.add(orderEntity);
