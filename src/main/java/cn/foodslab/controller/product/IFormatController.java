@@ -34,13 +34,13 @@ public interface IFormatController {
     /**
      * 读取
      */
-    void mRetrieve();
+    void mRetrieves();
 
     /**
      * 读取
      */
     @Clear(Session.class)
-    void retrieve();
+    void retrieves();
 
     /**
      * 标记权重
@@ -51,4 +51,15 @@ public interface IFormatController {
      * 交换权重
      */
     void mSwapWeight();
+
+    /**
+     * 读取权重列表
+     */
+    void mWeights();
+
+
+    /**
+     * 读取推荐列表
+     */
+    void recommends();
 }

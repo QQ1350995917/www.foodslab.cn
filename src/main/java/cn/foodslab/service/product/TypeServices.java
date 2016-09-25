@@ -54,9 +54,9 @@ public class TypeServices implements ITypeServices {
     }
 
     @Override
-    public LinkedList<TypeEntity> mRetrieveInSeries(String seriesId) {
+    public LinkedList<TypeEntity> mRetrievesInSeries(SeriesEntity seriesEntity) {
         LinkedList<TypeEntity> typeEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM product_type WHERE seriesId = ? WHERE status != -1", seriesId);
+        List<Record> records = Db.find("SELECT * FROM product_type WHERE seriesId = ? AND status != -1", seriesEntity.getSeriesId());
         for (Record record : records) {
             Map<String, Object> typeMap = record.getColumns();
             typeEntities.add(JSON.parseObject(JSON.toJSONString(typeMap), TypeEntity.class));
@@ -65,9 +65,9 @@ public class TypeServices implements ITypeServices {
     }
 
     @Override
-    public LinkedList<TypeEntity> retrieveInSeries(String seriesId) {
+    public LinkedList<TypeEntity> retrievesInSeries(SeriesEntity seriesEntity) {
         LinkedList<TypeEntity> typeEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM product_type WHERE seriesId = ? WHERE status = 1", seriesId);
+        List<Record> records = Db.find("SELECT * FROM product_type WHERE seriesId = ? AND status = 1", seriesEntity.getSeriesId());
         for (Record record : records) {
             Map<String, Object> typeMap = record.getColumns();
             typeEntities.add(JSON.parseObject(JSON.toJSONString(typeMap), TypeEntity.class));
@@ -77,7 +77,7 @@ public class TypeServices implements ITypeServices {
 
     @Override
     public TypeEntity mRetrieveById(String typeId) {
-        List<Record> records = Db.find("SELECT * FROM product_type WHERE typeId = ? WHERE status != -1", typeId);
+        List<Record> records = Db.find("SELECT * FROM product_type WHERE typeId = ? AND status != -1", typeId);
         if (records.size() == 1) {
             return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), TypeEntity.class);
         } else {
@@ -87,7 +87,7 @@ public class TypeServices implements ITypeServices {
 
     @Override
     public TypeEntity retrieveById(String typeId) {
-        List<Record> records = Db.find("SELECT * FROM product_type WHERE typeId = ? WHERE status = 1", typeId);
+        List<Record> records = Db.find("SELECT * FROM product_type WHERE typeId = ? AND status = 1", typeId);
         if (records.size() == 1) {
             return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), TypeEntity.class);
         } else {

@@ -32,17 +32,17 @@ public interface ITypeServices {
 
     /**
      * 读取系列下的类型
-     * @param seriesId 系列ID
+     * @param seriesEntity 最少包含系列ID的数据对象
      * @return success 类型数据集 fail null
      */
-    LinkedList<TypeEntity> mRetrieveInSeries(String seriesId);
+    LinkedList<TypeEntity> mRetrievesInSeries(SeriesEntity seriesEntity);
 
     /**
      * 读取系列下的类型
-     * @param seriesId 系列ID
+     * @param seriesEntity 最少包含系列ID的数据对象
      * @return success 类型数据集 fail null
      */
-    LinkedList<TypeEntity> retrieveInSeries(String seriesId);
+    LinkedList<TypeEntity> retrievesInSeries(SeriesEntity seriesEntity);
 
     /**
      * 通过类型的ID精确读取类型信息

@@ -32,18 +32,18 @@ public interface IFormatServices {
     /**
      * 后端接口
      * 读取类型下的规格
-     * @param typeId 类型ID
+     * @param typeEntity 最少包含类型ID的类型数据对象
      * @return success 规格数据集 fail null
      */
-    LinkedList<FormatEntity> mRetrieveInType(String typeId);
+    LinkedList<FormatEntity> mRetrievesInType(TypeEntity typeEntity);
 
     /**
      * 前端接口
      * 读取类型下的规格
-     * @param typeId 类型ID
+     * @param typeEntity 最少包含类型ID的类型数据对象
      * @return success 规格数据集 fail null
      */
-    LinkedList<FormatEntity> retrieveInType(String typeId);
+    LinkedList<FormatEntity> retrievesInType(TypeEntity typeEntity);
 
     /**
      * 后端接口
@@ -67,6 +67,13 @@ public interface IFormatServices {
      * @return success 规格数据 fail null
      */
     FormatEntity mRetrieveInTypeByLabel(FormatEntity formatEntity);
+
+
+    /**
+     * 根据权重顺序读取
+     * @return
+     */
+    LinkedList<FormatEntity> mRetrieveByWeight();
 
     /**
      * 使一个产品规格数据作为最高推荐

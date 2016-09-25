@@ -18,26 +18,26 @@ public class FormatEntity {
     private String postageMeta;// 邮费单位 通常是￥
     private float pricing;// 现价
     private float pricingDiscount;// 现价对比定价的折扣
-    private String pricingStart;// 折扣活动开始时间
-    private String pricingEnd;// 折扣活动结束时间
+    private long pricingStart;// 折扣活动开始时间
+    private long pricingEnd;// 折扣活动结束时间
     private int pricingStatus;// 折扣活动所处于的状态，是否要显示
     private int expressCount;// 包邮需要的数量
     private String expressName;// 邮递公司名称
-    private String expressStart;// 包邮活动开始时间
-    private String expressEnd;// 包邮活动结束时间
+    private long expressStart;// 包邮活动开始时间
+    private long expressEnd;// 包邮活动结束时间
     private int expressStatus;// 包邮活动所处于的状态，是否要显示
     private int giftCount;// 满赠需要的数量
     private String giftLabel;// 满赠产品的名称
     private String giftId;// 满赠产品规格的ID
-    private String giftStart;// 满赠活动开始时间
-    private String giftEnd;// 满赠活动结束时间
+    private long giftStart;// 满赠活动开始时间
+    private long giftEnd;// 满赠活动结束时间
     private int giftStatus;// 满赠活动所处于的状态
     private int queue;// 该规格的顺序
     private int weight;// 该规格的顺序
     private int status;// 该规格的状态
     private String typeId;// 规格的类型ID
-    private String createTime;
-    private String updateTime;
+    private long createTime;
+    private long updateTime;
     private TypeEntity typeEntity;
 
     public FormatEntity() {
@@ -132,19 +132,19 @@ public class FormatEntity {
         this.pricingDiscount = pricingDiscount;
     }
 
-    public String getPricingStart() {
+    public long getPricingStart() {
         return pricingStart;
     }
 
-    public void setPricingStart(String pricingStart) {
+    public void setPricingStart(long pricingStart) {
         this.pricingStart = pricingStart;
     }
 
-    public String getPricingEnd() {
+    public long getPricingEnd() {
         return pricingEnd;
     }
 
-    public void setPricingEnd(String pricingEnd) {
+    public void setPricingEnd(long pricingEnd) {
         this.pricingEnd = pricingEnd;
     }
 
@@ -172,19 +172,19 @@ public class FormatEntity {
         this.expressName = expressName;
     }
 
-    public String getExpressStart() {
+    public long getExpressStart() {
         return expressStart;
     }
 
-    public void setExpressStart(String expressStart) {
+    public void setExpressStart(long expressStart) {
         this.expressStart = expressStart;
     }
 
-    public String getExpressEnd() {
+    public long getExpressEnd() {
         return expressEnd;
     }
 
-    public void setExpressEnd(String expressEnd) {
+    public void setExpressEnd(long expressEnd) {
         this.expressEnd = expressEnd;
     }
 
@@ -220,19 +220,19 @@ public class FormatEntity {
         this.giftId = giftId;
     }
 
-    public String getGiftStart() {
+    public long getGiftStart() {
         return giftStart;
     }
 
-    public void setGiftStart(String giftStart) {
+    public void setGiftStart(long giftStart) {
         this.giftStart = giftStart;
     }
 
-    public String getGiftEnd() {
+    public long getGiftEnd() {
         return giftEnd;
     }
 
-    public void setGiftEnd(String giftEnd) {
+    public void setGiftEnd(long giftEnd) {
         this.giftEnd = giftEnd;
     }
 
@@ -276,19 +276,19 @@ public class FormatEntity {
         this.typeId = typeId;
     }
 
-    public String getCreateTime() {
+    public long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(String createTime) {
+    public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 
-    public String getUpdateTime() {
+    public long getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(String updateTime) {
+    public void setUpdateTime(long updateTime) {
         this.updateTime = updateTime;
     }
 

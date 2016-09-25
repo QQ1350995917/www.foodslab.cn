@@ -1,7 +1,6 @@
 package cn.foodslab.product;
 
-import cn.foodslab.service.product.FormatEntity;
-import com.alibaba.fastjson.JSON;
+import cn.foodslab.common.utils.DateTime;
 
 /**
  * Created by Pengwei Ding on 2016-08-05 22:07.
@@ -9,18 +8,9 @@ import com.alibaba.fastjson.JSON;
  * Description: @TODO
  */
 public class Test {
-    public static void main(String[] args) {
-        FormatEntity formatEntity = new FormatEntity();
-        formatEntity.setLabel("450");
-        formatEntity.setMeta("ml");
-        formatEntity.setAmount(1);
-        formatEntity.setAmountMeta("瓶");
-        formatEntity.setPricing(180);
-        formatEntity.setPriceMeta("￥");
-        formatEntity.setPostage(10);
-        formatEntity.setPostageMeta("￥");
-        formatEntity.setTypeId("aba4d190-6874-426a-883f-a1e561a6f879");
-
-        System.out.println(JSON.toJSONString(formatEntity));
+    public static void main(String[] args)  throws Exception{
+        System.out.println(System.currentTimeMillis());
+        String fullTime = DateTime.parseLongToFullTime(1474792322996l);
+        System.out.println(fullTime);
     }
 }

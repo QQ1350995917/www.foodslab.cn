@@ -2,13 +2,16 @@ package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.model.product.VSeriesEntity;
 import cn.foodslab.model.product.VTypeEntity;
 import cn.foodslab.service.product.ITypeServices;
+import cn.foodslab.service.product.SeriesEntity;
 import cn.foodslab.service.product.TypeEntity;
 import cn.foodslab.service.product.TypeServices;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
+import java.util.LinkedList;
 import java.util.UUID;
 
 /**
@@ -116,12 +119,21 @@ public class TypeController extends Controller implements ITypeController {
     }
 
     @Override
-    public void mRetrieve() {
-
+    public void mRetrieves() {
+        String params = this.getPara("p");
+        VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
+        SeriesEntity seriesEntity = new SeriesEntity(vSeriesEntity.getSeriesId(), vSeriesEntity.getLabel());
+        LinkedList<TypeEntity> typeEntities = iTypeServices.mRetrievesInSeries(seriesEntity);
+        LinkedList<VTypeEntity> vTypeEntities = new LinkedList<>();
+        for (TypeEntity typeEntity:typeEntities){
+            vTypeEntities.add(new VTypeEntity(typeEntity));
+        }
+        IResultSet iResultSet = new ResultSet(3050,vTypeEntities,"success");
+        renderJson(JSON.toJSONString(iResultSet));
     }
 
     @Override
-    public void retrieve() {
+    public void retrieves() {
 
     }
 }

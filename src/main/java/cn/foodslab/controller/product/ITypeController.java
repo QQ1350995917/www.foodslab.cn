@@ -50,13 +50,13 @@ public interface ITypeController {
      * 后台接口
      * 根据产品类型的ID读取
      */
-    void mRetrieve();
+    void mRetrieves();
 
     /**
      * 前台接口
      * 根据产品类型的ID读取
      */
     @Clear(Session.class)
-    void retrieve();
+    void retrieves();
 
 }

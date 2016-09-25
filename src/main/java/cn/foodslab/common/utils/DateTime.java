@@ -1,6 +1,7 @@
 package cn.foodslab.common.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by Pengwei Ding on 2016-08-11 11:18.
@@ -33,5 +34,10 @@ public class DateTime {
         return time;
     }
 
-
+    public static String parseLongToFullTime(long timestamp) throws Exception {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date(timestamp);
+        String format = simpleDateFormat.format(date);
+        return format;
+    }
 }

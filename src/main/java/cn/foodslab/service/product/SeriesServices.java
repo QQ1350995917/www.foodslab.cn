@@ -70,7 +70,7 @@ public class SeriesServices implements ISeriesServices {
     @Override
     public LinkedList<SeriesEntity> mRetrieves() {
         LinkedList<SeriesEntity> seriesEntities = new LinkedList<>();
-        List<Record> seriesRecords = Db.find("SELECT seriesId,label FROM product_series WHERE status != -1");
+        List<Record> seriesRecords = Db.find("SELECT * FROM product_series WHERE status != -1");
         for (int index = 0; index < seriesRecords.size(); index++) {
             Map<String, Object> seriesMap = seriesRecords.get(index).getColumns();
             SeriesEntity result = JSON.parseObject(JSON.toJSONString(seriesMap), SeriesEntity.class);
