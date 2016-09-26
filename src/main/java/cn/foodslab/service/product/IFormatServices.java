@@ -90,10 +90,5 @@ public interface IFormatServices {
      */
     FormatEntity[] mSwapWeight(FormatEntity formatEntity1, FormatEntity formatEntity2);
 
-    /**
-     *
-     * @param seriesEntity
-     * @return
-     */
-    LinkedList<FormatEntity> retrieveInSeries(SeriesEntity seriesEntity);
+
 }

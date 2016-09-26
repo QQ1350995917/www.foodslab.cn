@@ -43,9 +43,17 @@ public interface ISeriesController {
 
     /**
      * 前台接口
-     * 读取
+     * 读取系列进行显示
+     * 应用于首页，系列等页面
      */
     @Clear(Session.class)
     void retrieves();
+
+    /**
+     * 前台接口
+     * 读取倒置的产品树数据
+     * 应用于系列页面页签切换的数据显示
+     */
+    void retrieveInversionTree();
 
 }

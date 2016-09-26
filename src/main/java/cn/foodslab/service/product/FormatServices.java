@@ -219,22 +219,4 @@ public class FormatServices implements IFormatServices {
             return null;
         }
     }
-
-    @Override
-    public LinkedList<FormatEntity> retrieveInSeries(SeriesEntity seriesEntity) {
-        LinkedList<FormatEntity> formatEntities = new LinkedList<>();
-        List<Record> typeRecords = Db.find("SELECT seriesId,typeId,label FROM product_type WHERE status = 1 AND seriesId = ?",seriesEntity.getSeriesId());
-        for (int index = 0; index < typeRecords.size(); index++) {
-            Map<String, Object> typeMap = typeRecords.get(index).getColumns();
-            TypeEntity typeEntity = JSON.parseObject(JSON.toJSONString(typeMap), TypeEntity.class);
-            List<Record> formatRecords = Db.find("SELECT formatId,label,meta,price,priceMeta,typeId FROM product_format WHERE typeId = ? AND status = 1", typeEntity.getTypeId());
-            for (Record formatRecord : formatRecords) {
-                Map<String, Object> formatMap = formatRecord.getColumns();
-                FormatEntity formatEntity = JSON.parseObject(JSON.toJSONString(formatMap), FormatEntity.class);
-                formatEntity.setTypeEntity(typeEntity);
-                formatEntities.add(formatEntity);
-            }
-        }
-        return formatEntities;
-    }
 }

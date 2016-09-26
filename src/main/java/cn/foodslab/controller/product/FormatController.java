@@ -182,21 +182,4 @@ public class FormatController extends Controller implements IFormatController {
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
-
-    @Override
-    public void retrieveInSeries() {
-        String params = this.getPara("p");
-        VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
-        SeriesEntity seriesEntity = new SeriesEntity();
-        seriesEntity.setSeriesId(vSeriesEntity.getSeriesId());
-        LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
-        LinkedList<FormatEntity> formatEntities = iFormatServices.retrieveInSeries(seriesEntity);
-        for (FormatEntity formatEntity:formatEntities){
-            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
-            vFormatEntity.setParent(new VTypeEntity(formatEntity.getTypeEntity()));
-            vFormatEntities.add(vFormatEntity);
-        }
-        IResultSet iResultSet = new ResultSet(3050,vFormatEntities,"success");
-        renderJson(JSON.toJSONString(iResultSet));
-    }
 }

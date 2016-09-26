@@ -18,7 +18,7 @@ public class SeriesServices implements ISeriesServices {
 
     @Override
     public SeriesEntity mCreate(SeriesEntity seriesEntity) {
-        if (this.retrieveByLabel(seriesEntity) == null) {
+        if (this.mRetrieveByLabel(seriesEntity) == null) {
             Record record = new Record().set("seriesId", seriesEntity.getSeriesId()).set("label", seriesEntity.getLabel());
             boolean save = Db.save("product_series", record);
             if (save) {
@@ -33,7 +33,7 @@ public class SeriesServices implements ISeriesServices {
 
     @Override
     public SeriesEntity mUpdate(SeriesEntity seriesEntity) {
-        if (this.retrieveByLabel(seriesEntity) == null) {
+        if (this.mRetrieveByLabel(seriesEntity) == null) {
             int update = Db.update("UPDATE product_series SET label = ? WHERE seriesId = ? ", seriesEntity.getLabel(), seriesEntity.getSeriesId());
             if (update == 1) {
                 return seriesEntity;
@@ -81,12 +81,18 @@ public class SeriesServices implements ISeriesServices {
 
     @Override
     public SeriesEntity retrieveById(String seriesId) {
-        return null;
+        List<Record> records = Db.find("SELECT * FROM product_series WHERE seriesId = ? AND status = 1", seriesId);
+        if (records.size() == 1) {
+            SeriesEntity result = JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), SeriesEntity.class);
+            return result;
+        } else {
+            return null;
+        }
     }
 
 
     @Override
-    public SeriesEntity retrieveByLabel(SeriesEntity seriesEntity) {
+    public SeriesEntity mRetrieveByLabel(SeriesEntity seriesEntity) {
         List<Record> records = Db.find("SELECT * FROM product_series WHERE label = ? AND seriesId != ? AND status != -1", seriesEntity.getLabel(), seriesEntity.getSeriesId());
         if (records.size() == 1) {
             SeriesEntity result = JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), SeriesEntity.class);

@@ -54,9 +54,17 @@ public interface ITypeController {
 
     /**
      * 前台接口
-     * 根据产品类型的ID读取
+     *
      */
     @Clear(Session.class)
     void retrieves();
+
+    /**
+     * 前台接口
+     * 根据产品类型的ID读取
+     * 详情页面使用了该接口
+     */
+    @Clear(Session.class)
+    void retrieveTree();
 
 }

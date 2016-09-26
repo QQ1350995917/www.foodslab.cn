@@ -33,18 +33,18 @@ public interface ISeriesServices {
     SeriesEntity mUpdateStatus(SeriesEntity seriesEntity);
 
     /**
-     * 前台接口
-     * 读取所有的系列
-     * @return success 数据集合 fail null
-     */
-    LinkedList<SeriesEntity> retrieves();
-
-    /**
      * 后台接口
      * 读取所有的系列
      * @return success 数据集合 fail null
      */
     LinkedList<SeriesEntity> mRetrieves();
+
+    /**
+     * 通过label查找 用户重名查找
+     * @param seriesEntity 系列数据对象
+     * @return success 数据对象 fail null
+     */
+    SeriesEntity mRetrieveByLabel(SeriesEntity seriesEntity);
 
     /**
      * 通过ID精确查找
@@ -54,9 +54,11 @@ public interface ISeriesServices {
     SeriesEntity retrieveById(String seriesId);
 
     /**
-     * 通过label查找 用户重名查找
-     * @param seriesEntity 系列数据对象
-     * @return success 数据对象 fail null
+     * 前台接口
+     * 读取所有的系列
+     * @return success 数据集合 fail null
      */
-    SeriesEntity retrieveByLabel(SeriesEntity seriesEntity);
+    LinkedList<SeriesEntity> retrieves();
+
+
 }

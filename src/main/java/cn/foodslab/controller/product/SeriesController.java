@@ -2,10 +2,10 @@ package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.model.product.VFormatEntity;
 import cn.foodslab.model.product.VSeriesEntity;
-import cn.foodslab.service.product.ISeriesServices;
-import cn.foodslab.service.product.SeriesEntity;
-import cn.foodslab.service.product.SeriesServices;
+import cn.foodslab.model.product.VTypeEntity;
+import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
@@ -19,6 +19,8 @@ import java.util.UUID;
  */
 public class SeriesController extends Controller implements ISeriesController {
     private ISeriesServices iSeriesServices = new SeriesServices();
+    private ITypeServices iTypeServices = new TypeServices();
+    private IFormatServices iFormatServices = new FormatServices();
 
     @Override
     public void index() {
@@ -34,11 +36,11 @@ public class SeriesController extends Controller implements ISeriesController {
         SeriesEntity result = iSeriesServices.mCreate(seriesEntity);
         if (result == null) {
             seriesEntity.setSeriesId(null);
-            IResultSet iResultSet = new ResultSet(3000,vSeriesEntity,"fail");
+            IResultSet iResultSet = new ResultSet(3000, vSeriesEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
             vSeriesEntity.setSeriesId(result.getSeriesId());
-            IResultSet iResultSet = new ResultSet(3050,vSeriesEntity,"success");
+            IResultSet iResultSet = new ResultSet(3050, vSeriesEntity, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -50,10 +52,10 @@ public class SeriesController extends Controller implements ISeriesController {
         SeriesEntity seriesEntity = new SeriesEntity(vSeriesEntity.getSeriesId(), vSeriesEntity.getLabel());
         SeriesEntity result = iSeriesServices.mUpdate(seriesEntity);
         if (result == null) {
-            IResultSet iResultSet = new ResultSet(3000,vSeriesEntity,"fail");
+            IResultSet iResultSet = new ResultSet(3000, vSeriesEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,vSeriesEntity,"success");
+            IResultSet iResultSet = new ResultSet(3050, vSeriesEntity, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -65,10 +67,10 @@ public class SeriesController extends Controller implements ISeriesController {
         SeriesEntity seriesEntity = new SeriesEntity(vSeriesEntity.getSeriesId(), null, 0, vSeriesEntity.getStatus());
         SeriesEntity result = iSeriesServices.mUpdateStatus(seriesEntity);
         if (result == null) {
-            IResultSet iResultSet = new ResultSet(3000,vSeriesEntity,"fail");
+            IResultSet iResultSet = new ResultSet(3000, vSeriesEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,vSeriesEntity,"success");
+            IResultSet iResultSet = new ResultSet(3050, vSeriesEntity, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -80,15 +82,15 @@ public class SeriesController extends Controller implements ISeriesController {
         VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
         LinkedList<SeriesEntity> seriesEntities = iSeriesServices.mRetrieves();
         if (seriesEntities == null) {
-            IResultSet iResultSet = new ResultSet(3000,null,"fail");
+            IResultSet iResultSet = new ResultSet(3000, null, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
             LinkedList<VSeriesEntity> vSeriesEntities = new LinkedList<>();
-            for (SeriesEntity seriesEntity:seriesEntities){
+            for (SeriesEntity seriesEntity : seriesEntities) {
                 String sessionId = vSeriesEntity == null ? null : vSeriesEntity.getSessionId();
-                vSeriesEntities.add(new VSeriesEntity(sessionId,seriesEntity.getSeriesId(),seriesEntity.getLabel(),seriesEntity.getStatus()));
+                vSeriesEntities.add(new VSeriesEntity(sessionId, seriesEntity.getSeriesId(), seriesEntity.getLabel(), seriesEntity.getStatus()));
             }
-            IResultSet iResultSet = new ResultSet(3050,vSeriesEntities,"success");
+            IResultSet iResultSet = new ResultSet(3050, vSeriesEntities, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -99,19 +101,38 @@ public class SeriesController extends Controller implements ISeriesController {
         VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
         LinkedList<SeriesEntity> seriesEntities = iSeriesServices.retrieves();
         if (seriesEntities == null) {
-            IResultSet iResultSet = new ResultSet(3000,null,"fail");
+            IResultSet iResultSet = new ResultSet(3000, null, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
             LinkedList<VSeriesEntity> vSeriesEntities = new LinkedList<>();
-            for (SeriesEntity seriesEntity:seriesEntities){
+            for (SeriesEntity seriesEntity : seriesEntities) {
                 String sessionId = vSeriesEntity == null ? null : vSeriesEntity.getSessionId();
                 Integer status = vSeriesEntity == null ? -2 : vSeriesEntity.getStatus();
-                vSeriesEntities.add(new VSeriesEntity(sessionId,seriesEntity.getSeriesId(),seriesEntity.getLabel(),status));
+                vSeriesEntities.add(new VSeriesEntity(sessionId, seriesEntity.getSeriesId(), seriesEntity.getLabel(), status));
             }
-            IResultSet iResultSet = new ResultSet(3050,vSeriesEntities,"success");
+            IResultSet iResultSet = new ResultSet(3050, vSeriesEntities, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
 
-
+    @Override
+    public void retrieveInversionTree() {
+        String params = this.getPara("p");
+        LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
+        VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
+        SeriesEntity seriesEntity = iSeriesServices.retrieveById(vSeriesEntity.getSeriesId());
+        LinkedList<TypeEntity> typeEntities = iTypeServices.retrievesInSeries(seriesEntity);
+        for (TypeEntity typeEntity : typeEntities) {
+            LinkedList<FormatEntity> formatEntities = iFormatServices.retrievesInType(typeEntity);
+            for (FormatEntity formatEntity:formatEntities){
+                VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+                VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+                vTypeEntity.setParent(new VSeriesEntity(seriesEntity));
+                vFormatEntity.setParent(vTypeEntity);
+                vFormatEntities.add(vFormatEntity);
+            }
+        }
+        IResultSet iResultSet = new ResultSet(3050, vFormatEntities, "success");
+        renderJson(JSON.toJSONString(iResultSet));
+    }
 }
