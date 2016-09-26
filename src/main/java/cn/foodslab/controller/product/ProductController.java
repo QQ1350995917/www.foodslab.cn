@@ -20,12 +20,6 @@ import java.util.Map;
 public class ProductController extends Controller implements IProductController {
     IProductServices iProductServices = new ProductServices();
 
-    @Override
-    public void index() {
-        renderJson("error url");
-    }
-
-    @Override
     public void mRetrieves() {
         String params = this.getPara("p");
         Map map = JSON.parseObject(params, Map.class);
@@ -57,59 +51,6 @@ public class ProductController extends Controller implements IProductController 
         renderJson(JSON.toJSONString(iResultSet));
     }
 
-    @Override
-    public void mRetrieveBys() {
-
-    }
-
-    @Override
-    public void mRetrieveByt() {
-
-    }
-
-    @Override
-    public void mRetrieveByf() {
-
-    }
-
-    @Override
-    public void retrieveBys() {
-
-    }
-
-    @Override
-    public void retrieveByt() {
-
-    }
-
-    @Override
-    public void retrieveByf() {
-
-    }
-
-    @Override
-    public void recommend() {
-        String params = this.getPara("p");
-        Map map = JSON.parseObject(params, Map.class);
-        String sessionId = map.get("sessionId").toString();
-        LinkedList<FormatEntity> formatEntities = iProductServices.recommend();
-        LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
-        for (FormatEntity formatEntity : formatEntities) {
-            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
-            vFormatEntity.setSessionId(sessionId);
-            TypeEntity typeEntity = formatEntity.getTypeEntity();
-            VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
-            vTypeEntity.setSessionId(sessionId);
-            SeriesEntity seriesEntity = typeEntity.getSeriesEntity();
-            VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
-            vSeriesEntity.setSessionId(sessionId);
-            vTypeEntity.setParent(vSeriesEntity);
-            vFormatEntity.setParent(vTypeEntity);
-            vFormatEntities.add(vFormatEntity);
-        }
-        IResultSet iResultSet = new ResultSet(3050, vFormatEntities, "success");
-        renderJson(JSON.toJSONString(iResultSet));
-    }
 
 //    @Override
 //    public void series() {

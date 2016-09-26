@@ -38,22 +38,7 @@ public class ProductServices implements IProductServices {
         return seriesEntities;
     }
 
-    @Override
-    public LinkedList<FormatEntity> recommend() {
-        LinkedList<FormatEntity> result = new LinkedList<>();
-        List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE status = 1 AND weight < 8 order by weight ASC");
-        for (Record formatRecord : formatRecords) {
-            FormatEntity formatEntity = JSON.parseObject(JSON.toJSONString(formatRecord.getColumns()), FormatEntity.class);
-            List<Record> typeIdRecords = Db.find("SELECT * FROM product_type WHERE typeId = ? ", formatEntity.getTypeId());
-            TypeEntity typeEntity = JSON.parseObject(JSON.toJSONString(typeIdRecords.get(0).getColumns()), TypeEntity.class);
-            List<Record> seriesRecords = Db.find("SELECT * FROM product_series WHERE seriesId = ?", typeEntity.getSeriesId());
-            SeriesEntity seriesEntity = JSON.parseObject(JSON.toJSONString(seriesRecords.get(0).getColumns()), SeriesEntity.class);
-            typeEntity.setSeriesEntity(seriesEntity);
-            formatEntity.setTypeEntity(typeEntity);
-            result.add(formatEntity);
-        }
-        return result;
-    }
+
 
     //    @Override
 //    public FormatEntity retrieveTreeByFormatId(String formatId) {

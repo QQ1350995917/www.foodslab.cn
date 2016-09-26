@@ -17,10 +17,5 @@ public interface IProductServices {
     LinkedList<SeriesEntity> mRetrieves();
 
 
-    /**
-     * 前台接口
-     * 读取推荐产品集合
-     * @return
-     */
-    LinkedList<FormatEntity> recommend();
+
 }

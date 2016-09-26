@@ -5,10 +5,7 @@ import cn.foodslab.common.response.ResultSet;
 import cn.foodslab.model.product.VFormatEntity;
 import cn.foodslab.model.product.VSeriesEntity;
 import cn.foodslab.model.product.VTypeEntity;
-import cn.foodslab.service.product.FormatEntity;
-import cn.foodslab.service.product.FormatServices;
-import cn.foodslab.service.product.IFormatServices;
-import cn.foodslab.service.product.TypeEntity;
+import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
@@ -184,5 +181,22 @@ public class FormatController extends Controller implements IFormatController {
             IResultSet iResultSet = new ResultSet(3050,vFormatEntities,"success");
             renderJson(JSON.toJSONString(iResultSet));
         }
+    }
+
+    @Override
+    public void retrieveInSeries() {
+        String params = this.getPara("p");
+        VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
+        SeriesEntity seriesEntity = new SeriesEntity();
+        seriesEntity.setSeriesId(vSeriesEntity.getSeriesId());
+        LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
+        LinkedList<FormatEntity> formatEntities = iFormatServices.retrieveInSeries(seriesEntity);
+        for (FormatEntity formatEntity:formatEntities){
+            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+            vFormatEntity.setParent(new VTypeEntity(formatEntity.getTypeEntity()));
+            vFormatEntities.add(vFormatEntity);
+        }
+        IResultSet iResultSet = new ResultSet(3050,vFormatEntities,"success");
+        renderJson(JSON.toJSONString(iResultSet));
     }
 }

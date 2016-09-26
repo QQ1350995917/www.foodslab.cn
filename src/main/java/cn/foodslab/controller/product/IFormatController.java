@@ -57,9 +57,13 @@ public interface IFormatController {
      */
     void mWeights();
 
-
     /**
      * 读取推荐列表
      */
     void recommends();
+
+    /**
+     * 通过系列的ID读取产品树
+     */
+    void retrieveInSeries();
 }

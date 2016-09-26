@@ -84,6 +84,7 @@ public class SeriesServices implements ISeriesServices {
         return null;
     }
 
+
     @Override
     public SeriesEntity retrieveByLabel(SeriesEntity seriesEntity) {
         List<Record> records = Db.find("SELECT * FROM product_series WHERE label = ? AND seriesId != ? AND status != -1", seriesEntity.getLabel(), seriesEntity.getSeriesId());

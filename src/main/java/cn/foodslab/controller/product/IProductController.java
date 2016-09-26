@@ -9,58 +9,6 @@ package cn.foodslab.controller.product;
  */
 public interface IProductController {
 
-    /**
-     * 默认接口
-     * 导向404
-     */
-    void index();
 
-    /**
-     * 后台接口
-     * 读取所有产品树信息
-     */
-    void mRetrieves();
-
-    /**
-     * 后台接口
-     * 根据系列ID读取一棵产品树信息
-     */
-    void mRetrieveBys();
-
-    /**
-     * 后台接口
-     * 根据类型ID读取一棵产品树信息
-     */
-    void mRetrieveByt();
-
-    /**
-     * 后台接口
-     * 根据规格ID读取一棵产品树信息
-     */
-    void mRetrieveByf();
-
-    /**
-     * 前台接口
-     * 根据规格ID读取一棵产品树
-     */
-    void retrieveBys();
-
-    /**
-     * 前台接口
-     * 根据类型ID读取一棵产品树
-     */
-    void retrieveByt();
-
-    /**
-     * 前台接口
-     * 根据规格ID读取一棵产品树
-     */
-    void retrieveByf();
-
-    /**
-     * 前台接口
-     * 获取所有的推荐产品
-     */
-    void recommend();
 
 }
