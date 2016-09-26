@@ -36,11 +36,6 @@ public interface IFormatController {
      */
     void mRetrieves();
 
-    /**
-     * 读取
-     */
-    @Clear(Session.class)
-    void retrieves();
 
     /**
      * 标记权重
@@ -58,7 +53,21 @@ public interface IFormatController {
     void mWeights();
 
     /**
+     * 读取
+     */
+    @Clear(Session.class)
+    void retrieves();
+
+    /**
+     * 前台接口
+     * 根据规格ID读取
+     */
+    @Clear(Session.class)
+    void retrieveInversionTree();
+
+    /**
      * 读取推荐列表
      */
+    @Clear(Session.class)
     void recommends();
 }

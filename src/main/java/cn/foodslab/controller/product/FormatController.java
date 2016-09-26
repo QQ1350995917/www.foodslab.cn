@@ -19,6 +19,8 @@ import java.util.UUID;
  * Description: @TODO
  */
 public class FormatController extends Controller implements IFormatController {
+    private ISeriesServices iSeriesServices = new SeriesServices();
+    private ITypeServices iTypeServices = new TypeServices();
     private IFormatServices iFormatServices = new FormatServices();
 
     @Override
@@ -50,10 +52,10 @@ public class FormatController extends Controller implements IFormatController {
         FormatEntity formatEntity = vFormatEntity.getFormatEntity();
         FormatEntity result = iFormatServices.mUpdate(formatEntity);
         if (result == null) {
-            IResultSet iResultSet = new ResultSet(3000,vFormatEntity,"fail");
+            IResultSet iResultSet = new ResultSet(3000, vFormatEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,result,"success");
+            IResultSet iResultSet = new ResultSet(3050, result, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -67,10 +69,10 @@ public class FormatController extends Controller implements IFormatController {
         formatEntity.setStatus(vFormatEntity.getStatus());
         FormatEntity result = iFormatServices.mUpdateStatus(formatEntity);
         if (result == null) {
-            IResultSet iResultSet = new ResultSet(3000,vFormatEntity,"fail");
+            IResultSet iResultSet = new ResultSet(3000, vFormatEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,result,"success");
+            IResultSet iResultSet = new ResultSet(3050, result, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -82,16 +84,11 @@ public class FormatController extends Controller implements IFormatController {
         TypeEntity typeEntity = new TypeEntity(vTypeEntity.getSeriesId(), vTypeEntity.getTypeId(), vTypeEntity.getLabel());
         LinkedList<FormatEntity> formatEntities = iFormatServices.mRetrievesInType(typeEntity);
         LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
-        for (FormatEntity formatEntity : formatEntities){
+        for (FormatEntity formatEntity : formatEntities) {
             vFormatEntities.add(new VFormatEntity(formatEntity));
         }
-        IResultSet iResultSet = new ResultSet(3050,vFormatEntities,"success");
+        IResultSet iResultSet = new ResultSet(3050, vFormatEntities, "success");
         renderJson(JSON.toJSONString(iResultSet));
-    }
-
-    @Override
-    public void retrieves() {
-
     }
 
     @Override
@@ -103,10 +100,10 @@ public class FormatController extends Controller implements IFormatController {
         formatEntity.setWeight(vFormatEntity.getWeight());
         FormatEntity result = iFormatServices.mKingWeight(formatEntity);
         if (result == null) {
-            IResultSet iResultSet = new ResultSet(3000,vFormatEntity,"fail");
+            IResultSet iResultSet = new ResultSet(3000, vFormatEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,result,"success");
+            IResultSet iResultSet = new ResultSet(3050, result, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -131,10 +128,10 @@ public class FormatController extends Controller implements IFormatController {
         FormatEntity[] result = iFormatServices.mSwapWeight(formatEntity1, formatEntity2);
 
         if (result == null) {
-            IResultSet iResultSet = new ResultSet(3000,paramsMap,"fail");
+            IResultSet iResultSet = new ResultSet(3000, paramsMap, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,result,"success");
+            IResultSet iResultSet = new ResultSet(3050, result, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -143,7 +140,7 @@ public class FormatController extends Controller implements IFormatController {
     public void mWeights() {
         LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
         LinkedList<FormatEntity> formatEntities = iFormatServices.mRetrieveByWeight();
-        for (FormatEntity formatEntity:formatEntities){
+        for (FormatEntity formatEntity : formatEntities) {
             VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
             VTypeEntity vTypeEntity = new VTypeEntity(formatEntity.getTypeEntity());
             VSeriesEntity vSeriesEntity = new VSeriesEntity(formatEntity.getTypeEntity().getSeriesEntity());
@@ -153,10 +150,36 @@ public class FormatController extends Controller implements IFormatController {
         }
 
         if (formatEntities == null) {
-            IResultSet iResultSet = new ResultSet(3000,vFormatEntities,"fail");
+            IResultSet iResultSet = new ResultSet(3000, vFormatEntities, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,vFormatEntities,"success");
+            IResultSet iResultSet = new ResultSet(3050, vFormatEntities, "success");
+            renderJson(JSON.toJSONString(iResultSet));
+        }
+    }
+
+
+    @Override
+    public void retrieves() {
+
+    }
+
+    @Override
+    public void retrieveInversionTree() {
+        String params = this.getPara("p");
+        VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
+        FormatEntity formatEntity = iFormatServices.retrieveById(vFormatEntity.getFormatId());
+        if (formatEntity == null) {
+            IResultSet iResultSet = new ResultSet(3000, vFormatEntity, "fail");
+            renderJson(JSON.toJSONString(iResultSet));
+        } else {
+            TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
+            SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
+            VFormatEntity result = new VFormatEntity(formatEntity);
+            VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+            vTypeEntity.setParent(new VSeriesEntity(seriesEntity));
+            result.setParent(vTypeEntity);
+            IResultSet iResultSet = new ResultSet(3050, result, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -165,7 +188,7 @@ public class FormatController extends Controller implements IFormatController {
     public void recommends() {
         LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
         LinkedList<FormatEntity> formatEntities = iFormatServices.mRetrieveByWeight();
-        for (FormatEntity formatEntity:formatEntities){
+        for (FormatEntity formatEntity : formatEntities) {
             VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
             VTypeEntity vTypeEntity = new VTypeEntity(formatEntity.getTypeEntity());
             VSeriesEntity vSeriesEntity = new VSeriesEntity(formatEntity.getTypeEntity().getSeriesEntity());
@@ -175,10 +198,10 @@ public class FormatController extends Controller implements IFormatController {
         }
 
         if (formatEntities == null) {
-            IResultSet iResultSet = new ResultSet(3000,vFormatEntities,"fail");
+            IResultSet iResultSet = new ResultSet(3000, vFormatEntities, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050,vFormatEntities,"success");
+            IResultSet iResultSet = new ResultSet(3050, vFormatEntities, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }

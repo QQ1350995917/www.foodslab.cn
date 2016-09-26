@@ -2,15 +2,19 @@ package cn.foodslab.controller.cart;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.model.cart.VCartEntity;
+import cn.foodslab.model.product.VFormatEntity;
+import cn.foodslab.model.product.VSeriesEntity;
+import cn.foodslab.model.product.VTypeEntity;
 import cn.foodslab.service.cart.CartEntity;
 import cn.foodslab.service.cart.CartServices;
 import cn.foodslab.service.cart.ICartServices;
+import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -19,71 +23,84 @@ import java.util.UUID;
  * Description: @TODO
  */
 public class CartController extends Controller implements ICartController {
-
     private ICartServices iCartServices = new CartServices();
+    private ISeriesServices iSeriesServices = new SeriesServices();
+    private ITypeServices iTypeServices = new TypeServices();
+    private IFormatServices iFormatServices = new FormatServices();
 
     @Override
     public void retrieve() {
-        IResultSet resultSet = new ResultSet();
-        LinkedList<Map<String, Object>> result = iCartServices.retrieve();
-        resultSet.setCode(200);
-        resultSet.setData(result);
-        renderJson(JSON.toJSONString(resultSet));
+        String params = this.getPara("p");
+        VCartEntity vCartEntity = JSON.parseObject(params, VCartEntity.class);
+        LinkedList<CartEntity> cartEntities = iCartServices.retrieveByAccountId(vCartEntity.getSessionId());
+        if (cartEntities == null) {
+            IResultSet iResultSet = new ResultSet(3000, vCartEntity, "fail");
+            renderJson(JSON.toJSONString(iResultSet));
+        } else {
+            LinkedList<VCartEntity> vCartEntities = new LinkedList<>();
+            for (CartEntity cartEntity : cartEntities) {
+                FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
+                TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
+                SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
+                VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+                VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+                VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
+                vTypeEntity.setParent(vSeriesEntity);
+                vFormatEntity.setParent(vTypeEntity);
+                VCartEntity responseVCartEntity = new VCartEntity(cartEntity);
+                responseVCartEntity.setFormatEntity(vFormatEntity);
+                vCartEntities.add(responseVCartEntity);
+            }
+            IResultSet iResultSet = new ResultSet(3050, vCartEntities, "success");
+            renderJson(JSON.toJSONString(iResultSet));
+        }
     }
 
     @Override
     public void create() {
-        IResultSet resultSet = new ResultSet();
-        String accountId = this.getPara("accountId");
-        String formatId = this.getPara("formatId");
-        int amount = this.getParaToInt("amount");
-        CartEntity cartEntity = new CartEntity(formatId, amount, accountId);
+        String params = this.getPara("p");
+        VCartEntity vCartEntity = JSON.parseObject(params, VCartEntity.class);
+        CartEntity cartEntity = vCartEntity.getCartEntity();
         cartEntity.setMappingId(UUID.randomUUID().toString());
-        CartEntity cartEntityResult = iCartServices.isExist(cartEntity);
-        if (cartEntityResult != null) {
-            amount = amount + cartEntityResult.getAmount();
-            cartEntity.setMappingId(cartEntityResult.getMappingId());
-            cartEntity.setAmount(amount);
-            CartEntity updateResult = iCartServices.update(cartEntity);
-            resultSet.setCode(200);
-            resultSet.setData(updateResult);
-            renderJson(JSON.toJSONString(resultSet));
-        } else {
+        cartEntity.setAccountId(vCartEntity.getSessionId());
+        CartEntity cartEntityInCart = iCartServices.isExistInCart(cartEntity);
+        if (cartEntityInCart == null) {
             CartEntity createResult = iCartServices.create(cartEntity);
-            resultSet.setCode(200);
-            renderJson(JSON.toJSONString(createResult));
+            IResultSet iResultSet = new ResultSet(3050, createResult, "success");
+            renderJson(JSON.toJSONString(iResultSet));
+        } else {
+            int amount = vCartEntity.getAmount() + cartEntityInCart.getAmount();
+            cartEntity.setMappingId(cartEntityInCart.getMappingId());
+            cartEntity.setAmount(amount);
+            CartEntity updateResult = iCartServices.updateAmount(cartEntity);
+            IResultSet iResultSet = new ResultSet(3050, updateResult, "success");
+            renderJson(JSON.toJSONString(iResultSet));
         }
     }
 
     @Override
     public void update() {
-        IResultSet resultSet = new ResultSet();
-        String accountId = this.getPara("accountId");
-        String mapping = this.getPara("mapping");
-        int amount = this.getParaToInt("amount");
-        CartEntity cartEntity = new CartEntity();
-        cartEntity.setMappingId(mapping);
-        cartEntity.setAmount(amount);
-        cartEntity.setAccountId(accountId);
-        CartEntity updateResult = iCartServices.update(cartEntity);
-        resultSet.setCode(200);
-        resultSet.setData(updateResult);
-        renderJson(JSON.toJSONString(resultSet));
+        String params = this.getPara("p");
+        VCartEntity vCartEntity = JSON.parseObject(params, VCartEntity.class);
+        CartEntity cartEntity = vCartEntity.getCartEntity();
+        cartEntity.setAccountId(vCartEntity.getSessionId());
+        CartEntity updateResult = iCartServices.updateAmount(cartEntity);
+        IResultSet iResultSet = new ResultSet(3050, updateResult, "success");
+        renderJson(JSON.toJSONString(iResultSet));
     }
 
     @Override
     public void delete() {
-        IResultSet resultSet = new ResultSet();
-        String accountId = this.getPara("accountId");
-        String mapping = this.getPara("mapping");
-        CartEntity cartEntity = new CartEntity();
-        cartEntity.setMappingId(mapping);
-        cartEntity.setAccountId(accountId);
-        LinkedList<CartEntity> cartEntities = new LinkedList<>();
-        cartEntities.add(cartEntity);
-        List<CartEntity> delete = iCartServices.delete(cartEntities);
-        resultSet.setCode(200);
-        resultSet.setData(delete);
-        renderJson(JSON.toJSONString(resultSet));
+        String params = this.getPara("p");
+        VCartEntity vCartEntity = JSON.parseObject(params, VCartEntity.class);
+        CartEntity cartEntity = vCartEntity.getCartEntity();
+        List<CartEntity> delete = iCartServices.deleteByIds(cartEntity.getMappingId());
+        if (delete == null) {
+            IResultSet iResultSet = new ResultSet(3000, vCartEntity, "fail");
+            renderJson(JSON.toJSONString(iResultSet));
+        } else {
+            IResultSet iResultSet = new ResultSet(3050, delete, "success");
+            renderJson(JSON.toJSONString(iResultSet));
+        }
     }
 }

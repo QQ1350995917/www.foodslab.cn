@@ -3,6 +3,7 @@ package cn.foodslab.controller.order;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
 import cn.foodslab.model.query.QueryPageEntity;
+import cn.foodslab.service.cart.CartEntity;
 import cn.foodslab.service.cart.CartServices;
 import cn.foodslab.service.cart.ICartServices;
 import cn.foodslab.service.order.*;
@@ -131,8 +132,8 @@ public class OrderController extends Controller implements IOrderController {
                 orderEntity.setPostage(0);
                 OrderEntity orderCreateResult = iOrderServices.create(orderEntity);
                 if (orderCreateResult != null) {
-                    String[] strings = iCartServices.deleteByIds(split);
-                    if (strings != null) {
+                    List<CartEntity> cartEntities = iCartServices.deleteByIds(split);
+                    if (cartEntities != null) {
                         resultSet.setCode(200);
                         renderJson(JSON.toJSONString(resultSet));
                     } else {

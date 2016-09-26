@@ -8,7 +8,6 @@ import cn.foodslab.service.product.FormatEntity;
  * Description: @TODO
  */
 public class CartEntity {
-
     private String mappingId;
     private String formatId;
     private int amount;
@@ -16,7 +15,6 @@ public class CartEntity {
     private String accountId;
     private String createTime;
     private String updateTime;
-    private FormatEntity product;
 
     public CartEntity() {
         super();
@@ -94,11 +92,4 @@ public class CartEntity {
         this.updateTime = updateTime;
     }
 
-    public FormatEntity getProduct() {
-        return product;
-    }
-
-    public void setProduct(FormatEntity product) {
-        this.product = product;
-    }
 }
