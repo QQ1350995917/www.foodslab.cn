@@ -32,7 +32,13 @@ public class CartController extends Controller implements ICartController {
     public void retrieve() {
         String params = this.getPara("p");
         VCartEntity vCartEntity = JSON.parseObject(params, VCartEntity.class);
-        LinkedList<CartEntity> cartEntities = iCartServices.retrieveByAccountId(vCartEntity.getSessionId());
+        LinkedList<CartEntity> cartEntities;
+        if (vCartEntity.getMappingIds() != null) {
+            String[] split = vCartEntity.getMappingIds().split(",");
+            cartEntities = iCartServices.retrieveByIds(split);
+        } else {
+            cartEntities = iCartServices.retrieveByAccountId(vCartEntity.getSessionId());
+        }
         if (cartEntities == null) {
             IResultSet iResultSet = new ResultSet(3000, vCartEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));

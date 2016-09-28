@@ -13,7 +13,7 @@ public interface IOrderServices {
      * 读取用户名下所有账户的订单
      * @return
      */
-    LinkedList<OrderEntity> retrieve(String userId);
+    LinkedList<OrderEntity> retrieveByAccount(String accountId);
 
     OrderEntity retrieveById(String orderId);
 

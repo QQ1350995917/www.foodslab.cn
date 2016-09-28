@@ -11,7 +11,8 @@ import cn.foodslab.service.cart.CartEntity;
 public class VCartEntity {
 
     private String sessionId;
-    private String mappingId;
+    private String mappingId;//返回单个的mappingId
+    private String mappingIds;//支持一个或多个的mappingIds查找
     private String formatId;
     private int amount;
     private int status = 1;
@@ -57,6 +58,14 @@ public class VCartEntity {
 
     public void setFormatId(String formatId) {
         this.formatId = formatId;
+    }
+
+    public String getMappingIds() {
+        return mappingIds;
+    }
+
+    public void setMappingIds(String mappingIds) {
+        this.mappingIds = mappingIds;
     }
 
     public int getAmount() {

@@ -1,11 +1,5 @@
 package cn.foodslab.service.order;
 
-import cn.foodslab.service.product.FormatEntity;
-import cn.foodslab.service.product.IProductServices;
-import cn.foodslab.service.product.ProductServices;
-import cn.foodslab.service.user.AccountEntity;
-import cn.foodslab.service.user.AccountServices;
-import cn.foodslab.service.user.IAccountServices;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
@@ -20,29 +14,15 @@ import java.util.Map;
  * Description: @TODO
  */
 public class OrderServices implements IOrderServices {
-    IAccountServices accountServices = new AccountServices();
-    IProductServices productServices = new ProductServices();
 
     @Override
-    public LinkedList<OrderEntity> retrieve(String userId) {
+    public LinkedList<OrderEntity> retrieveByAccount(String accountId) {
         LinkedList<OrderEntity> result = new LinkedList<>();
-        LinkedList<AccountEntity> accountEntities = accountServices.retrieveAccountsByUserId(userId);
-        for (AccountEntity accountEntity:accountEntities){
-            List<Record> records = Db.find("SELECT * FROM user_order WHERE accountId = ? ", accountEntity.getAccountId());
-            for (Record record:records){
-                Map<String, Object> orderMap = record.getColumns();
-                OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(orderMap), OrderEntity.class);
-                LinkedList<FormatEntity> products = new LinkedList<>();
-                List<Record> productRecords = Db.find("SELECT * FROM user_order_product WHERE orderId = ?", orderEntity.getOrderId());
-                for (Record productRecord:productRecords){
-                    Map<String, Object> productMap = productRecord.getColumns();
-                    String formatId = productMap.get("formatId").toString();
-//                    FormatEntity formatEntity = productServices.retrieveTreeByFormatId(formatId);
-//                    products.add(formatEntity);
-                }
-                orderEntity.setProducts(products);
-                result.add(orderEntity);
-            }
+        List<Record> records = Db.find("SELECT * FROM user_order WHERE accountId = ? ", accountId);
+        for (Record record:records){
+            Map<String, Object> orderMap = record.getColumns();
+            OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(orderMap), OrderEntity.class);
+            result.add(orderEntity);
         }
         return result;
     }

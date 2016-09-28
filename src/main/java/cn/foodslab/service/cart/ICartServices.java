@@ -14,6 +14,8 @@ public interface ICartServices {
 
     CartEntity retrieveById(String mappingId);
 
+    LinkedList<CartEntity> retrieveByIds(String... mappingIds);
+
     LinkedList<CartEntity> retrieveByAccountId(String accountId);
 
     CartEntity updateAmount(CartEntity cartEntity);

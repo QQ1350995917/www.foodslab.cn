@@ -31,6 +31,11 @@ public class BillingController extends Controller implements IBillingController 
     private IProductServices iProductServices = new ProductServices();
 
     @Override
+    public void retrieve() {
+
+    }
+
+    @Override
     public void index() {
         String accountId = this.getPara("accountId");
         String productIds = this.getPara("productIds");

@@ -37,6 +37,16 @@ public class CartServices implements ICartServices {
     }
 
     @Override
+    public LinkedList<CartEntity> retrieveByIds(String... mappingIds) {
+        LinkedList<CartEntity> cartEntities = new LinkedList<>();
+        for (String mappingId : mappingIds) {
+            List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE status = 1 AND mappingId = ?", mappingId);
+            cartEntities.add(JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), CartEntity.class));
+        }
+        return cartEntities;
+    }
+
+    @Override
     public LinkedList<CartEntity> retrieveByAccountId(String accountId) {
         LinkedList<CartEntity> cartEntities = new LinkedList<>();
         List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE status = 1 AND accountId = ?", accountId);

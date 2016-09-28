@@ -18,6 +18,18 @@ import java.util.Map;
 public class Order2ProductServices implements IOrder2ProductServices {
 
     @Override
+    public LinkedList<Order2ProductEntity> retrieveByOrder(String orderId) {
+        LinkedList<Order2ProductEntity> result = new LinkedList<>();
+        List<Record> mappingRecords = Db.find("SELECT * FROM user_order_product WHERE orderId = ?", orderId);
+        for (Record mappingRecord:mappingRecords){
+            Map<String, Object> mappingMap = mappingRecord.getColumns();
+            Order2ProductEntity order2ProductEntity = JSON.parseObject(JSON.toJSONString(mappingMap), Order2ProductEntity.class);
+            result.add(order2ProductEntity);
+        }
+        return result;
+    }
+
+    @Override
     public LinkedList<Order2ProductEntity> retrieve(String mapping) {
         LinkedList<Order2ProductEntity> result = new LinkedList<>();
         List<Record> mappingRecords = Db.find("SELECT * FROM user_order_product WHERE mappingId = ?", mapping);
