@@ -18,7 +18,18 @@ public interface IOrderController {
     void create();
 
     /**
+     * 用户确认收货
+     */
+    void expressed();
+
+    /**
      * 匿名用户订单查询
      */
     void query();
+
+    void mRetrieveUnExpress();
+    void mRetrieveExpressing();
+    void mRetrieveExpressed();
+    void mRetrieveAll();
+    void mUpdateExpress();
 }

@@ -7,7 +7,7 @@ package cn.foodslab.model.query;
  */
 public class QueryPageEntity {
     private String orderId;
-    private String orderTime;
+    private long orderTime;
     private String address;
     private String name;
     private String phone;
@@ -19,7 +19,7 @@ public class QueryPageEntity {
         super();
     }
 
-    public QueryPageEntity(String orderId, String orderTime, String address, String name, String phone, String expressName, String expressNumber, String expressStatus) {
+    public QueryPageEntity(String orderId, long orderTime, String address, String name, String phone, String expressName, String expressNumber, String expressStatus) {
         this.orderId = orderId;
         this.orderTime = orderTime;
         this.address = address;
@@ -38,11 +38,11 @@ public class QueryPageEntity {
         this.orderId = orderId;
     }
 
-    public String getOrderTime() {
+    public long getOrderTime() {
         return orderTime;
     }
 
-    public void setOrderTime(String orderTime) {
+    public void setOrderTime(long orderTime) {
         this.orderTime = orderTime;
     }
 

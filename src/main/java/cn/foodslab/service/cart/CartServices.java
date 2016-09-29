@@ -37,6 +37,37 @@ public class CartServices implements ICartServices {
     }
 
     @Override
+    public LinkedList<CartEntity> retrieveCartByAccountId(String accountId) {
+        return null;
+    }
+
+    @Override
+    public CartEntity retrieveCartByFormatId(String formatId) {
+        List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE status = 1 AND formatId = ?", formatId);
+        return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), CartEntity.class);
+    }
+
+    @Override
+    public LinkedList<CartEntity> retrieveByOrderId(String orderId) {
+        LinkedList<CartEntity> cartEntities = new LinkedList<>();
+        List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE orderId = ? ", orderId);
+        for (Record record:records){
+            cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
+        }
+        return cartEntities;
+    }
+
+    @Override
+    public CartEntity attachToOrder(CartEntity cartEntity) {
+        int update = Db.update("UPDATE user_cart SET orderId = ?,status = ? WHERE mappingId = ?", cartEntity.getOrderId(), cartEntity.getStatus(), cartEntity.getMappingId());
+        if (update == 1) {
+            return cartEntity;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public LinkedList<CartEntity> retrieveByIds(String... mappingIds) {
         LinkedList<CartEntity> cartEntities = new LinkedList<>();
         for (String mappingId : mappingIds) {
@@ -65,6 +96,7 @@ public class CartServices implements ICartServices {
             return null;
         }
     }
+
 
     @Override
     public List<CartEntity> deleteByIds(String... mappingIds) {

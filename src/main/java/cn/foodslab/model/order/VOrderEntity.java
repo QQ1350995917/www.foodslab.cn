@@ -11,7 +11,7 @@ import java.util.LinkedList;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: 支付页面提交订单的数据模型，兼容匿名订单和非匿名订单
  */
-public class VOrderEntity {
+public class VOrderEntity implements Comparable {
     private String sessionId;
     private String orderId;//响应字段
     private String senderName;
@@ -22,11 +22,14 @@ public class VOrderEntity {
     private int status;
     private String expressLabel;
     private String expressNumber;
+    private long createTime;
     private LinkedList<VFormatEntity> formatEntities;//响应字段
 
     private String productIds;
 
-    /**兼容匿名订单**/
+    /**
+     * 兼容匿名订单*
+     */
     private String province;
     private String city;
     private String county;
@@ -44,13 +47,14 @@ public class VOrderEntity {
     public VOrderEntity(OrderEntity orderEntity) {
         this.orderId = orderEntity.getOrderId();
         this.senderName = orderEntity.getSenderName();
-        this.senderPhone =orderEntity.getSenderPhone();
+        this.senderPhone = orderEntity.getSenderPhone();
         this.receiverId = orderEntity.getReceiverId();
         this.cost = orderEntity.getCost();
-        this.postage =  orderEntity.getPostage();
+        this.postage = orderEntity.getPostage();
         this.status = orderEntity.getStatus();
         this.expressLabel = orderEntity.getExpressLabel();
         this.expressNumber = orderEntity.getExpressNumber();
+        this.createTime = orderEntity.getCreateTime();
     }
 
     public VOrderEntity(String sessionId, String orderId, String senderName, String senderPhone, String receiverId, float cost, float postage, int status, String expressLabel, String expressNumber) {
@@ -146,6 +150,14 @@ public class VOrderEntity {
         this.expressNumber = expressNumber;
     }
 
+    public long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(long createTime) {
+        this.createTime = createTime;
+    }
+
     public LinkedList<VFormatEntity> getFormatEntities() {
         return formatEntities;
     }
@@ -234,7 +246,7 @@ public class VOrderEntity {
         this.phone1 = phone1;
     }
 
-    public OrderEntity getOrderEntity (){
+    public OrderEntity getOrderEntity() {
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setOrderId(this.getOrderId());
         orderEntity.setSenderName(this.getSenderName());
@@ -248,7 +260,7 @@ public class VOrderEntity {
         return orderEntity;
     }
 
-    public ReceiverEntity getReceiverEntity(){
+    public ReceiverEntity getReceiverEntity() {
         ReceiverEntity receiverEntity = new ReceiverEntity();
         receiverEntity.setName(this.getName());
         receiverEntity.setPhone0(this.getPhone0());
@@ -260,5 +272,14 @@ public class VOrderEntity {
         receiverEntity.setVillage(this.getVillage());
         receiverEntity.setAppend(this.getAppend());
         return receiverEntity;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (this.getCreateTime() > ((VOrderEntity) o).getCreateTime()) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 }

@@ -52,7 +52,7 @@ public class AccountServices implements IAccountServices {
                 .set("status", 1);
         Record userAccountRecord = new Record()
                 .set("accountId", accountEntity.getAccountId())
-                .set("identity", accountEntity.getTelephone())
+                .set("identity", accountEntity.getIdentity())
                 .set("userId", accountEntity.getUserId());
         boolean user = Db.save("user", userRecord);
         boolean account = Db.save("user_account", userAccountRecord);
@@ -70,34 +70,7 @@ public class AccountServices implements IAccountServices {
 
     @Override
     public AccountEntity update(AccountEntity accountEntity) {
-        String head = "UPDATE user_account SET ";
-        String set = "";
-        if (accountEntity.getTelephone() != null) {
-            set = set + " , telephone = '" + accountEntity.getTelephone() + "' ";
-        }
-        if (accountEntity.getName() != null) {
-            set = set + " , name = '" + accountEntity.getName() + "' ";
-        }
-        if (accountEntity.getGender() != -1) {
-            set = set + " , gender = '" + accountEntity.getGender() + "' ";
-        }
-        if (accountEntity.getAddress() != null) {
-            set = set + " , address = '" + accountEntity.getAddress() + "' ";
-        }
-        if (accountEntity.getBirthday() != null) {
-            set = set + " , birthday = '" + accountEntity.getBirthday() + "' ";
-        }
-
-        String where = " WHERE accountId = '" + accountEntity.getAccountId() + "'";
-
-        String sql = head + set.replaceFirst(",", " ") + where;
-
-        int update = Db.update(sql);
-        if (update == 1) {
-            return accountEntity;
-        } else {
-            return null;
-        }
+        return null;
     }
 
     @Override

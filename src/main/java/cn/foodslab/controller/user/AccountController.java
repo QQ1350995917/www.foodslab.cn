@@ -2,12 +2,13 @@ package cn.foodslab.controller.user;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.service.user.AccountEntity;
-import cn.foodslab.service.user.AccountServices;
-import cn.foodslab.service.user.IAccountServices;
+import cn.foodslab.model.user.VAccountEntity;
+import cn.foodslab.model.user.VUserEntity;
+import cn.foodslab.service.user.*;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
+import java.util.LinkedList;
 import java.util.UUID;
 
 /**
@@ -16,8 +17,8 @@ import java.util.UUID;
  * Description: @TODO
  */
 public class AccountController extends Controller implements IAccountController {
-    IAccountServices userServices = new AccountServices();
-
+    IUserServices iUserServices = new UserServices();
+    IAccountServices iAccountServices = new AccountServices();
     @Override
     public void index() {
 
@@ -26,7 +27,7 @@ public class AccountController extends Controller implements IAccountController 
     @Override
     public void retrieve() {
         String phone = this.getPara("phone");
-        AccountEntity retrieve = userServices.retrieve(phone);
+        AccountEntity retrieve = iAccountServices.retrieve(phone);
         IResultSet resultSet = new ResultSet();
         if (retrieve != null) {
             resultSet.setCode(200);
@@ -42,7 +43,7 @@ public class AccountController extends Controller implements IAccountController 
     public void create() {
         String telephone = this.getPara("telephone");
         AccountEntity accountEntity = new AccountEntity(UUID.randomUUID().toString(), telephone, null, 0, null, null, null, 0, UUID.randomUUID().toString());
-        AccountEntity result = userServices.create(accountEntity);
+        AccountEntity result = iAccountServices.create(accountEntity);
         IResultSet resultSet = new ResultSet();
         if (result != null) {
             resultSet.setCode(200);
@@ -67,7 +68,7 @@ public class AccountController extends Controller implements IAccountController 
         }
         String birthday = this.getPara("birthday");
         AccountEntity accountEntity = new AccountEntity(accountId, telephone, name, gender, address, null, birthday, 0, userId);
-        AccountEntity result = userServices.update(accountEntity);
+        AccountEntity result = iAccountServices.update(accountEntity);
         IResultSet resultSet = new ResultSet();
         if (result != null) {
             resultSet.setCode(200);
@@ -102,5 +103,24 @@ public class AccountController extends Controller implements IAccountController 
     @Override
     public void portrait() {
 
+    }
+
+    @Override
+    public void mRetrieve() {
+        LinkedList<UserEntity> userEntities = iUserServices.mRetrieve();
+        LinkedList<VUserEntity> vUserEntities = new LinkedList<>();
+        for (UserEntity userEntity:userEntities){
+            VUserEntity vUserEntity = new VUserEntity(userEntity);
+            LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveAccountsByUserId(userEntity.getUserId());
+            LinkedList<VAccountEntity> vAccountEntities = new LinkedList<>();
+            for (AccountEntity accountEntity:accountEntities){
+                VAccountEntity result = new VAccountEntity(accountEntity);
+                vAccountEntities.add(result);
+            }
+            vUserEntity.setAccountEntities(vAccountEntities);
+            vUserEntities.add(vUserEntity);
+        }
+        IResultSet iResultSet = new ResultSet(3050, vUserEntities, "success");
+        renderJson(JSON.toJSONString(iResultSet));
     }
 }

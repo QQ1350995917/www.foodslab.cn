@@ -20,15 +20,15 @@ public class OrderEntity {
     private int status;
     private String expressLabel;
     private String expressNumber;
-    private String createTime;
-    private String updateTime;
+    private long createTime;
+    private long updateTime;
     private LinkedList<FormatEntity> products;
 
     public OrderEntity() {
         super();
     }
 
-    public OrderEntity(String orderId, String accountId, String senderName, String senderPhone, String receiverId, float cost, float postage, int status, String expressLabel, String expressNumber, String createTime, String updateTime) {
+    public OrderEntity(String orderId, String accountId, String senderName, String senderPhone, String receiverId, float cost, float postage, int status, String expressLabel, String expressNumber, long createTime, long updateTime) {
         this.orderId = orderId;
         this.accountId = accountId;
         this.senderName = senderName;
@@ -134,19 +134,19 @@ public class OrderEntity {
         this.expressNumber = expressNumber;
     }
 
-    public String getCreateTime() {
+    public long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(String createTime) {
+    public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 
-    public String getUpdateTime() {
+    public long getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(String updateTime) {
+    public void setUpdateTime(long updateTime) {
         this.updateTime = updateTime;
     }
 

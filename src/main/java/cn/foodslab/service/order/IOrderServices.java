@@ -15,9 +15,47 @@ public interface IOrderServices {
      */
     LinkedList<OrderEntity> retrieveByAccount(String accountId);
 
+    /**
+     *
+     * @param orderId
+     * @return
+     */
     OrderEntity retrieveById(String orderId);
 
+    /**
+     *
+     * @param orderEntity
+     * @return
+     */
     OrderEntity create(OrderEntity orderEntity);
+
+    /**
+     * 用户确认收货
+     * @param orderEntity
+     * @return
+     */
+    OrderEntity expressed(OrderEntity orderEntity);
+
+    /**
+     *
+     * @param status
+     * @return
+     */
+    LinkedList<OrderEntity> mRetrieveByStatus(int status);
+
+    /**
+     *
+     * @return
+     */
+    LinkedList<OrderEntity> mRetrieveAll();
+
+    /**
+     * 发货
+     * @param orderEntity
+     * @return
+     */
+    OrderEntity updateExpress(OrderEntity orderEntity);
+
 
 
 

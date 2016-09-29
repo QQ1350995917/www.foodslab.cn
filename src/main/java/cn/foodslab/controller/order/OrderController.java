@@ -10,7 +10,9 @@ import cn.foodslab.model.query.QueryPageEntity;
 import cn.foodslab.service.cart.CartEntity;
 import cn.foodslab.service.cart.CartServices;
 import cn.foodslab.service.cart.ICartServices;
-import cn.foodslab.service.order.*;
+import cn.foodslab.service.order.IOrderServices;
+import cn.foodslab.service.order.OrderEntity;
+import cn.foodslab.service.order.OrderServices;
 import cn.foodslab.service.product.*;
 import cn.foodslab.service.receiver.IReceiverService;
 import cn.foodslab.service.receiver.ReceiverEntity;
@@ -22,8 +24,8 @@ import cn.foodslab.service.user.UserEntity;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -36,7 +38,6 @@ public class OrderController extends Controller implements IOrderController {
     private IOrderServices iOrderServices = new OrderServices();
     private IReceiverService iReceiverService = new ReceiverServices();
     private ICartServices iCartServices = new CartServices();
-    private IOrder2ProductServices iOrder2ProductServices = new Order2ProductServices();
     private ISeriesServices iSeriesServices = new SeriesServices();
     private ITypeServices iTypeServices = new TypeServices();
     private IFormatServices iFormatServices = new FormatServices();
@@ -55,10 +56,11 @@ public class OrderController extends Controller implements IOrderController {
             for (AccountEntity accountEntity : accountEntities) {
                 LinkedList<OrderEntity> orderEntities = iOrderServices.retrieveByAccount(accountEntity.getAccountId());
                 for (OrderEntity orderEntity : orderEntities) {
-                    LinkedList<Order2ProductEntity> order2ProductEntities = iOrder2ProductServices.retrieveByOrder(orderEntity.getOrderId());
+                    VOrderEntity result = new VOrderEntity(orderEntity);
+                    LinkedList<CartEntity> cartEntities = iCartServices.retrieveByOrderId(orderEntity.getOrderId());
                     LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
-                    for (Order2ProductEntity order2ProductEntity:order2ProductEntities){
-                        FormatEntity formatEntity = iFormatServices.retrieveById(order2ProductEntity.getFormatId());
+                    for (CartEntity cartEntity : cartEntities) {
+                        FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
                         TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
                         SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
                         VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
@@ -68,11 +70,11 @@ public class OrderController extends Controller implements IOrderController {
                         vFormatEntity.setParent(vTypeEntity);
                         vFormatEntities.add(vFormatEntity);
                     }
-                    VOrderEntity result = new VOrderEntity(orderEntity);
                     result.setFormatEntities(vFormatEntities);
                     results.add(result);
                 }
             }
+            Collections.sort(results);
             IResultSet iResultSet = new ResultSet(3050, results, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
@@ -82,10 +84,13 @@ public class OrderController extends Controller implements IOrderController {
     public void create() {
         String params = this.getPara("p");
         VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
-        if (vOrderEntity.getSessionId() == null){
+        if (vOrderEntity.getSessionId() == null) {
             String receiverId = UUID.randomUUID().toString();
             ReceiverEntity receiverEntity = vOrderEntity.getReceiverEntity();
             receiverEntity.setReceiverId(receiverId);
+            /**
+             * 保存匿名订单的收货人信息
+             */
             ReceiverEntity resultReceiver = iReceiverService.create(receiverEntity);
             if (resultReceiver != null) {
                 String orderId = UUID.randomUUID().toString();
@@ -93,16 +98,23 @@ public class OrderController extends Controller implements IOrderController {
                 orderEntity.setOrderId(orderId);
                 orderEntity.setReceiverId(receiverId);
                 orderEntity.setAccountId(vOrderEntity.getSessionId());
+                /**
+                 * 保存匿名订单的订单信息
+                 */
                 OrderEntity resultOrder = iOrderServices.create(orderEntity);
                 if (resultOrder != null) {
-                    LinkedList<Order2ProductEntity> formatMappingEntities = new LinkedList<>();
-                    formatMappingEntities.add(new Order2ProductEntity(UUID.randomUUID().toString(), orderId, vOrderEntity.getProductIds()));
-                    List<Order2ProductEntity> orderProductMappingEntities = iOrder2ProductServices.create(formatMappingEntities);
-                    if (orderProductMappingEntities != null) {
+                    CartEntity cartEntity = new CartEntity();
+                    String mappingId = UUID.randomUUID().toString();
+                    cartEntity.setMappingId(mappingId);
+                    cartEntity.setFormatId(vOrderEntity.getProductIds());
+                    cartEntity.setAmount(1);
+                    cartEntity.setPricing(0);
+                    cartEntity.setOrderId(resultOrder.getOrderId());
+                    cartEntity.setStatus(2);
+                    CartEntity resultCartEntity = iCartServices.create(cartEntity);
+                    if (resultCartEntity != null) {
                         IResultSet iResultSet = new ResultSet(3050, orderEntity, "success");
                         renderJson(JSON.toJSONString(iResultSet));
-                    } else {
-
                     }
                 } else {
 
@@ -110,44 +122,44 @@ public class OrderController extends Controller implements IOrderController {
             } else {
 
             }
-        }else {
+        } else {
             String orderId = UUID.randomUUID().toString();
             float orderTotalPrice = 0.0f;
-            LinkedList<Order2ProductEntity> order2ProductEntities = new LinkedList<>();
-            String[] split = vOrderEntity.getProductIds().split(",");
-            for (String productId : split) {
-                CartEntity cartEntity = iCartServices.retrieveById(productId);
-                Order2ProductEntity order2ProductEntity = new Order2ProductEntity();
-                String mappingId = UUID.randomUUID().toString();
-                order2ProductEntity.setMappingId(mappingId);
-                order2ProductEntity.setOrderId(orderId);
-                order2ProductEntity.setFormatId(cartEntity.getFormatId());
-                order2ProductEntity.setAmount(cartEntity.getAmount());
-                float productTotalPrice = cartEntity.getAmount();
-                order2ProductEntity.setTotalPrice(productTotalPrice);
-                orderTotalPrice = orderTotalPrice + productTotalPrice;
-                order2ProductEntities.add(order2ProductEntity);
-            }
-
-            if (iOrder2ProductServices.create(order2ProductEntities) != null) {
-                OrderEntity orderEntity = new OrderEntity();
-                orderEntity.setAccountId(vOrderEntity.getSessionId());
-                orderEntity.setOrderId(orderId);
-                orderEntity.setCost(orderTotalPrice);
-                orderEntity.setPostage(0);
-                orderEntity.setReceiverId(vOrderEntity.getReceiverId());
-                OrderEntity orderCreateResult = iOrderServices.create(orderEntity);
-                if (orderCreateResult != null) {
-                    List<CartEntity> cartEntities = iCartServices.deleteByIds(split);
-                    if (cartEntities != null) {
-                        IResultSet iResultSet = new ResultSet(3050, orderEntity, "success");
-                        renderJson(JSON.toJSONString(iResultSet));
-                    } else {
-                    }
-                } else {
+            OrderEntity orderEntity = new OrderEntity();
+            orderEntity.setAccountId(vOrderEntity.getSessionId());
+            orderEntity.setOrderId(orderId);
+            orderEntity.setCost(orderTotalPrice);
+            orderEntity.setPostage(0);
+            orderEntity.setReceiverId(vOrderEntity.getReceiverId());
+            OrderEntity orderCreateResult = iOrderServices.create(orderEntity);
+            if (orderCreateResult != null) {
+                String[] split = vOrderEntity.getProductIds().split(",");
+                for (String formatId : split) {
+                    CartEntity cartEntity = iCartServices.retrieveById(formatId);
+                    cartEntity.setOrderId(orderId);
+                    cartEntity.setStatus(2);
+                    iCartServices.attachToOrder(cartEntity);
                 }
+                IResultSet iResultSet = new ResultSet(3050, orderEntity, "success");
+                renderJson(JSON.toJSONString(iResultSet));
             } else {
+
             }
+        }
+    }
+
+    @Override
+    public void expressed() {
+        String params = this.getPara("p");
+        VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
+        OrderEntity orderEntity = vOrderEntity.getOrderEntity();
+        OrderEntity result = iOrderServices.expressed(orderEntity);
+        if (result == null) {
+            IResultSet iResultSet = new ResultSet(3000, vOrderEntity, "fail");
+            renderJson(JSON.toJSONString(iResultSet));
+        } else {
+            IResultSet iResultSet = new ResultSet(3050, vOrderEntity, "success");
+            renderJson(JSON.toJSONString(iResultSet));
         }
     }
 
@@ -177,5 +189,125 @@ public class OrderController extends Controller implements IOrderController {
         } else {
 
         }
+    }
+
+    @Override
+    public void mRetrieveUnExpress() {
+        LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrieveByStatus(1);
+        LinkedList<VOrderEntity> vOrderEntities = new LinkedList<>();
+        for (OrderEntity orderEntity : orderEntities) {
+            VOrderEntity result = new VOrderEntity(orderEntity);
+            LinkedList<CartEntity> cartEntities = iCartServices.retrieveByOrderId(orderEntity.getOrderId());
+            LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
+            for (CartEntity cartEntity : cartEntities) {
+                FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
+                TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
+                SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
+                VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+                VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+                VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
+                vTypeEntity.setParent(vSeriesEntity);
+                vFormatEntity.setParent(vTypeEntity);
+                vFormatEntities.add(vFormatEntity);
+            }
+            result.setFormatEntities(vFormatEntities);
+            vOrderEntities.add(result);
+        }
+        IResultSet iResultSet = new ResultSet(3050, vOrderEntities, "success");
+        renderJson(JSON.toJSONString(iResultSet));
+    }
+
+    @Override
+    public void mRetrieveExpressing() {
+        LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrieveByStatus(2);
+        LinkedList<VOrderEntity> vOrderEntities = new LinkedList<>();
+        for (OrderEntity orderEntity : orderEntities) {
+            VOrderEntity result = new VOrderEntity(orderEntity);
+            LinkedList<CartEntity> cartEntities = iCartServices.retrieveByOrderId(orderEntity.getOrderId());
+            LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
+            for (CartEntity cartEntity : cartEntities) {
+                FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
+                TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
+                SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
+                VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+                VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+                VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
+                vTypeEntity.setParent(vSeriesEntity);
+                vFormatEntity.setParent(vTypeEntity);
+                vFormatEntities.add(vFormatEntity);
+            }
+            result.setFormatEntities(vFormatEntities);
+            vOrderEntities.add(result);
+        }
+        IResultSet iResultSet = new ResultSet(3050, vOrderEntities, "success");
+        renderJson(JSON.toJSONString(iResultSet));
+    }
+
+    @Override
+    public void mRetrieveExpressed() {
+        LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrieveByStatus(3);
+        LinkedList<VOrderEntity> vOrderEntities = new LinkedList<>();
+        for (OrderEntity orderEntity : orderEntities) {
+            VOrderEntity result = new VOrderEntity(orderEntity);
+            LinkedList<CartEntity> cartEntities = iCartServices.retrieveByOrderId(orderEntity.getOrderId());
+            LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
+            for (CartEntity cartEntity : cartEntities) {
+                FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
+                TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
+                SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
+                VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+                VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+                VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
+                vTypeEntity.setParent(vSeriesEntity);
+                vFormatEntity.setParent(vTypeEntity);
+                vFormatEntities.add(vFormatEntity);
+            }
+            result.setFormatEntities(vFormatEntities);
+            vOrderEntities.add(result);
+        }
+        IResultSet iResultSet = new ResultSet(3050, vOrderEntities, "success");
+        renderJson(JSON.toJSONString(iResultSet));
+    }
+
+    @Override
+    public void mRetrieveAll() {
+        LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrieveAll();
+        LinkedList<VOrderEntity> vOrderEntities = new LinkedList<>();
+        for (OrderEntity orderEntity : orderEntities) {
+            VOrderEntity result = new VOrderEntity(orderEntity);
+            LinkedList<CartEntity> cartEntities = iCartServices.retrieveByOrderId(orderEntity.getOrderId());
+            LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
+            for (CartEntity cartEntity : cartEntities) {
+                FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
+                TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
+                SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
+                VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+                VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+                VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
+                vTypeEntity.setParent(vSeriesEntity);
+                vFormatEntity.setParent(vTypeEntity);
+                vFormatEntities.add(vFormatEntity);
+            }
+            result.setFormatEntities(vFormatEntities);
+            vOrderEntities.add(result);
+        }
+        IResultSet iResultSet = new ResultSet(3050, vOrderEntities, "success");
+        renderJson(JSON.toJSONString(iResultSet));
+    }
+
+    @Override
+    public void mUpdateExpress() {
+        String params = this.getPara("p");
+        VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
+        OrderEntity orderEntity = vOrderEntity.getOrderEntity();
+        OrderEntity result = iOrderServices.updateExpress(orderEntity);
+        if (result == null) {
+            IResultSet iResultSet = new ResultSet(3000, vOrderEntity, "fail");
+            renderJson(JSON.toJSONString(iResultSet));
+        } else {
+            IResultSet iResultSet = new ResultSet(3050, vOrderEntity, "success");
+            renderJson(JSON.toJSONString(iResultSet));
+        }
+
     }
 }

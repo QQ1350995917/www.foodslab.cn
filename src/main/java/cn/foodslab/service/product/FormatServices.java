@@ -168,7 +168,7 @@ public class FormatServices implements IFormatServices {
     @Override
     public LinkedList<FormatEntity> mRetrieveByWeight() {
         LinkedList<FormatEntity> result = new LinkedList<>();
-        List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE status = 1 order by weight ASC");
+        List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE status = 1 order by weight ASC limit 12 offset 0 ");
         for (Record formatRecord : formatRecords) {
             FormatEntity formatEntity = JSON.parseObject(JSON.toJSONString(formatRecord.getColumns()), FormatEntity.class);
             List<Record> typeIdRecords = Db.find("SELECT * FROM product_type WHERE typeId = ? ", formatEntity.getTypeId());

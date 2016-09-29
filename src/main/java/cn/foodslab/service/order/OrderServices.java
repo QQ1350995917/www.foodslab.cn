@@ -52,4 +52,45 @@ public class OrderServices implements IOrderServices {
             return null;
         }
     }
+
+    @Override
+    public OrderEntity expressed(OrderEntity orderEntity) {
+        int update = Db.update("UPDATE user_order SET status = 3 WHERE orderId = ? ",orderEntity.getOrderId());
+        if (update == 1){
+            return orderEntity;
+        }
+        return null;
+    }
+
+    @Override
+    public LinkedList<OrderEntity> mRetrieveByStatus(int status) {
+        LinkedList<OrderEntity> orderEntities = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM user_order WHERE status = ? ",status);
+        for (Record record:records){
+            OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(record.getColumns()), OrderEntity.class);
+            orderEntities.add(orderEntity);
+        }
+        return orderEntities;
+    }
+
+
+    @Override
+    public LinkedList<OrderEntity> mRetrieveAll() {
+        LinkedList<OrderEntity> orderEntities = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM user_order WHERE status != -1 ");
+        for (Record record:records){
+            OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(record.getColumns()), OrderEntity.class);
+            orderEntities.add(orderEntity);
+        }
+        return orderEntities;
+    }
+
+    @Override
+    public OrderEntity updateExpress(OrderEntity orderEntity) {
+        int update = Db.update("UPDATE user_order SET status = 2, expressLabel = ?,expressNumber = ? WHERE orderId = ? ",orderEntity.getExpressLabel(),orderEntity.getExpressNumber(),orderEntity.getOrderId());
+        if (update == 1){
+            return orderEntity;
+        }
+        return null;
+    }
 }

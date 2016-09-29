@@ -51,4 +51,9 @@ public interface IAccountController {
      */
     void portrait();
 
+    /**
+     * 管理员读取用户
+     */
+    void mRetrieve();
+
 }
