@@ -56,4 +56,9 @@ public interface IAccountController {
      */
     void mRetrieve();
 
+    /**
+     * 管理员修改用户状态
+     */
+    void mMark();
+
 }

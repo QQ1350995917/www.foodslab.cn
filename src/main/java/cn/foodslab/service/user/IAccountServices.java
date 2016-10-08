@@ -52,12 +52,5 @@ public interface IAccountServices {
      */
     AccountEntity update(AccountEntity accountEntity);
 
-    /**
-     * 管理员接口
-     * 禁用用户
-     * @param userEntity
-     * @return 返回被禁用的用户或者null
-     */
-    UserEntity block(UserEntity userEntity);
 
 }

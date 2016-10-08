@@ -7,6 +7,7 @@ import cn.foodslab.model.product.VFormatEntity;
 import cn.foodslab.model.product.VSeriesEntity;
 import cn.foodslab.model.product.VTypeEntity;
 import cn.foodslab.model.query.QueryPageEntity;
+import cn.foodslab.model.user.VUserEntity;
 import cn.foodslab.service.cart.CartEntity;
 import cn.foodslab.service.cart.CartServices;
 import cn.foodslab.service.cart.ICartServices;
@@ -17,10 +18,7 @@ import cn.foodslab.service.product.*;
 import cn.foodslab.service.receiver.IReceiverService;
 import cn.foodslab.service.receiver.ReceiverEntity;
 import cn.foodslab.service.receiver.ReceiverServices;
-import cn.foodslab.service.user.AccountEntity;
-import cn.foodslab.service.user.AccountServices;
-import cn.foodslab.service.user.IAccountServices;
-import cn.foodslab.service.user.UserEntity;
+import cn.foodslab.service.user.*;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
@@ -41,6 +39,7 @@ public class OrderController extends Controller implements IOrderController {
     private ISeriesServices iSeriesServices = new SeriesServices();
     private ITypeServices iTypeServices = new TypeServices();
     private IFormatServices iFormatServices = new FormatServices();
+    private IUserServices iUserServices = new UserServices();
 
     @Override
     public void retrieve() {
@@ -192,6 +191,38 @@ public class OrderController extends Controller implements IOrderController {
     }
 
     @Override
+    public void mRetrieveByUser() {
+        String params = this.getPara("p");
+        VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
+        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveAccountsByUserId(vUserEntity.getUserId());
+        LinkedList<VOrderEntity> results = new LinkedList<>();
+        for (AccountEntity accountEntity : accountEntities) {
+            LinkedList<OrderEntity> orderEntities = iOrderServices.retrieveByAccount(accountEntity.getAccountId());
+            for (OrderEntity orderEntity : orderEntities) {
+                VOrderEntity result = new VOrderEntity(orderEntity);
+                LinkedList<CartEntity> cartEntities = iCartServices.retrieveByOrderId(orderEntity.getOrderId());
+                LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
+                for (CartEntity cartEntity : cartEntities) {
+                    FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
+                    TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
+                    SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
+                    VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+                    VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+                    VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
+                    vTypeEntity.setParent(vSeriesEntity);
+                    vFormatEntity.setParent(vTypeEntity);
+                    vFormatEntities.add(vFormatEntity);
+                }
+                result.setFormatEntities(vFormatEntities);
+                results.add(result);
+            }
+        }
+        Collections.sort(results);
+        IResultSet iResultSet = new ResultSet(3050, results, "success");
+        renderJson(JSON.toJSONString(iResultSet));
+    }
+
+    @Override
     public void mRetrieveUnExpress() {
         LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrieveByStatus(1);
         LinkedList<VOrderEntity> vOrderEntities = new LinkedList<>();
@@ -308,6 +339,5 @@ public class OrderController extends Controller implements IOrderController {
             IResultSet iResultSet = new ResultSet(3050, vOrderEntity, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
-
     }
 }

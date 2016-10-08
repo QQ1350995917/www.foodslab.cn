@@ -37,11 +37,6 @@ public class CartServices implements ICartServices {
     }
 
     @Override
-    public LinkedList<CartEntity> retrieveCartByAccountId(String accountId) {
-        return null;
-    }
-
-    @Override
     public CartEntity retrieveCartByFormatId(String formatId) {
         List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE status = 1 AND formatId = ?", formatId);
         return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), CartEntity.class);

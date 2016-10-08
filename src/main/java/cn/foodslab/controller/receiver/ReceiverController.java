@@ -2,6 +2,7 @@ package cn.foodslab.controller.receiver;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.model.user.VUserEntity;
 import cn.foodslab.service.receiver.IReceiverService;
 import cn.foodslab.service.receiver.ReceiverEntity;
 import cn.foodslab.service.receiver.ReceiverServices;
@@ -107,5 +108,16 @@ public class ReceiverController extends Controller implements IReceiverControlle
     @Override
     public void king() {
 
+    }
+
+    @Override
+    public void mRetrieveByUser() {
+        String params = this.getPara("p");
+        VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
+        LinkedList<ReceiverEntity> receiverEntities = iReceiverService.retrieve(vUserEntity.getUserEntity());
+        IResultSet resultSet = new ResultSet();
+        resultSet.setCode(3050);
+        resultSet.setData(receiverEntities);
+        renderJson(JSON.toJSONString(resultSet));
     }
 }

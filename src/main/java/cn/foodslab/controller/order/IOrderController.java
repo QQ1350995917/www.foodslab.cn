@@ -27,6 +27,7 @@ public interface IOrderController {
      */
     void query();
 
+    void mRetrieveByUser();
     void mRetrieveUnExpress();
     void mRetrieveExpressing();
     void mRetrieveExpressed();

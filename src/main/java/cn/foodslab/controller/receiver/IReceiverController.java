@@ -41,4 +41,6 @@ public interface IReceiverController {
      */
     void king();
 
+    void mRetrieveByUser();
+
 }

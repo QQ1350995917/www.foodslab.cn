@@ -11,8 +11,8 @@ import java.util.LinkedList;
  */
 public class VUserEntity {
     private String userId;
-    private int status;
-    private LinkedList<VAccountEntity> accountEntities;
+    private int status = -2;
+    private LinkedList<VAccountEntity> children;
 
     public VUserEntity() {
         super();
@@ -44,12 +44,12 @@ public class VUserEntity {
         this.status = status;
     }
 
-    public LinkedList<VAccountEntity> getAccountEntities() {
-        return accountEntities;
+    public LinkedList<VAccountEntity> getChildren() {
+        return children;
     }
 
-    public void setAccountEntities(LinkedList<VAccountEntity> accountEntities) {
-        this.accountEntities = accountEntities;
+    public void setChildren(LinkedList<VAccountEntity> children) {
+        this.children = children;
     }
 
     public UserEntity getUserEntity(){

@@ -2,8 +2,10 @@ package cn.foodslab.service.user;
 
 import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -72,10 +74,4 @@ public class AccountServices implements IAccountServices {
     public AccountEntity update(AccountEntity accountEntity) {
         return null;
     }
-
-    @Override
-    public UserEntity block(UserEntity userEntity) {
-        return null;
-    }
-
 }

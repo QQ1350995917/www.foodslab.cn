@@ -6,10 +6,12 @@ import cn.foodslab.model.cart.VCartEntity;
 import cn.foodslab.model.product.VFormatEntity;
 import cn.foodslab.model.product.VSeriesEntity;
 import cn.foodslab.model.product.VTypeEntity;
+import cn.foodslab.model.user.VUserEntity;
 import cn.foodslab.service.cart.CartEntity;
 import cn.foodslab.service.cart.CartServices;
 import cn.foodslab.service.cart.ICartServices;
 import cn.foodslab.service.product.*;
+import cn.foodslab.service.user.*;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
@@ -27,6 +29,7 @@ public class CartController extends Controller implements ICartController {
     private ISeriesServices iSeriesServices = new SeriesServices();
     private ITypeServices iTypeServices = new TypeServices();
     private IFormatServices iFormatServices = new FormatServices();
+    private IAccountServices iAccountServices = new AccountServices();
 
     @Override
     public void retrieve() {
@@ -108,5 +111,35 @@ public class CartController extends Controller implements ICartController {
             IResultSet iResultSet = new ResultSet(3050, delete, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
+    }
+
+    @Override
+    public void mRetrieveByUser() {
+        String params = this.getPara("p");
+        VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
+        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveAccountsByUserId(vUserEntity.getUserId());
+        LinkedList<CartEntity> result = new LinkedList<>();
+        for (AccountEntity accountEntity : accountEntities) {
+            LinkedList<CartEntity> cartEntities = iCartServices.retrieveByAccountId(accountEntity.getAccountId());
+            result.addAll(cartEntities);
+        }
+
+        LinkedList<VCartEntity> vCartEntities = new LinkedList<>();
+        for (CartEntity cartEntity : result) {
+            FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
+            TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
+            SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
+            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+            VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+            VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
+            vTypeEntity.setParent(vSeriesEntity);
+            vFormatEntity.setParent(vTypeEntity);
+            VCartEntity responseVCartEntity = new VCartEntity(cartEntity);
+            responseVCartEntity.setFormatEntity(vFormatEntity);
+            vCartEntities.add(responseVCartEntity);
+        }
+        IResultSet iResultSet = new ResultSet(3050, vCartEntities, "success");
+        renderJson(JSON.toJSONString(iResultSet));
+
     }
 }

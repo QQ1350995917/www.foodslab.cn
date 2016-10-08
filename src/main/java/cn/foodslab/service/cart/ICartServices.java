@@ -14,8 +14,6 @@ public interface ICartServices {
 
     CartEntity retrieveById(String mappingId);
 
-    LinkedList<CartEntity> retrieveCartByAccountId(String accountId);
-
     /**
      * 读取未支付的format
      * @param formatId
@@ -42,5 +40,7 @@ public interface ICartServices {
     List<CartEntity> deleteByIds(String... mappingIds);
 
     CartEntity isExistInCart(CartEntity cartEntity);
+
+
 }
 

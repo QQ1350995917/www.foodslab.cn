@@ -11,6 +11,8 @@ public interface ICartController {
 
     void retrieve();
 
+    void mRetrieveByUser();
+
     void update();
 
     void delete();

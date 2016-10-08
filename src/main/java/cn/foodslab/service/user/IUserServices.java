@@ -11,4 +11,10 @@ public interface IUserServices {
 
     LinkedList<UserEntity> mRetrieve();
 
+    UserEntity mRetrieveById(String userId);
+
+    UserEntity mBlock(UserEntity userEntity);
+
+    UserEntity mUnBlock(UserEntity userEntity);
+
 }

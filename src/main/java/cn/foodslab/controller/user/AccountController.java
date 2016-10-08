@@ -19,6 +19,7 @@ import java.util.UUID;
 public class AccountController extends Controller implements IAccountController {
     IUserServices iUserServices = new UserServices();
     IAccountServices iAccountServices = new AccountServices();
+
     @Override
     public void index() {
 
@@ -109,18 +110,46 @@ public class AccountController extends Controller implements IAccountController 
     public void mRetrieve() {
         LinkedList<UserEntity> userEntities = iUserServices.mRetrieve();
         LinkedList<VUserEntity> vUserEntities = new LinkedList<>();
-        for (UserEntity userEntity:userEntities){
+        for (UserEntity userEntity : userEntities) {
             VUserEntity vUserEntity = new VUserEntity(userEntity);
             LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveAccountsByUserId(userEntity.getUserId());
             LinkedList<VAccountEntity> vAccountEntities = new LinkedList<>();
-            for (AccountEntity accountEntity:accountEntities){
+            for (AccountEntity accountEntity : accountEntities) {
                 VAccountEntity result = new VAccountEntity(accountEntity);
                 vAccountEntities.add(result);
             }
-            vUserEntity.setAccountEntities(vAccountEntities);
+            vUserEntity.setChildren(vAccountEntities);
             vUserEntities.add(vUserEntity);
         }
         IResultSet iResultSet = new ResultSet(3050, vUserEntities, "success");
         renderJson(JSON.toJSONString(iResultSet));
+    }
+
+    @Override
+    public void mMark() {
+        String params = this.getPara("p");
+        VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
+        if (vUserEntity.getStatus() == 0) {
+            UserEntity userEntity = iUserServices.mBlock(vUserEntity.getUserEntity());
+            if (userEntity == null) {
+                IResultSet iResultSet = new ResultSet(3000, vUserEntity, "fail");
+                renderJson(JSON.toJSONString(iResultSet));
+            } else {
+                IResultSet iResultSet = new ResultSet(3050, userEntity, "success");
+                renderJson(JSON.toJSONString(iResultSet));
+            }
+        } else if (vUserEntity.getStatus() == 1) {
+            UserEntity userEntity = iUserServices.mUnBlock(vUserEntity.getUserEntity());
+            if (userEntity == null) {
+                IResultSet iResultSet = new ResultSet(3000, vUserEntity, "fail");
+                renderJson(JSON.toJSONString(iResultSet));
+            } else {
+                IResultSet iResultSet = new ResultSet(3050, userEntity, "success");
+                renderJson(JSON.toJSONString(iResultSet));
+            }
+        } else {
+            IResultSet iResultSet = new ResultSet(3000, vUserEntity, "fail");
+            renderJson(JSON.toJSONString(iResultSet));
+        }
     }
 }
