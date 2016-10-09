@@ -10,11 +10,28 @@ import java.util.LinkedList;
 public interface IAccountServices {
 
     /**
-     * 通过电话号码读取账户
-     * @param phoneNumber
-     * @return 返回查询到的账户或者null
+     * 用户接口
+     * 用户注册、更换身份标记时候查看目标身份是否已经被注册
+     * @param identity 目标身份，如电话号码，微信ID或QQ ID
+     * @return false 目标可用，true 目标不可用
      */
-    AccountEntity retrieve(String phoneNumber);
+    boolean existAccount(String identity);
+
+    /**
+     * 用户接口
+     * 创建新的账户同时创建用户ID
+     * @param accountEntity 账户对象
+     * @return fail null success 账户对象
+     */
+    AccountEntity create(AccountEntity accountEntity);
+
+    /**
+     * 用户接口
+     * 通过账户的身份ID读取账户
+     * @param identity 账户身份ID
+     * @return fail null success 账户对象
+     */
+    AccountEntity retrieve(String identity);
 
     /**
      * 通过用户ID读取其下的所有账户
@@ -30,12 +47,7 @@ public interface IAccountServices {
      */
     UserEntity retrieveUserByAccountId(String account);
 
-    /**
-     * 创建新的账户同时创建用户ID
-     * @param accountEntity
-     * @return 返回新建的账户或者null
-     */
-    AccountEntity create(AccountEntity accountEntity);
+
 
     /**
      * 把两个账户绑定到同一个用户

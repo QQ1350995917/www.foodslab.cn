@@ -16,7 +16,7 @@ public class ReceiverEntity {
     private String name;
     private String phone0;
     private String phone1;
-    private int status;
+    private int status; // -1标示删除，1标示禁用，2标示正常，3标示默认收货地址。数据库中该字段默认为2，目前暂时没有1的状态。
     private String accountId;
     private String createTime;
     private String updateTime;

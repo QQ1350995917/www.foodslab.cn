@@ -26,18 +26,13 @@ public class AccountController extends Controller implements IAccountController 
     }
 
     @Override
-    public void retrieve() {
-        String phone = this.getPara("phone");
-        AccountEntity retrieve = iAccountServices.retrieve(phone);
-        IResultSet resultSet = new ResultSet();
-        if (retrieve != null) {
-            resultSet.setCode(200);
-            resultSet.setData(retrieve);
-        } else {
-            resultSet.setCode(500);
-            resultSet.setMessage("不存在该用户");
-        }
-        renderJson(JSON.toJSONString(resultSet));
+    public void exist() {
+
+    }
+
+    @Override
+    public void smsCode() {
+
     }
 
     @Override
@@ -55,6 +50,23 @@ public class AccountController extends Controller implements IAccountController 
         }
         renderJson(JSON.toJSONString(resultSet));
     }
+
+    @Override
+    public void login() {
+        String phone = this.getPara("phone");
+        AccountEntity retrieve = iAccountServices.retrieve(phone);
+        IResultSet resultSet = new ResultSet();
+        if (retrieve != null) {
+            resultSet.setCode(200);
+            resultSet.setData(retrieve);
+        } else {
+            resultSet.setCode(500);
+            resultSet.setMessage("不存在该用户");
+        }
+        renderJson(JSON.toJSONString(resultSet));
+    }
+
+
 
     @Override
     public void update() {
@@ -91,10 +103,7 @@ public class AccountController extends Controller implements IAccountController 
 
     }
 
-    @Override
-    public void exist() {
 
-    }
 
     @Override
     public void password() {

@@ -6,6 +6,21 @@ package cn.foodslab.common.response;
  * Description: WEB-SERVICE-API
  */
 public interface IResultSet {
+    enum ResultCode {
+
+        EXE_FAIL(3000),
+        EXE_SUCCESS(3050);
+
+        private int code;
+        ResultCode(int code){
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+    }
+
     /**
      * 自定义结果码
      *
@@ -37,6 +52,7 @@ public interface IResultSet {
 
     /**
      * 集成另外一个IResultSet对象
+     *
      * @param iResultSet 另外一个IResultSet对象
      * @param iResultSet
      * @return

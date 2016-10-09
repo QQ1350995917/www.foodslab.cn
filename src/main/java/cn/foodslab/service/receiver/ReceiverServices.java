@@ -3,7 +3,6 @@ package cn.foodslab.service.receiver;
 import cn.foodslab.service.user.AccountEntity;
 import cn.foodslab.service.user.AccountServices;
 import cn.foodslab.service.user.IAccountServices;
-import cn.foodslab.service.user.UserEntity;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
@@ -23,11 +22,11 @@ public class ReceiverServices implements IReceiverService {
     private IAccountServices iAccountServices = new AccountServices();
 
     @Override
-    public LinkedList<ReceiverEntity> retrieve(UserEntity userEntity) {
+    public LinkedList<ReceiverEntity> retrieveByUserId(String userId) {
         LinkedList<ReceiverEntity> result = new LinkedList<>();
-        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveAccountsByUserId(userEntity.getUserId());
+        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveAccountsByUserId(userId);
         for (AccountEntity accountEntity : accountEntities) {
-            List<Record> receiverRecords = Db.find("SELECT * FROM user_receiver WHERE accountId = ? ", accountEntity.getAccountId());
+            List<Record> receiverRecords = Db.find("SELECT * FROM user_receiver WHERE accountId = ? AND status != -1", accountEntity.getAccountId());
             for (Record receiverRecord : receiverRecords) {
                 Map<String, Object> receiverMap = receiverRecord.getColumns();
                 ReceiverEntity receiverEntity = JSON.parseObject(JSON.toJSONString(receiverMap), ReceiverEntity.class);
@@ -69,7 +68,7 @@ public class ReceiverServices implements IReceiverService {
     }
 
     @Override
-    public ReceiverEntity update(ReceiverEntity receiverEntity) {
+    public ReceiverEntity updateById(ReceiverEntity receiverEntity) {
         boolean succeed = Db.tx(new IAtom() {
             public boolean run() throws SQLException {
                 Db.update("UPDATE user_receiver SET status = 1 WHERE accountId = ? ", receiverEntity.getAccountId());
@@ -89,17 +88,28 @@ public class ReceiverServices implements IReceiverService {
     @Override
     public ReceiverEntity deleteById(String receiverId) {
         ReceiverEntity receiverEntity = this.retrieveById(receiverId);
-        int update = Db.update("DELETE FROM user_receiver WHERE receiverId = ? ", receiverId);
+        int update = Db.update("UPDATE user_receiver SET status = -1 WHERE receiverId = ? ", receiverId);
         return update == 1 ? receiverEntity : null;
     }
 
-    @Override
-    public LinkedList<ReceiverEntity> deleteByIds(String... receiverIds) {
-        return null;
-    }
 
     @Override
     public ReceiverEntity kingReceiverInUser(String receiverId, String userId) {
         return null;
+    }
+
+    @Override
+    public LinkedList<ReceiverEntity> mRetrieveByUserId(String userId) {
+        LinkedList<ReceiverEntity> result = new LinkedList<>();
+        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveAccountsByUserId(userId);
+        for (AccountEntity accountEntity : accountEntities) {
+            List<Record> receiverRecords = Db.find("SELECT * FROM user_receiver WHERE accountId = ? ", accountEntity.getAccountId());
+            for (Record receiverRecord : receiverRecords) {
+                Map<String, Object> receiverMap = receiverRecord.getColumns();
+                ReceiverEntity receiverEntity = JSON.parseObject(JSON.toJSONString(receiverMap), ReceiverEntity.class);
+                result.add(receiverEntity);
+            }
+        }
+        return result;
     }
 }

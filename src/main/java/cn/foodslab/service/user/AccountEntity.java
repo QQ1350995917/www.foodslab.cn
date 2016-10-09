@@ -13,7 +13,7 @@ public class AccountEntity {
     private String address;
     private String portrait;
     private String birthday;
-    private int source;
+    private int source; // 1电话注册，2微信注册，3QQ注册
     private String userId;
     private String createTime;
     private String updateTime;

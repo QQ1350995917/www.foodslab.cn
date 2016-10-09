@@ -2,10 +2,8 @@ package cn.foodslab.service.user;
 
 import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 
-import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +14,30 @@ import java.util.Map;
  * Description: @TODO
  */
 public class AccountServices implements IAccountServices {
+
+    @Override
+    public boolean existAccount(String identity) {
+        return false;
+    }
+
+
+    @Override
+    public AccountEntity create(AccountEntity accountEntity) {
+        Record userRecord = new Record()
+                .set("userId", accountEntity.getUserId())
+                .set("status", 1);
+        Record userAccountRecord = new Record()
+                .set("accountId", accountEntity.getAccountId())
+                .set("identity", accountEntity.getIdentity())
+                .set("userId", accountEntity.getUserId());
+        boolean user = Db.save("user", userRecord);
+        boolean account = Db.save("user_account", userAccountRecord);
+        if (user && account) {
+            return accountEntity;
+        } else {
+            return null;
+        }
+    }
 
     @Override
     public AccountEntity retrieve(String phoneNumber) {
@@ -47,23 +69,6 @@ public class AccountServices implements IAccountServices {
         return userEntity;
     }
 
-    @Override
-    public AccountEntity create(AccountEntity accountEntity) {
-        Record userRecord = new Record()
-                .set("userId", accountEntity.getUserId())
-                .set("status", 1);
-        Record userAccountRecord = new Record()
-                .set("accountId", accountEntity.getAccountId())
-                .set("identity", accountEntity.getIdentity())
-                .set("userId", accountEntity.getUserId());
-        boolean user = Db.save("user", userRecord);
-        boolean account = Db.save("user_account", userAccountRecord);
-        if (user && account) {
-            return accountEntity;
-        } else {
-            return null;
-        }
-    }
 
     @Override
     public LinkedList<AccountEntity> bind(AccountEntity accountEntity1, AccountEntity accountEntity2) {
