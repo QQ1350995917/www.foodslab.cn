@@ -27,18 +27,114 @@ public interface IAccountServices {
 
     /**
      * 用户接口
-     * 通过账户的身份ID读取账户
+     * 通过账户的身份ID读取账户（登录接口）
      * @param identity 账户身份ID
      * @return fail null success 账户对象
      */
-    AccountEntity retrieve(String identity);
+    AccountEntity retrieveByIdentity(String identity);
 
     /**
-     * 通过用户ID读取其下的所有账户
-     * @param userId
-     * @return 返回查询到的账户或者空队列
+     * 用户接口
+     * 根据账户的身份更新账户密码
+     * @param accountEntity 账户对象
+     * @return fail null success 账户对象
      */
-    LinkedList<AccountEntity> retrieveAccountsByUserId(String userId);
+    AccountEntity updatePassword(AccountEntity accountEntity);
+
+    /**
+     * 用户接口
+     * 更新账户昵称性别地址信息
+     * @param accountEntity 账户对象
+     * @return fail null success 账户对象
+     */
+    AccountEntity update(AccountEntity accountEntity);
+
+    /**
+     * 用户接口
+     * 修改账户的头像
+     * @param accountEntity 账户对象
+     * @return fail null success 账户对象
+     */
+    AccountEntity portrait(AccountEntity accountEntity);
+
+    /**
+     * 用户接口（仅用户手机账户的修改）
+     * 修改账户的电话号码
+     * @param accountEntity 账户对象
+     * @return fail null success 账户对象
+     */
+    AccountEntity updateIdentity(AccountEntity accountEntity);
+
+    /**
+     * 用户接口
+     * 把一个账户与当前账户绑定
+     * @param targetAccountEntity 目标账户
+     * @param currentAccountEntity 当前账户
+     * @return fail null success 当前账户的用户对象
+     */
+    UserEntity bind(AccountEntity targetAccountEntity,AccountEntity currentAccountEntity);
+
+    /**
+     * 用户接口
+     * 把一个账户与当前账户解绑
+     * @param targetAccountEntity 目标账户
+     * @param currentAccountEntity 当前账户
+     * @return fail null success 当前账户的用户对象
+     */
+    UserEntity unBind(AccountEntity targetAccountEntity,AccountEntity currentAccountEntity);
+
+    /**
+     * 用户接口
+     * 通过用户ID读取其下的所有账户
+     * @param userId 用户ID
+     * @return fail null success 当前用户的账户集合
+     */
+    LinkedList<AccountEntity> retrieveByUserId(String userId);
+
+    /**
+     * 管理员接口
+     * 分页读取所有的用户
+     * @param page 页码
+     * @param counter 每页条数
+     * @return fail null success 系统用户集合
+     */
+    LinkedList<UserEntity> mRetrieveUsers(int page,int counter);
+
+    /**
+     * 管理员接口
+     * 根据关键字分页搜索
+     * @param key 关键字
+     * @param page 页码
+     * @param counter 每页条数
+     * @return fail null success 系统用户集合
+     */
+    LinkedList<UserEntity> mQueryUsers(String key,int page,int counter);
+
+    /**
+     * 管理员接口
+     * 把用户以及其下的账户禁用
+     * @param userEntity 用户对象
+     * @return fail null success 用户对象
+     */
+    UserEntity mBlock(UserEntity userEntity);
+
+    /**
+     * 管理员接口
+     * 把用户以及其下的账户启用
+     * @param userEntity 用户对象
+     * @return fail null success 用户对象
+     */
+    UserEntity mUnBlock(UserEntity userEntity);
+
+
+    /**
+     * 管理员接口
+     * 根据用户的ID读取账户信息
+     * @param userId 用户ID
+     * @return fail null success 账户对象集合
+     */
+    LinkedList<AccountEntity> mRetrieveByUserId(String userId);
+
 
     /**
      * 通过账户ID读取用户信息
@@ -49,20 +145,6 @@ public interface IAccountServices {
 
 
 
-    /**
-     * 把两个账户绑定到同一个用户
-     * @param accountEntity1
-     * @param accountEntity2
-     * @return 返回绑定到同一个用户下的账户的集合或者null
-     */
-    LinkedList<AccountEntity> bind(AccountEntity accountEntity1,AccountEntity accountEntity2);
-
-    /**
-     * 更新账户信息
-     * @param accountEntity
-     * @return 返回更新成功的账户或者null
-     */
-    AccountEntity update(AccountEntity accountEntity);
 
 
 }

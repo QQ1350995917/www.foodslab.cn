@@ -35,41 +35,70 @@ public interface IAccountController {
     void login();
 
     /**
-     * 更新账户
+     * 用户接口
+     * 用户读取自身的用户信息读取账号信息
      */
-    void update();
+    void retrieve();
 
     /**
-     * 禁用账户
-     * 管理员接口
-     */
-    void block();
-
-    /**
-     * 绑定或解绑账户
-     */
-    void bind();
-
-
-
-    /**
+     * 用户接口
      * 忘记密码接口
      */
     void password();
 
     /**
+     * 用户接口
+     * 更新账户昵称，性别，生日，地址信息
+     */
+    void update();
+
+    /**
+     * 用户接口
      * 用户修改头像
      */
     void portrait();
 
     /**
-     * 管理员读取用户
+     * 用户接口
+     * 变更账户的手机号码
      */
-    void mRetrieve();
+    void phone();
+
+    /**
+     * 用户接口
+     * 绑定账户
+     */
+    void bind();
+
+    /**
+     * 用户接口
+     * 解绑账户
+     */
+    void unBind();
+
+    /**
+     * 管理员接口
+     * 管理员分页读取所有的用户信息
+     */
+    void mRetrieveUsers();
+
+    /**
+     * 管理员接口
+     * 管理员分页搜索用户信息
+     */
+    void mQueryUsers();
 
     /**
      * 管理员修改用户状态
      */
     void mMark();
+
+    /**
+     * 管理员接口
+     * 管理员根据用户信息读取其下的账户信息
+     */
+    void mRetrieveAccounts();
+
+
 
 }

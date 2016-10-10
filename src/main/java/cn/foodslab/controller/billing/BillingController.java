@@ -40,7 +40,7 @@ public class BillingController extends Controller implements IBillingController 
         String accountId = this.getPara("accountId");
         String productIds = this.getPara("productIds");
         if (accountId != null) {
-            LinkedList<ReceiverEntity> receiverEntities = iReceiverService.retrieve(iAccountServices.retrieveUserByAccountId(accountId));
+            LinkedList<ReceiverEntity> receiverEntities = iReceiverService.retrieveByUserId(iAccountServices.retrieveUserByAccountId(accountId).getUserId());
             LinkedList<BillingProductEntity> billingProductEntities = new LinkedList<>();
             if (productIds != null) {
                 String[] split = productIds.split(",");

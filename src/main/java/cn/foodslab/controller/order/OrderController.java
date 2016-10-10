@@ -39,7 +39,6 @@ public class OrderController extends Controller implements IOrderController {
     private ISeriesServices iSeriesServices = new SeriesServices();
     private ITypeServices iTypeServices = new TypeServices();
     private IFormatServices iFormatServices = new FormatServices();
-    private IUserServices iUserServices = new UserServices();
 
     @Override
     public void retrieve() {
@@ -50,7 +49,7 @@ public class OrderController extends Controller implements IOrderController {
             IResultSet iResultSet = new ResultSet(3000, vOrderEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveAccountsByUserId(userEntity.getUserId());
+            LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(userEntity.getUserId());
             LinkedList<VOrderEntity> results = new LinkedList<>();
             for (AccountEntity accountEntity : accountEntities) {
                 LinkedList<OrderEntity> orderEntities = iOrderServices.retrieveByAccount(accountEntity.getAccountId());
@@ -194,7 +193,7 @@ public class OrderController extends Controller implements IOrderController {
     public void mRetrieveByUser() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
-        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveAccountsByUserId(vUserEntity.getUserId());
+        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(vUserEntity.getUserId());
         LinkedList<VOrderEntity> results = new LinkedList<>();
         for (AccountEntity accountEntity : accountEntities) {
             LinkedList<OrderEntity> orderEntities = iOrderServices.retrieveByAccount(accountEntity.getAccountId());

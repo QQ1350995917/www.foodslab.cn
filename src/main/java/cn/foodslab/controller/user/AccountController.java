@@ -17,7 +17,6 @@ import java.util.UUID;
  * Description: @TODO
  */
 public class AccountController extends Controller implements IAccountController {
-    IUserServices iUserServices = new UserServices();
     IAccountServices iAccountServices = new AccountServices();
 
     @Override
@@ -54,7 +53,7 @@ public class AccountController extends Controller implements IAccountController 
     @Override
     public void login() {
         String phone = this.getPara("phone");
-        AccountEntity retrieve = iAccountServices.retrieve(phone);
+        AccountEntity retrieve = iAccountServices.retrieveByIdentity(phone);
         IResultSet resultSet = new ResultSet();
         if (retrieve != null) {
             resultSet.setCode(200);
@@ -93,17 +92,21 @@ public class AccountController extends Controller implements IAccountController 
         renderJson(JSON.toJSONString(resultSet));
     }
 
-    @Override
-    public void block() {
-
-    }
 
     @Override
     public void bind() {
 
     }
 
+    @Override
+    public void phone() {
 
+    }
+
+    @Override
+    public void unBind() {
+
+    }
 
     @Override
     public void password() {
@@ -116,12 +119,17 @@ public class AccountController extends Controller implements IAccountController 
     }
 
     @Override
-    public void mRetrieve() {
-        LinkedList<UserEntity> userEntities = iUserServices.mRetrieve();
+    public void retrieve() {
+
+    }
+
+    @Override
+    public void mRetrieveUsers() {
+        LinkedList<UserEntity> userEntities = iAccountServices.mRetrieveUsers(1, 1);
         LinkedList<VUserEntity> vUserEntities = new LinkedList<>();
         for (UserEntity userEntity : userEntities) {
             VUserEntity vUserEntity = new VUserEntity(userEntity);
-            LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveAccountsByUserId(userEntity.getUserId());
+            LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(userEntity.getUserId());
             LinkedList<VAccountEntity> vAccountEntities = new LinkedList<>();
             for (AccountEntity accountEntity : accountEntities) {
                 VAccountEntity result = new VAccountEntity(accountEntity);
@@ -134,12 +142,18 @@ public class AccountController extends Controller implements IAccountController 
         renderJson(JSON.toJSONString(iResultSet));
     }
 
+
+    @Override
+    public void mQueryUsers() {
+
+    }
+
     @Override
     public void mMark() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
         if (vUserEntity.getStatus() == 0) {
-            UserEntity userEntity = iUserServices.mBlock(vUserEntity.getUserEntity());
+            UserEntity userEntity = iAccountServices.mBlock(vUserEntity.getUserEntity());
             if (userEntity == null) {
                 IResultSet iResultSet = new ResultSet(3000, vUserEntity, "fail");
                 renderJson(JSON.toJSONString(iResultSet));
@@ -148,7 +162,7 @@ public class AccountController extends Controller implements IAccountController 
                 renderJson(JSON.toJSONString(iResultSet));
             }
         } else if (vUserEntity.getStatus() == 1) {
-            UserEntity userEntity = iUserServices.mUnBlock(vUserEntity.getUserEntity());
+            UserEntity userEntity = iAccountServices.mUnBlock(vUserEntity.getUserEntity());
             if (userEntity == null) {
                 IResultSet iResultSet = new ResultSet(3000, vUserEntity, "fail");
                 renderJson(JSON.toJSONString(iResultSet));
@@ -160,5 +174,10 @@ public class AccountController extends Controller implements IAccountController 
             IResultSet iResultSet = new ResultSet(3000, vUserEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         }
+    }
+
+    @Override
+    public void mRetrieveAccounts() {
+
     }
 }

@@ -20,7 +20,6 @@ public class AccountServices implements IAccountServices {
         return false;
     }
 
-
     @Override
     public AccountEntity create(AccountEntity accountEntity) {
         Record userRecord = new Record()
@@ -40,15 +39,47 @@ public class AccountServices implements IAccountServices {
     }
 
     @Override
-    public AccountEntity retrieve(String phoneNumber) {
-        List<Record> accountRecords = Db.find("SELECT * FROM user_account WHERE identity = ? ", phoneNumber);
+    public AccountEntity retrieveByIdentity(String identity) {
+        List<Record> accountRecords = Db.find("SELECT * FROM user_account WHERE identity = ? ", identity);
         Map<String, Object> accountMap = accountRecords.get(0).getColumns();
         AccountEntity accountEntity = JSON.parseObject(JSON.toJSONString(accountMap), AccountEntity.class);
         return accountEntity;
     }
 
+
     @Override
-    public LinkedList<AccountEntity> retrieveAccountsByUserId(String userId) {
+    public AccountEntity updatePassword(AccountEntity accountEntity) {
+        return null;
+    }
+
+    @Override
+    public AccountEntity update(AccountEntity accountEntity) {
+        return null;
+    }
+
+    @Override
+    public AccountEntity portrait(AccountEntity accountEntity) {
+        return null;
+    }
+
+    @Override
+    public AccountEntity updateIdentity(AccountEntity accountEntity) {
+        return null;
+    }
+
+    @Override
+    public UserEntity bind(AccountEntity targetAccountEntity, AccountEntity currentAccountEntity) {
+        return null;
+    }
+
+    @Override
+    public UserEntity unBind(AccountEntity targetAccountEntity, AccountEntity currentAccountEntity) {
+        return null;
+    }
+
+
+    @Override
+    public LinkedList<AccountEntity> retrieveByUserId(String userId) {
         LinkedList<AccountEntity> result = new LinkedList<>();
         List<Record> accountRecords = Db.find("SELECT * FROM user_account WHERE userId = ? ", userId);
         for (Record accountRecord : accountRecords) {
@@ -57,6 +88,46 @@ public class AccountServices implements IAccountServices {
             result.add(accountEntity);
         }
         return result;
+    }
+
+    @Override
+    public LinkedList<UserEntity> mRetrieveUsers(int page,int counter) {
+        LinkedList<UserEntity> userEntities = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM user WHERE status != -1");
+        for (Record record : records) {
+            userEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), UserEntity.class));
+        }
+        return userEntities;
+    }
+
+    @Override
+    public LinkedList<UserEntity> mQueryUsers(String key, int page, int counter) {
+        return null;
+    }
+
+    @Override
+    public UserEntity mBlock(UserEntity userEntity) {
+        int count = Db.update("UPDATE user SET status = 0 WHERE userId = ? ", userEntity.getUserId());
+        if (count == 1) {
+            return userEntity;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public UserEntity mUnBlock(UserEntity userEntity) {
+        int count = Db.update("UPDATE user SET status = 1 WHERE userId = ? ", userEntity.getUserId());
+        if (count == 1) {
+            return userEntity;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public LinkedList<AccountEntity> mRetrieveByUserId(String userId) {
+        return null;
     }
 
     @Override
@@ -70,13 +141,12 @@ public class AccountServices implements IAccountServices {
     }
 
 
-    @Override
-    public LinkedList<AccountEntity> bind(AccountEntity accountEntity1, AccountEntity accountEntity2) {
-        return null;
-    }
 
-    @Override
-    public AccountEntity update(AccountEntity accountEntity) {
-        return null;
-    }
+
+
+
+
+
+
+
 }

@@ -117,7 +117,7 @@ public class CartController extends Controller implements ICartController {
     public void mRetrieveByUser() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
-        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveAccountsByUserId(vUserEntity.getUserId());
+        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(vUserEntity.getUserId());
         LinkedList<CartEntity> result = new LinkedList<>();
         for (AccountEntity accountEntity : accountEntities) {
             LinkedList<CartEntity> cartEntities = iCartServices.retrieveByAccountId(accountEntity.getAccountId());

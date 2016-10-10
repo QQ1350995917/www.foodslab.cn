@@ -24,7 +24,7 @@ public class ReceiverServices implements IReceiverService {
     @Override
     public LinkedList<ReceiverEntity> retrieveByUserId(String userId) {
         LinkedList<ReceiverEntity> result = new LinkedList<>();
-        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveAccountsByUserId(userId);
+        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(userId);
         for (AccountEntity accountEntity : accountEntities) {
             List<Record> receiverRecords = Db.find("SELECT * FROM user_receiver WHERE accountId = ? AND status != -1", accountEntity.getAccountId());
             for (Record receiverRecord : receiverRecords) {
@@ -101,7 +101,7 @@ public class ReceiverServices implements IReceiverService {
     @Override
     public LinkedList<ReceiverEntity> mRetrieveByUserId(String userId) {
         LinkedList<ReceiverEntity> result = new LinkedList<>();
-        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveAccountsByUserId(userId);
+        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(userId);
         for (AccountEntity accountEntity : accountEntities) {
             List<Record> receiverRecords = Db.find("SELECT * FROM user_receiver WHERE accountId = ? ", accountEntity.getAccountId());
             for (Record receiverRecord : receiverRecords) {
