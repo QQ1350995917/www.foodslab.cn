@@ -1,11 +1,11 @@
 package cn.foodslab.service.link;
 
-import cn.foodslab.common.response.IResultSet;
-import cn.foodslab.common.response.ResultSet;
+import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 
-import java.util.HashMap;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,75 +18,148 @@ import java.util.Map;
 public class LinkServices implements ILinkServices {
 
     @Override
-    public IResultSet retrieve() {
-        LinkedList<Map> linkList = new LinkedList<>();
-        List<Record> linkRecords = Db.find("SELECT * FROM link WHERE linkId = pid ORDER BY queue");
-        for (Record linkRecord : linkRecords) {
-            Map<String, Object> linkEntity = linkRecord.getColumns();
-            LinkedList<Map> subLinkList = new LinkedList<>();
-            List<Record> subLinkRecords = Db.find("SELECT * FROM link WHERE pid = ? AND status != -1 AND linkId != pid", linkEntity.get("linkId"));
-            for (Record subLinkRecord : subLinkRecords) {
-                Map<String, Object> subLinkEntity = subLinkRecord.getColumns();
-                subLinkList.add(subLinkEntity);
+    public LinkedList<LinkEntity> retrieves() {
+        LinkedList<LinkEntity> result = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM link WHERE pid = linkId AND status = 2 ORDER BY weight DESC");
+        for (Record record : records) {
+            Map<String, Object> columns = record.getColumns();
+            LinkEntity linkEntity = JSON.parseObject(JSON.toJSONString(columns), LinkEntity.class);
+            result.add(linkEntity);
+        }
+        return result;
+    }
+
+    @Override
+    public LinkedList<LinkEntity> retrievesByPid(String pid) {
+        LinkedList<LinkEntity> result = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM link WHERE pid = ? AND status = 2 ORDER BY weight DESC", pid);
+        for (Record record : records) {
+            Map<String, Object> columns = record.getColumns();
+            LinkEntity linkEntity = JSON.parseObject(JSON.toJSONString(columns), LinkEntity.class);
+            result.add(linkEntity);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean mExist(LinkEntity linkEntity) {
+        if (linkEntity.getLinkId() == linkEntity.getPid()) {
+            List<Record> records = Db.find("SELECT * FROM link WHERE linkId = pid AND label = ? AND status != -1", linkEntity.getLabel());
+            if (records.size() == 1) {
+                return true;
+            } else {
+                return false;
             }
-            linkEntity.put("children", subLinkList);
-            linkList.add(linkEntity);
+        } else {
+            List<Record> records = Db.find("SELECT * FROM link WHERE pid = ? AND label = ? OR href = ? AND status != -1", linkEntity.getLabel(), linkEntity.getHref());
+            if (records.size() == 1) {
+                return true;
+            } else {
+                return false;
+            }
         }
-        IResultSet resultSet = new ResultSet();
-        resultSet.setCode(200);
-        resultSet.setData(linkList);
-        resultSet.setMessage("");
-        return resultSet;
     }
 
     @Override
-    public IResultSet create(LinkEntity linkEntity) {
-        IResultSet resultSet = isExistLinkName(linkEntity);
-        if ("true".equals(resultSet.getData().toString())) {
-            resultSet.setCode(500);
-            resultSet.setMessage("名称已经存在");
-        } else if ("false".equals(resultSet.getData().toString())) {
-            Record record = new Record()
-                    .set("linkId", linkEntity.getLinkId())
-                    .set("label", linkEntity.getLabel())
-                    .set("href", linkEntity.getHref())
-                    .set("status", linkEntity.getStatus())
-                    .set("pid", linkEntity.getPid());
-            Db.save("link", record);
-            resultSet.setCode(200);
-            resultSet.setMessage("创建成功");
-            HashMap<String, String> link = new HashMap<>();
-            link.put("linkId", linkEntity.getLinkId());
-            link.put("label", linkEntity.getLabel());
-            link.put("href", linkEntity.getHref());
-            link.put("status", linkEntity.getStatus() + "");
-            link.put("pid", linkEntity.getPid());
-            resultSet.setData(link);
+    public LinkEntity mCreate(LinkEntity linkEntity) {
+        Record record = new Record()
+                .set("linkId", linkEntity.getLinkId())
+                .set("label", linkEntity.getLabel())
+                .set("href", linkEntity.getHref())
+                .set("pid", linkEntity.getPid())
+                .set("weight", linkEntity.getWeight())
+                .set("status", linkEntity.getStatus());
+        boolean save = Db.save("link", record);
+        if (save) {
+            return linkEntity;
+        } else {
+            return null;
         }
-        return resultSet;
     }
 
     @Override
-    public IResultSet update(LinkEntity linkEntity) {
-        int update = Db.update("UPDATE link SET label = ?, href = ?, status = ? WHERE linkId = ?", linkEntity.getLabel(), linkEntity.getHref(), linkEntity.getStatus(), linkEntity.getLinkId());
-        IResultSet resultSet = new ResultSet();
+    public LinkEntity mUpdate(LinkEntity linkEntity) {
+        int update = Db.update("UPDATE link SET label = ?, SET href = ? WHERE linkId = ? AND status != -1", linkEntity.getLabel(), linkEntity.getHref(), linkEntity.getLinkId());
         if (update == 1) {
-            resultSet.setCode(200);
-            resultSet.setData(linkEntity);
-            resultSet.setMessage("更新成功");
+            return linkEntity;
         } else {
-            resultSet.setCode(500);
-            resultSet.setMessage("更新失败");
+            return null;
         }
-        return resultSet;
     }
 
-    private IResultSet isExistLinkName(LinkEntity linkEntity) {
-        List<Record> records = Db.find("SELECT * FROM link WHERE status !=-1 AND label = ? AND pid = ?", linkEntity.getLabel(), linkEntity.getLinkId());
-        if (records.size() == 1) {
-            return new ResultSet("true");
+    @Override
+    public LinkEntity mBlock(LinkEntity linkEntity) {
+        int update = Db.update("UPDATE link SET status = 1 WHERE linkId = ?", linkEntity.getLinkId());
+        if (update == 1) {
+            return linkEntity;
         } else {
-            return new ResultSet("false");
+            return null;
         }
+    }
+
+    @Override
+    public LinkEntity mUnBlock(LinkEntity linkEntity) {
+        int update = Db.update("UPDATE link SET status = 2 WHERE linkId = ?", linkEntity.getLinkId());
+        if (update == 1) {
+            return linkEntity;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public LinkEntity mDelete(LinkEntity linkEntity) {
+        int update = Db.update("UPDATE link SET status = -1 WHERE linkId = ?", linkEntity.getLinkId());
+        if (update == 1) {
+            return linkEntity;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public LinkEntity[] mSwap(LinkEntity linkEntity1, LinkEntity linkEntity2) {
+        boolean succeed = Db.tx(new IAtom() {
+            public boolean run() throws SQLException {
+                int update1 = Db.update("UPDATE link SET weight = ? WHERE linkId = ? AND status != -1", linkEntity1.getWeight(), linkEntity1.getLinkId());
+                int update2 = Db.update("UPDATE link SET weight = ? WHERE linkId = ? AND status != -1", linkEntity2.getWeight(), linkEntity2.getLinkId());
+                return update1 > 0 && update2 == 1;
+            }
+        });
+        if (succeed) {
+            LinkEntity[] formatEntities = new LinkEntity[2];
+            int weight = linkEntity1.getWeight();
+            linkEntity1.setWeight(linkEntity2.getWeight());
+            linkEntity2.setWeight(weight);
+            formatEntities[0] = linkEntity1;
+            formatEntities[1] = linkEntity2;
+            return formatEntities;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public LinkedList<LinkEntity> mRetrieves() {
+        LinkedList<LinkEntity> result = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM link WHERE pid = linkId AND status != -1 ORDER BY weight DESC");
+        for (Record record : records) {
+            Map<String, Object> columns = record.getColumns();
+            LinkEntity linkEntity = JSON.parseObject(JSON.toJSONString(columns), LinkEntity.class);
+            result.add(linkEntity);
+        }
+        return result;
+    }
+
+    @Override
+    public LinkedList<LinkEntity> mRetrievesByPid(String pid) {
+        LinkedList<LinkEntity> result = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM link WHERE pid = ? AND status != -1 ORDER BY weight DESC", pid);
+        for (Record record : records) {
+            Map<String, Object> columns = record.getColumns();
+            LinkEntity linkEntity = JSON.parseObject(JSON.toJSONString(columns), LinkEntity.class);
+            result.add(linkEntity);
+        }
+        return result;
     }
 }

@@ -10,12 +10,18 @@ public class LinkEntity {
     private String label;
     private String href;
     private String pid;
-    private int status;
+    private int weight;
+    private int status;//-1标示删除，1标示禁用，2标示正常
     private String createTime;
     private String updateTime;
 
     public LinkEntity() {
         super();
+    }
+
+    public LinkEntity(String linkId,int weight) {
+        this.linkId = linkId;
+        this.weight = weight;
     }
 
     public LinkEntity(String linkId, String label, String href, String pid, int status) {
@@ -56,6 +62,14 @@ public class LinkEntity {
 
     public void setPid(String pid) {
         this.pid = pid;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 
     public int getStatus() {

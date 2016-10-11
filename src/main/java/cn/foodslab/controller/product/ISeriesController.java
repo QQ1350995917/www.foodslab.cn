@@ -18,42 +18,48 @@ public interface ISeriesController {
     void index();
 
     /**
-     * 后台接口
-     * 创建
-     */
-    void mCreate();
-
-    /**
-     * 后台接口
-     * 更新
-     */
-    void mUpdate();
-
-    /**
-     * 后台接口
-     * 状态
-     */
-    void mMark();
-
-    /**
-     * 后台接口
-     * 读取
-     */
-    void mRetrieves();
-
-    /**
-     * 前台接口
+     * 用户接口
      * 读取系列进行显示
      * 应用于首页，系列等页面
      */
     @Clear(Session.class)
-    void retrieves();
+    void retrieve();
 
     /**
-     * 前台接口
-     * 读取倒置的产品树数据
-     * 应用于系列页面页签切换的数据显示
+     * 用户接口
+     * 根据系列的ID读取产品树信息
      */
-    void retrieveInversionTree();
+    @Clear(Session.class)
+    void tree();
 
+    /**
+     * 用户接口
+     * 根据系列的ID读取倒置的产品树信息
+     */
+    @Clear(Session.class)
+    void treeInversion();
+
+    /**
+     * 管理员接口
+     * 创建新系列
+     */
+    void mCreate();
+
+    /**
+     * 管理员接口接口
+     * 更新系列名称
+     */
+    void mUpdate();
+
+    /**
+     * 管理员接口接口
+     * 更新系列状态
+     */
+    void mMark();
+
+    /**
+     * 管理员接口
+     * 读取系列集合
+     */
+    void mRetrieve();
 }

@@ -17,9 +17,46 @@ import java.util.Map;
  */
 public class FormatServices implements IFormatServices {
 
+
+    @Override
+    public LinkedList<FormatEntity> retrievesInType(TypeEntity typeEntity) {
+        LinkedList<FormatEntity> formatEntities = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM product_format WHERE status = 1 AND typeId = ? order by weight ASC, updateTime DESC", typeEntity.getTypeId());
+        for (Record record : records) {
+            Map<String, Object> formatMap = record.getColumns();
+            formatEntities.add(JSON.parseObject(JSON.toJSONString(formatMap), FormatEntity.class));
+        }
+        return formatEntities;
+    }
+
+    @Override
+    public FormatEntity retrieveById(String formatId) {
+        List<Record> records = Db.find("SELECT * FROM product_format WHERE status = 1 AND formatId = ? order by weight ASC, updateTime DESC", formatId);
+        if (records.size() == 1) {
+            return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), FormatEntity.class);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public LinkedList<FormatEntity> retrievesByWeight(int min, int max) {
+        return null;
+    }
+
+    @Override
+    public boolean mExist(String formatLabel, String typeId) {
+        List<Record> records = Db.find("SELECT * FROM product_format WHERE label = ? AND typeId = ? AND status != -1 ", formatLabel, typeId);
+        if (records.size() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     @Override
     public FormatEntity mCreate(FormatEntity formatEntity) {
-        if (mRetrieveInTypeByLabel(formatEntity) == null) {
+        if (this.mExist(formatEntity.getLabel(),formatEntity.getTypeId())) {
             Record record = new Record()
                     .set("formatId", formatEntity.getFormatId())
                     .set("label", formatEntity.getLabel())
@@ -62,7 +99,7 @@ public class FormatServices implements IFormatServices {
 
     @Override
     public FormatEntity mUpdate(FormatEntity formatEntity) {
-        if (mRetrieveInTypeByLabel(formatEntity) == null) {
+        if (this.mExist(formatEntity.getLabel(),formatEntity.getTypeId())) {
             Record record = new Record()
                     .set("formatId", formatEntity.getFormatId())
                     .set("label", formatEntity.getLabel())
@@ -104,8 +141,8 @@ public class FormatServices implements IFormatServices {
     }
 
     @Override
-    public FormatEntity mUpdateStatus(FormatEntity formatEntity) {
-        int update = Db.update("UPDATE product_format SET status = ? WHERE formatId = ? ", formatEntity.getStatus(), formatEntity.getFormatId());
+    public FormatEntity mBlock(FormatEntity formatEntity) {
+        int update = Db.update("UPDATE product_format SET status = 1 WHERE formatId = ? ", formatEntity.getFormatId());
         if (update == 1) {
             return formatEntity;
         } else {
@@ -114,72 +151,23 @@ public class FormatServices implements IFormatServices {
     }
 
     @Override
-    public LinkedList<FormatEntity> mRetrievesInType(TypeEntity typeEntity) {
-        LinkedList<FormatEntity> formatEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM product_format WHERE status != -1 AND typeId = ? order by weight ASC, updateTime DESC", typeEntity.getTypeId());
-        for (Record record : records) {
-            Map<String, Object> formatMap = record.getColumns();
-            formatEntities.add(JSON.parseObject(JSON.toJSONString(formatMap), FormatEntity.class));
-        }
-        return formatEntities;
-    }
-
-    @Override
-    public LinkedList<FormatEntity> retrievesInType(TypeEntity typeEntity) {
-        LinkedList<FormatEntity> formatEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM product_format WHERE status = 1 AND typeId = ? order by weight ASC, updateTime DESC", typeEntity.getTypeId());
-        for (Record record : records) {
-            Map<String, Object> formatMap = record.getColumns();
-            formatEntities.add(JSON.parseObject(JSON.toJSONString(formatMap), FormatEntity.class));
-        }
-        return formatEntities;
-    }
-
-    @Override
-    public FormatEntity mRetrieveById(String formatId) {
-        List<Record> records = Db.find("SELECT * FROM product_format WHERE status != -1 AND formatId = ? order by weight ASC, updateTime DESC", formatId);
-        if (records.size() == 1) {
-            return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), FormatEntity.class);
+    public FormatEntity mUnBlock(FormatEntity formatEntity) {
+        int update = Db.update("UPDATE product_format SET status = 2 WHERE formatId = ? ", formatEntity.getFormatId());
+        if (update == 1) {
+            return formatEntity;
         } else {
             return null;
         }
     }
 
     @Override
-    public FormatEntity retrieveById(String formatId) {
-        List<Record> records = Db.find("SELECT * FROM product_format WHERE status = 1 AND formatId = ? order by weight ASC, updateTime DESC", formatId);
-        if (records.size() == 1) {
-            return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), FormatEntity.class);
+    public FormatEntity mDelete(FormatEntity formatEntity) {
+        int update = Db.update("UPDATE product_format SET status = -1 WHERE formatId = ? ", formatEntity.getFormatId());
+        if (update == 1) {
+            return formatEntity;
         } else {
             return null;
         }
-    }
-
-    @Override
-    public FormatEntity mRetrieveInTypeByLabel(FormatEntity formatEntity) {
-        List<Record> records = Db.find("SELECT * FROM product_format WHERE label = ? AND typeId != ? AND status != -1 AND formatId != ?", formatEntity.getLabel(), formatEntity.getTypeId(), formatEntity.getFormatId());
-        if (records.size() == 1) {
-            return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), FormatEntity.class);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public LinkedList<FormatEntity> mRetrieveByWeight() {
-        LinkedList<FormatEntity> result = new LinkedList<>();
-        List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE status = 1 order by weight ASC limit 12 offset 0 ");
-        for (Record formatRecord : formatRecords) {
-            FormatEntity formatEntity = JSON.parseObject(JSON.toJSONString(formatRecord.getColumns()), FormatEntity.class);
-            List<Record> typeIdRecords = Db.find("SELECT * FROM product_type WHERE typeId = ? ", formatEntity.getTypeId());
-            TypeEntity typeEntity = JSON.parseObject(JSON.toJSONString(typeIdRecords.get(0).getColumns()), TypeEntity.class);
-            List<Record> seriesRecords = Db.find("SELECT * FROM product_series WHERE seriesId = ?", typeEntity.getSeriesId());
-            SeriesEntity seriesEntity = JSON.parseObject(JSON.toJSONString(seriesRecords.get(0).getColumns()), SeriesEntity.class);
-            typeEntity.setSeriesEntity(seriesEntity);
-            formatEntity.setTypeEntity(typeEntity);
-            result.add(formatEntity);
-        }
-        return result;
     }
 
     @Override
@@ -215,6 +203,45 @@ public class FormatServices implements IFormatServices {
             formatEntities[0] = formatEntity1;
             formatEntities[1] = formatEntity2;
             return formatEntities;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public LinkedList<FormatEntity> mRetrieveByWeight(int index,int counter) {
+        LinkedList<FormatEntity> result = new LinkedList<>();
+        List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE status = 1 order by weight ASC limit 12 offset 0 ");
+        for (Record formatRecord : formatRecords) {
+            FormatEntity formatEntity = JSON.parseObject(JSON.toJSONString(formatRecord.getColumns()), FormatEntity.class);
+            List<Record> typeIdRecords = Db.find("SELECT * FROM product_type WHERE typeId = ? ", formatEntity.getTypeId());
+            TypeEntity typeEntity = JSON.parseObject(JSON.toJSONString(typeIdRecords.get(0).getColumns()), TypeEntity.class);
+            List<Record> seriesRecords = Db.find("SELECT * FROM product_series WHERE seriesId = ?", typeEntity.getSeriesId());
+            SeriesEntity seriesEntity = JSON.parseObject(JSON.toJSONString(seriesRecords.get(0).getColumns()), SeriesEntity.class);
+            typeEntity.setSeriesEntity(seriesEntity);
+            formatEntity.setTypeEntity(typeEntity);
+            result.add(formatEntity);
+        }
+        return result;
+    }
+
+
+    @Override
+    public LinkedList<FormatEntity> mRetrievesInType(TypeEntity typeEntity) {
+        LinkedList<FormatEntity> formatEntities = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM product_format WHERE status != -1 AND typeId = ? order by weight ASC, updateTime DESC", typeEntity.getTypeId());
+        for (Record record : records) {
+            Map<String, Object> formatMap = record.getColumns();
+            formatEntities.add(JSON.parseObject(JSON.toJSONString(formatMap), FormatEntity.class));
+        }
+        return formatEntities;
+    }
+
+    @Override
+    public FormatEntity mRetrieveById(String formatId) {
+        List<Record> records = Db.find("SELECT * FROM product_format WHERE status != -1 AND formatId = ? order by weight ASC, updateTime DESC", formatId);
+        if (records.size() == 1) {
+            return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), FormatEntity.class);
         } else {
             return null;
         }

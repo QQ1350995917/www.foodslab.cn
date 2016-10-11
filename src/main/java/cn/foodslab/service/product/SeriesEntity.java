@@ -10,8 +10,8 @@ import java.util.LinkedList;
 public class SeriesEntity {
     private String seriesId;
     private String label;
-    private int queue = 0;
-    private int status = -2;
+    private int queue;
+    private int status; // -1标示删除，1标示禁用，2标示正常
     private String createTime;
     private String updateTime;
     private LinkedList<TypeEntity> typeEntities;

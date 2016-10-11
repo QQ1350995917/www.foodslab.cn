@@ -17,60 +17,9 @@ import java.util.Map;
 public class SeriesServices implements ISeriesServices {
 
     @Override
-    public SeriesEntity mCreate(SeriesEntity seriesEntity) {
-        if (this.mRetrieveByLabel(seriesEntity) == null) {
-            Record record = new Record().set("seriesId", seriesEntity.getSeriesId()).set("label", seriesEntity.getLabel());
-            boolean save = Db.save("product_series", record);
-            if (save) {
-                return seriesEntity;
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public SeriesEntity mUpdate(SeriesEntity seriesEntity) {
-        if (this.mRetrieveByLabel(seriesEntity) == null) {
-            int update = Db.update("UPDATE product_series SET label = ? WHERE seriesId = ? ", seriesEntity.getLabel(), seriesEntity.getSeriesId());
-            if (update == 1) {
-                return seriesEntity;
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public SeriesEntity mUpdateStatus(SeriesEntity seriesEntity) {
-        int update = Db.update("UPDATE product_series SET status = ? WHERE seriesId = ? ", seriesEntity.getStatus(), seriesEntity.getSeriesId());
-        if (update == 1) {
-            return seriesEntity;
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public LinkedList<SeriesEntity> retrieves() {
+    public LinkedList<SeriesEntity> retrieve() {
         LinkedList<SeriesEntity> seriesEntities = new LinkedList<>();
         List<Record> seriesRecords = Db.find("SELECT seriesId,label FROM product_series WHERE status = 1");
-        for (int index = 0; index < seriesRecords.size(); index++) {
-            Map<String, Object> seriesMap = seriesRecords.get(index).getColumns();
-            SeriesEntity result = JSON.parseObject(JSON.toJSONString(seriesMap), SeriesEntity.class);
-            seriesEntities.add(result);
-        }
-        return seriesEntities;
-    }
-
-    @Override
-    public LinkedList<SeriesEntity> mRetrieves() {
-        LinkedList<SeriesEntity> seriesEntities = new LinkedList<>();
-        List<Record> seriesRecords = Db.find("SELECT * FROM product_series WHERE status != -1");
         for (int index = 0; index < seriesRecords.size(); index++) {
             Map<String, Object> seriesMap = seriesRecords.get(index).getColumns();
             SeriesEntity result = JSON.parseObject(JSON.toJSONString(seriesMap), SeriesEntity.class);
@@ -90,15 +39,79 @@ public class SeriesServices implements ISeriesServices {
         }
     }
 
+    @Override
+    public boolean mExist(String seriesName) {
+        List<Record> records = Db.find("SELECT * FROM product_series WHERE label = ? AND status != -1", seriesName);
+        if (records.size() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     @Override
-    public SeriesEntity mRetrieveByLabel(SeriesEntity seriesEntity) {
-        List<Record> records = Db.find("SELECT * FROM product_series WHERE label = ? AND seriesId != ? AND status != -1", seriesEntity.getLabel(), seriesEntity.getSeriesId());
-        if (records.size() == 1) {
-            SeriesEntity result = JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), SeriesEntity.class);
-            return result;
+    public SeriesEntity mCreate(SeriesEntity seriesEntity) {
+        if (this.mExist(seriesEntity.getLabel())) {
+            Record record = new Record().set("seriesId", seriesEntity.getSeriesId()).set("label", seriesEntity.getLabel());
+            boolean save = Db.save("product_series", record);
+            if (save) {
+                return seriesEntity;
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
+    }
+
+    @Override
+    public SeriesEntity mUpdate(SeriesEntity seriesEntity) {
+        if (this.mExist(seriesEntity.getLabel())) {
+            int update = Db.update("UPDATE product_series SET label = ? WHERE seriesId = ? ", seriesEntity.getLabel(), seriesEntity.getSeriesId());
+            if (update == 1) {
+                return seriesEntity;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public SeriesEntity mBlock(SeriesEntity seriesEntity) {
+        int update = Db.update("UPDATE product_series SET status = 1 WHERE seriesId = ? ", seriesEntity.getSeriesId());
+        if (update == 1) {
+            return seriesEntity;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public SeriesEntity mUnBlock(SeriesEntity seriesEntity) {
+        int update = Db.update("UPDATE product_series SET status = 2 WHERE seriesId = ? ", seriesEntity.getSeriesId());
+        if (update == 1) {
+            return seriesEntity;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public SeriesEntity mDelete(SeriesEntity seriesEntity) {
+        return null;
+    }
+
+    @Override
+    public LinkedList<SeriesEntity> mRetrieves() {
+        LinkedList<SeriesEntity> seriesEntities = new LinkedList<>();
+        List<Record> seriesRecords = Db.find("SELECT * FROM product_series WHERE status != -1");
+        for (int index = 0; index < seriesRecords.size(); index++) {
+            Map<String, Object> seriesMap = seriesRecords.get(index).getColumns();
+            SeriesEntity result = JSON.parseObject(JSON.toJSONString(seriesMap), SeriesEntity.class);
+            seriesEntities.add(result);
+        }
+        return seriesEntities;
     }
 }

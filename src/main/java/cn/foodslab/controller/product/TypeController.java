@@ -2,7 +2,6 @@ package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.model.product.VFormatEntity;
 import cn.foodslab.model.product.VSeriesEntity;
 import cn.foodslab.model.product.VTypeEntity;
 import cn.foodslab.service.product.*;
@@ -24,6 +23,11 @@ public class TypeController extends Controller implements ITypeController {
 
     @Override
     public void index() {
+
+    }
+
+    @Override
+    public void retrieve() {
 
     }
 
@@ -74,7 +78,15 @@ public class TypeController extends Controller implements ITypeController {
         TypeEntity typeEntity = new TypeEntity();
         typeEntity.setTypeId(vTypeEntity.getTypeId());
         typeEntity.setStatus(vTypeEntity.getStatus());
-        TypeEntity result = iTypeServices.mUpdateStatus(typeEntity);
+        TypeEntity result = null;
+        if (typeEntity.getStatus() == -1) {
+            result = iTypeServices.mDelete(typeEntity);
+        } else if (typeEntity.getStatus() == 1) {
+            result = iTypeServices.mBlock(typeEntity);
+        } else if (typeEntity.getStatus() == 2) {
+            result = iTypeServices.mUnBlock(typeEntity);
+        }
+
         if (result == null) {
             IResultSet iResultSet = new ResultSet(3000, vTypeEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
@@ -82,6 +94,16 @@ public class TypeController extends Controller implements ITypeController {
             IResultSet iResultSet = new ResultSet(3050, vTypeEntity, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
+    }
+
+    @Override
+    public void mImage() {
+
+    }
+
+    @Override
+    public void mImageDelete() {
+
     }
 
     @Override
@@ -133,40 +155,7 @@ public class TypeController extends Controller implements ITypeController {
     }
 
     @Override
-    public void retrieves() {
-        String params = this.getPara("p");
-        VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
-        SeriesEntity seriesEntity = new SeriesEntity(vSeriesEntity.getSeriesId(), vSeriesEntity.getLabel());
-        LinkedList<TypeEntity> typeEntities = iTypeServices.retrievesInSeries(seriesEntity);
-        LinkedList<VTypeEntity> vTypeEntities = new LinkedList<>();
-        for (TypeEntity typeEntity : typeEntities) {
-            vTypeEntities.add(new VTypeEntity(typeEntity));
-        }
-        IResultSet iResultSet = new ResultSet(3050, vTypeEntities, "success");
-        renderJson(JSON.toJSONString(iResultSet));
-    }
+    public void mRetrieve() {
 
-    @Override
-    public void retrieveTree() {
-        String params = this.getPara("p");
-        VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
-        TypeEntity typeEntity = iTypeServices.retrieveById(vTypeEntity.getTypeId());
-        if (typeEntity == null) {
-            IResultSet iResultSet = new ResultSet(3000, vTypeEntity, "fail");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
-            LinkedList<FormatEntity> formatEntities = iFormatServices.retrievesInType(typeEntity);
-            LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
-            for (FormatEntity formatEntity : formatEntities) {
-                VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
-                vFormatEntities.add(vFormatEntity);
-            }
-            VTypeEntity result = new VTypeEntity(typeEntity);
-            result.setParent(new VSeriesEntity(seriesEntity));
-            result.setChildren(vFormatEntities);
-            IResultSet iResultSet = new ResultSet(3050, result, "success");
-            renderJson(JSON.toJSONString(iResultSet));
-        }
     }
 }

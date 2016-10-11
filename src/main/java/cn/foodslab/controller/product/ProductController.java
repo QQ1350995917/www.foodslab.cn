@@ -17,7 +17,7 @@ import java.util.Map;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-public class ProductController extends Controller implements IProductController {
+public class ProductController extends Controller {
     IProductServices iProductServices = new ProductServices();
 
     public void mRetrieves() {

@@ -17,54 +17,64 @@ public interface ITypeController {
     void index();
 
     /**
-     * 后台接口
-     * 创建
+     * 用户接口
+     * 根据类型的ID读取类型的详情
+     */
+    @Clear(Session.class)
+    void retrieve();
+
+    /**
+     * 管理员接口
+     * 创建类型
      */
     void mCreate();
 
     /**
-     * 后台接口
-     * 更新
+     * 管理员接口
+     * 更新类型名称
      */
     void mUpdate();
 
     /**
-     * 后台接口
+     * 管理员接口
      * 更新状态
      */
     void mMark();
 
     /**
-     * 后台接口
+     * 管理员接口
+     * 更新类型图片
+     */
+    void mImage();
+
+    /**
+     * 管理员接口
+     * 删除类型图片
+     */
+    void mImageDelete();
+
+    /**
+     * 管理员接口
      * 更新简介
      */
     void mSummary();
 
     /**
-     * 后台接口
+     * 管理员接口
      * 更新说明
      */
     void mDirections();
 
     /**
-     * 后台接口
-     * 根据产品类型的ID读取
+     * 管理员接口
+     * 根据产品系列的ID读取简略类型信息集合
      */
     void mRetrieves();
 
     /**
-     * 前台接口
-     *
+     * 管理员接口
+     * 根据产品类型的ID读取类型详情
      */
-    @Clear(Session.class)
-    void retrieves();
-
-    /**
-     * 前台接口
-     * 根据产品类型的ID读取
-     * 详情页面使用了该接口
-     */
-    @Clear(Session.class)
-    void retrieveTree();
+    void mRetrieve();
 
 }

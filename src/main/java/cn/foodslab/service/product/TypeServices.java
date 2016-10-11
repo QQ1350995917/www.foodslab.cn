@@ -16,8 +16,39 @@ import java.util.Map;
 public class TypeServices implements ITypeServices {
 
     @Override
+    public LinkedList<TypeEntity> retrievesInSeries(SeriesEntity seriesEntity) {
+        LinkedList<TypeEntity> typeEntities = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM product_type WHERE seriesId = ? AND status = 1", seriesEntity.getSeriesId());
+        for (Record record : records) {
+            Map<String, Object> typeMap = record.getColumns();
+            typeEntities.add(JSON.parseObject(JSON.toJSONString(typeMap), TypeEntity.class));
+        }
+        return typeEntities;
+    }
+
+    @Override
+    public TypeEntity retrieveById(String typeId) {
+        List<Record> records = Db.find("SELECT * FROM product_type WHERE typeId = ? AND status = 1", typeId);
+        if (records.size() == 1) {
+            return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), TypeEntity.class);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean mExistInSeries(String typeName, String seriesId) {
+        List<Record> records = Db.find("SELECT * FROM product_type WHERE label = ? AND seriesId = ? AND status != -1", typeName, seriesId);
+        if (records.size() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public TypeEntity mCreate(TypeEntity typeEntity) {
-        if (this.mRetrieveInSeriesByLabel(typeEntity) == null) {
+        if (this.mExistInSeries(typeEntity.getLabel(),typeEntity.getSeriesId())) {
             Record record = new Record().set("seriesId", typeEntity.getSeriesId()).set("typeId", typeEntity.getTypeId()).set("label", typeEntity.getLabel());
             boolean save = Db.save("product_type", record);
             if (save) {
@@ -32,7 +63,7 @@ public class TypeServices implements ITypeServices {
 
     @Override
     public TypeEntity mUpdate(TypeEntity typeEntity) {
-        if (this.mRetrieveInSeriesByLabel(typeEntity) == null) {
+        if (this.mExistInSeries(typeEntity.getLabel(),typeEntity.getSeriesId())) {
             int update = Db.update("UPDATE product_type SET label = ? WHERE typeId = ? ", typeEntity.getLabel(), typeEntity.getTypeId());
             if (update == 1) {
                 return typeEntity;
@@ -44,8 +75,28 @@ public class TypeServices implements ITypeServices {
     }
 
     @Override
-    public TypeEntity mUpdateStatus(TypeEntity typeEntity) {
-        int update = Db.update("UPDATE product_type SET status = ? WHERE typeId = ? ", typeEntity.getStatus(), typeEntity.getTypeId());
+    public TypeEntity mBlock(TypeEntity typeEntity) {
+        int update = Db.update("UPDATE product_type SET status = 1 WHERE typeId = ? ", typeEntity.getStatus(), typeEntity.getTypeId());
+        if (update == 1) {
+            return typeEntity;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public TypeEntity mUnBlock(TypeEntity typeEntity) {
+        int update = Db.update("UPDATE product_type SET status = 2 WHERE typeId = ? ", typeEntity.getStatus(), typeEntity.getTypeId());
+        if (update == 1) {
+            return typeEntity;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public TypeEntity mDelete(TypeEntity typeEntity) {
+        int update = Db.update("UPDATE product_type SET status = -1 WHERE typeId = ? ", typeEntity.getStatus(), typeEntity.getTypeId());
         if (update == 1) {
             return typeEntity;
         } else {
@@ -64,40 +115,11 @@ public class TypeServices implements ITypeServices {
         return typeEntities;
     }
 
-    @Override
-    public LinkedList<TypeEntity> retrievesInSeries(SeriesEntity seriesEntity) {
-        LinkedList<TypeEntity> typeEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM product_type WHERE seriesId = ? AND status = 1", seriesEntity.getSeriesId());
-        for (Record record : records) {
-            Map<String, Object> typeMap = record.getColumns();
-            typeEntities.add(JSON.parseObject(JSON.toJSONString(typeMap), TypeEntity.class));
-        }
-        return typeEntities;
-    }
+
 
     @Override
     public TypeEntity mRetrieveById(String typeId) {
         List<Record> records = Db.find("SELECT * FROM product_type WHERE typeId = ? AND status != -1", typeId);
-        if (records.size() == 1) {
-            return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), TypeEntity.class);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public TypeEntity retrieveById(String typeId) {
-        List<Record> records = Db.find("SELECT * FROM product_type WHERE typeId = ? AND status = 1", typeId);
-        if (records.size() == 1) {
-            return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), TypeEntity.class);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public TypeEntity mRetrieveInSeriesByLabel(TypeEntity typeEntity) {
-        List<Record> records = Db.find("SELECT * FROM product_type WHERE label = ? AND seriesId = ? AND status != -1 AND typeId != ?", typeEntity.getLabel(), typeEntity.getSeriesId(), typeEntity.getTypeId());
         if (records.size() == 1) {
             return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), TypeEntity.class);
         } else {
@@ -123,5 +145,15 @@ public class TypeServices implements ITypeServices {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public TypeEntity mUpdateImage(TypeEntity typeEntity) {
+        return null;
+    }
+
+    @Override
+    public TypeEntity mImageDelete(TypeEntity typeEntity) {
+        return null;
     }
 }

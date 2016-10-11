@@ -1,11 +1,11 @@
-package cn.foodslab.controller.link;
+package cn.foodslab.controller.poster;
 
 /**
- * Created by Pengwei Ding on 2016-08-13 18:26.
+ * Created by Pengwei Ding on 2016-08-15 15:57.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-public interface ILinkController {
+public interface IPosterController {
 
     /**
      * 404
@@ -14,38 +14,37 @@ public interface ILinkController {
 
     /**
      * 用户接口
-     * 读取链接树
+     * 读取海报集合
      */
     void retrieves();
 
     /**
      * 管理员接口
-     * 创建链接分类
+     * 创建海报
      */
     void mCreate();
 
     /**
      * 管理员接口
-     * 更新链接分类
+     * 更新海报
      */
     void mUpdate();
 
     /**
      * 管理员接口
-     * 更新链接分类状态
+     * 更新海报状态
      */
     void mMark();
 
     /**
      * 管理员接口
-     * 交换链接分类的顺序
+     * 交换海报权重
      */
     void mSwap();
 
     /**
      * 管理员接口
-     * 读取链接集合
+     * 读取海报集合
      */
     void mRetrieves();
-
 }

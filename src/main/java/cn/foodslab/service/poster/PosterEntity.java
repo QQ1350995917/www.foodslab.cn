@@ -10,9 +10,10 @@ public class PosterEntity {
     private int status;
     private int clickable;
     private String href;
+    private String fileId;
+    private int weight;
     private String start;
     private String end;
-    private String pid;
     private String updateTime;
     private String createTime;
 
@@ -20,14 +21,20 @@ public class PosterEntity {
         super();
     }
 
-    public PosterEntity(String posterId, int status, int clickable, String href, String start, String end, String pid) {
+    public PosterEntity(String posterId, int weight) {
+        this.posterId = posterId;
+        this.weight = weight;
+    }
+
+    public PosterEntity(String posterId, int status, int clickable, String href,String fileId, int weight,String start, String end) {
         this.posterId = posterId;
         this.status = status;
         this.clickable = clickable;
         this.href = href;
+        this.fileId = fileId;
+        this.weight = weight;
         this.start = start;
         this.end = end;
-        this.pid = pid;
     }
 
     public String getPosterId() {
@@ -62,6 +69,22 @@ public class PosterEntity {
         this.href = href;
     }
 
+    public String getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
     public String getStart() {
         return start;
     }
@@ -76,14 +99,6 @@ public class PosterEntity {
 
     public void setEnd(String end) {
         this.end = end;
-    }
-
-    public String getPid() {
-        return pid;
-    }
-
-    public void setPid(String pid) {
-        this.pid = pid;
     }
 
     public String getUpdateTime() {

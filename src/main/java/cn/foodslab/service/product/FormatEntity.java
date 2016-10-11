@@ -33,7 +33,7 @@ public class FormatEntity {
     private long giftEnd;// 满赠活动结束时间
     private int giftStatus;// 满赠活动所处于的状态
     private int queue;// 该规格的顺序
-    private int weight;// 该规格的顺序
+    private int weight;// 该规格的权重，推荐相关，小于0为推荐，越小权重越高
     private int status;// 该规格的状态
     private String typeId;// 规格的类型ID
     private long createTime;

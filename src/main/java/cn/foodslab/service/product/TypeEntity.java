@@ -16,7 +16,7 @@ public class TypeEntity {
     private String summary;
     private String directions;
     private int queue;
-    private int status;
+    private int status; // -1标示删除，1标示禁用，2标示正常
     private String createTime;
     private String updateTime;
     private LinkedList<ImageEntity> imageEntities;
