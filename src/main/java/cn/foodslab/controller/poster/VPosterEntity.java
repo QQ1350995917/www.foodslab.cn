@@ -17,6 +17,19 @@ public class VPosterEntity extends PosterEntity {
         super();
     }
 
+    public VPosterEntity(PosterEntity posterEntity) {
+        this.setPosterId(posterEntity.getPosterId());
+        this.setStatus(posterEntity.getStatus());
+        this.setClickable(posterEntity.getClickable());
+        this.setHref(posterEntity.getHref());
+        this.setFileId(posterEntity.getFileId());
+        this.setWeight(posterEntity.getWeight());
+        this.setStart(posterEntity.getStart());
+        this.setEnd(posterEntity.getEnd());
+        this.setCreateTime(posterEntity.getCreateTime());
+        this.setUpdateTime(posterEntity.getUpdateTime());
+    }
+
     public String getPosterId1() {
         return posterId1;
     }

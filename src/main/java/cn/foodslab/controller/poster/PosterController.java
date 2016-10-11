@@ -30,7 +30,7 @@ public class PosterController extends Controller implements IPosterController {
         LinkedList<VPosterEntity> result = new LinkedList<>();
         LinkedList<PosterEntity> posterEntities = iPosterServices.retrieves();
         for (PosterEntity posterEntity : posterEntities) {
-            VPosterEntity vPosterEntity = (VPosterEntity) posterEntity;
+            VPosterEntity vPosterEntity = new VPosterEntity(posterEntity);
             result.add(vPosterEntity);
         }
         IResultSet resultSet = new ResultSet();
@@ -121,7 +121,7 @@ public class PosterController extends Controller implements IPosterController {
         LinkedList<VPosterEntity> result = new LinkedList<>();
         LinkedList<PosterEntity> posterEntities = iPosterServices.mRetrieves();
         for (PosterEntity posterEntity : posterEntities) {
-            VPosterEntity vPosterEntity = (VPosterEntity) posterEntity;
+            VPosterEntity vPosterEntity = new VPosterEntity(posterEntity);
             result.add(vPosterEntity);
         }
         IResultSet resultSet = new ResultSet();

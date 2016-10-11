@@ -30,11 +30,11 @@ public class LinkController extends Controller implements ILinkController {
         LinkedList<VLinkEntity> result = new LinkedList<>();
         LinkedList<LinkEntity> linkEntities = iLinkServices.retrieves();
         for (LinkEntity linkEntity : linkEntities) {
-            VLinkEntity vLinkEntity = (VLinkEntity) linkEntity;
+            VLinkEntity vLinkEntity = new VLinkEntity(linkEntity);
             LinkedList<VLinkEntity> childrenVlinkEntities = new LinkedList<>();
             LinkedList<LinkEntity> children = iLinkServices.retrievesByPid(linkEntity.getLinkId());
             for (LinkEntity child : children) {
-                childrenVlinkEntities.add((VLinkEntity) child);
+                childrenVlinkEntities.add(new VLinkEntity(child));
             }
             vLinkEntity.setChildren(childrenVlinkEntities);
             result.add(vLinkEntity);
@@ -145,13 +145,13 @@ public class LinkController extends Controller implements ILinkController {
         LinkedList<VLinkEntity> result = new LinkedList<>();
         LinkedList<LinkEntity> linkEntities = iLinkServices.mRetrieves();
         for (LinkEntity linkEntity : linkEntities) {
-            VLinkEntity vLinkEntity = (VLinkEntity) linkEntity;
-            LinkedList<VLinkEntity> childrenVLinkEntities = new LinkedList<>();
-            LinkedList<LinkEntity> children = iLinkServices.mRetrievesByPid(linkEntity.getLinkId());
-            for (LinkEntity child : children) {
-                childrenVLinkEntities.add((VLinkEntity) child);
-            }
-            vLinkEntity.setChildren(childrenVLinkEntities);
+            VLinkEntity vLinkEntity = new VLinkEntity(linkEntity);
+//            LinkedList<VLinkEntity> childrenVlinkEntities = new LinkedList<>();
+//            LinkedList<LinkEntity> children = iLinkServices.mRetrievesByPid(linkEntity.getLinkId());
+//            for (LinkEntity child : children) {
+//                childrenVlinkEntities.add(new VLinkEntity(child));
+//            }
+//            vLinkEntity.setChildren(childrenVlinkEntities);
             result.add(vLinkEntity);
         }
         IResultSet resultSet = new ResultSet();

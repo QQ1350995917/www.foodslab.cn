@@ -45,6 +45,7 @@ public class PosterServices implements IPosterServices {
                 .set("clickable", posterEntity.getClickable())
                 .set("href", posterEntity.getHref())
                 .set("fileId", posterEntity.getFileId())
+                .set("status", posterEntity.getStatus())
                 .set("start",posterEntity.getStart())
                 .set("end", posterEntity.getEnd());
         boolean poster = Db.update("poster", "posterId", record);

@@ -22,6 +22,17 @@ public class VLinkEntity extends LinkEntity {
         super();
     }
 
+    public VLinkEntity(LinkEntity linkEntity) {
+        this.setLinkId(linkEntity.getLinkId());
+        this.setLabel(linkEntity.getLabel());
+        this.setHref(linkEntity.getHref());
+        this.setPid(linkEntity.getPid());
+        this.setWeight(linkEntity.getWeight());
+        this.setStatus(linkEntity.getStatus());
+        this.setCreateTime(linkEntity.getCreateTime());
+        this.setUpdateTime(linkEntity.getUpdateTime());
+    }
+
     public String getLinkId1() {
         return linkId1;
     }
