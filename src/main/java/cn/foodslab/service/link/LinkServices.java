@@ -32,7 +32,7 @@ public class LinkServices implements ILinkServices {
     @Override
     public LinkedList<LinkEntity> retrievesByPid(String pid) {
         LinkedList<LinkEntity> result = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM link WHERE pid = ? AND status = 2 ORDER BY weight DESC", pid);
+        List<Record> records = Db.find("SELECT * FROM link WHERE pid = ? AND linkId != pid AND status = 2 ORDER BY weight DESC", pid);
         for (Record record : records) {
             Map<String, Object> columns = record.getColumns();
             LinkEntity linkEntity = JSON.parseObject(JSON.toJSONString(columns), LinkEntity.class);
@@ -43,7 +43,7 @@ public class LinkServices implements ILinkServices {
 
     @Override
     public boolean mExist(LinkEntity linkEntity) {
-        if (linkEntity.getLinkId() == linkEntity.getPid()) {
+        if (linkEntity.getLinkId().equals(linkEntity.getPid())) {
             List<Record> records = Db.find("SELECT * FROM link WHERE linkId = pid AND label = ? AND status != -1", linkEntity.getLabel());
             if (records.size() == 1) {
                 return true;
@@ -62,6 +62,7 @@ public class LinkServices implements ILinkServices {
 
     @Override
     public LinkEntity mCreate(LinkEntity linkEntity) {
+        Db.update("UPDATE link SET weight = weight + 1");
         Record record = new Record()
                 .set("linkId", linkEntity.getLinkId())
                 .set("label", linkEntity.getLabel())
@@ -79,7 +80,7 @@ public class LinkServices implements ILinkServices {
 
     @Override
     public LinkEntity mUpdate(LinkEntity linkEntity) {
-        int update = Db.update("UPDATE link SET label = ?, SET href = ? WHERE linkId = ? AND status != -1", linkEntity.getLabel(), linkEntity.getHref(), linkEntity.getLinkId());
+        int update = Db.update("UPDATE link SET label = ?, href = ? WHERE linkId = ? AND status != -1", linkEntity.getLabel(), linkEntity.getHref(), linkEntity.getLinkId());
         if (update == 1) {
             return linkEntity;
         } else {
@@ -121,9 +122,9 @@ public class LinkServices implements ILinkServices {
     public LinkEntity[] mSwap(LinkEntity linkEntity1, LinkEntity linkEntity2) {
         boolean succeed = Db.tx(new IAtom() {
             public boolean run() throws SQLException {
-                int update1 = Db.update("UPDATE link SET weight = ? WHERE linkId = ? AND status != -1", linkEntity1.getWeight(), linkEntity1.getLinkId());
-                int update2 = Db.update("UPDATE link SET weight = ? WHERE linkId = ? AND status != -1", linkEntity2.getWeight(), linkEntity2.getLinkId());
-                return update1 > 0 && update2 == 1;
+                int update1 = Db.update("UPDATE link SET weight = ? WHERE linkId = ? AND status != -1", linkEntity1.getWeight(), linkEntity2.getLinkId());
+                int update2 = Db.update("UPDATE link SET weight = ? WHERE linkId = ? AND status != -1", linkEntity2.getWeight(), linkEntity1.getLinkId());
+                return update1 == 1 && update2 == 1;
             }
         });
         if (succeed) {
@@ -142,7 +143,7 @@ public class LinkServices implements ILinkServices {
     @Override
     public LinkedList<LinkEntity> mRetrieves() {
         LinkedList<LinkEntity> result = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM link WHERE pid = linkId AND status != -1 ORDER BY weight DESC");
+        List<Record> records = Db.find("SELECT * FROM link WHERE pid = linkId AND status != -1 ORDER BY weight DESC, createTime ASC ");
         for (Record record : records) {
             Map<String, Object> columns = record.getColumns();
             LinkEntity linkEntity = JSON.parseObject(JSON.toJSONString(columns), LinkEntity.class);
@@ -154,7 +155,7 @@ public class LinkServices implements ILinkServices {
     @Override
     public LinkedList<LinkEntity> mRetrievesByPid(String pid) {
         LinkedList<LinkEntity> result = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM link WHERE pid = ? AND status != -1 ORDER BY weight DESC", pid);
+        List<Record> records = Db.find("SELECT * FROM link WHERE pid = ? AND linkId != pid AND status != -1 ORDER BY weight DESC, createTime DESC ", pid);
         for (Record record : records) {
             Map<String, Object> columns = record.getColumns();
             LinkEntity linkEntity = JSON.parseObject(JSON.toJSONString(columns), LinkEntity.class);

@@ -28,11 +28,11 @@ public class LinkController extends Controller implements ILinkController {
     @Override
     public void retrieves() {
         LinkedList<VLinkEntity> result = new LinkedList<>();
-        LinkedList<LinkEntity> linkEntities = iLinkServices.retrieves();
+        LinkedList<LinkEntity> linkEntities = iLinkServices.mRetrieves();
         for (LinkEntity linkEntity : linkEntities) {
             VLinkEntity vLinkEntity = new VLinkEntity(linkEntity);
             LinkedList<VLinkEntity> childrenVlinkEntities = new LinkedList<>();
-            LinkedList<LinkEntity> children = iLinkServices.retrievesByPid(linkEntity.getLinkId());
+            LinkedList<LinkEntity> children = iLinkServices.mRetrievesByPid(linkEntity.getLinkId());
             for (LinkEntity child : children) {
                 childrenVlinkEntities.add(new VLinkEntity(child));
             }
@@ -49,6 +49,7 @@ public class LinkController extends Controller implements ILinkController {
     public void mCreate() {
         String params = this.getPara("p");
         VLinkEntity vLinkEntity = JSON.parseObject(params, VLinkEntity.class);
+        vLinkEntity.setStatus(1);
         if (vLinkEntity.getPid() == null) {
             String linkId = UUID.randomUUID().toString();
             vLinkEntity.setLinkId(linkId);
@@ -78,12 +79,12 @@ public class LinkController extends Controller implements ILinkController {
     public void mUpdate() {
         String params = this.getPara("p");
         VLinkEntity vLinkEntity = JSON.parseObject(params, VLinkEntity.class);
-        LinkEntity result = iLinkServices.mUpdate(vLinkEntity);
         IResultSet resultSet = new ResultSet();
         if (iLinkServices.mExist(vLinkEntity)) {
             resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
             resultSet.setData(vLinkEntity);
         } else {
+            LinkEntity result = iLinkServices.mUpdate(vLinkEntity);
             if (result == null) {
                 resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
                 resultSet.setData(vLinkEntity);
@@ -142,21 +143,28 @@ public class LinkController extends Controller implements ILinkController {
 
     @Override
     public void mRetrieves() {
+        String params = this.getPara("p");
+        VLinkEntity requestVlinkEntity = JSON.parseObject(params, VLinkEntity.class);
+
         LinkedList<VLinkEntity> result = new LinkedList<>();
-        LinkedList<LinkEntity> linkEntities = iLinkServices.mRetrieves();
-        for (LinkEntity linkEntity : linkEntities) {
-            VLinkEntity vLinkEntity = new VLinkEntity(linkEntity);
-//            LinkedList<VLinkEntity> childrenVlinkEntities = new LinkedList<>();
-//            LinkedList<LinkEntity> children = iLinkServices.mRetrievesByPid(linkEntity.getLinkId());
-//            for (LinkEntity child : children) {
-//                childrenVlinkEntities.add(new VLinkEntity(child));
-//            }
-//            vLinkEntity.setChildren(childrenVlinkEntities);
-            result.add(vLinkEntity);
+        LinkedList<LinkEntity> linkEntities = null;
+        if (requestVlinkEntity.getLinkId() != null && requestVlinkEntity.getPid() != null && requestVlinkEntity.getLinkId().equals(requestVlinkEntity.getPid())) {
+            linkEntities = iLinkServices.mRetrievesByPid(requestVlinkEntity.getLinkId());
+        } else {
+            linkEntities = iLinkServices.mRetrieves();
         }
+
         IResultSet resultSet = new ResultSet();
-        resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-        resultSet.setData(result);
+        if (linkEntities != null) {
+            for (LinkEntity linkEntity : linkEntities) {
+                result.add(new VLinkEntity(linkEntity));
+            }
+            resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+            resultSet.setData(result);
+        } else {
+            resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
+            resultSet.setData(requestVlinkEntity);
+        }
         renderJson(JSON.toJSONString(resultSet));
     }
 }

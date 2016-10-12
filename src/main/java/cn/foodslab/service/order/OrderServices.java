@@ -38,7 +38,7 @@ public class OrderServices implements IOrderServices {
     @Override
     public LinkedList<OrderEntity> retrievesByAccounts(String[] accountIds,int status,int pageIndex,int counter) {
         LinkedList<OrderEntity> result = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM user_order WHERE accountId = ? ", accountIds);
+        List<Record> records = Db.find("SELECT * FROM user_order WHERE accountId = ? ", accountIds[0]);
         for (Record record:records){
             Map<String, Object> orderMap = record.getColumns();
             OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(orderMap), OrderEntity.class);
