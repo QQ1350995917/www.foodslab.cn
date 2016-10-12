@@ -1,4 +1,4 @@
-package cn.foodslab.model.billing;
+package cn.foodslab.controller.billing;
 
 import cn.foodslab.service.receiver.ReceiverEntity;
 

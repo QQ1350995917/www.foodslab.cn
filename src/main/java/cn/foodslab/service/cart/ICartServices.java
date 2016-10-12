@@ -1,7 +1,6 @@
 package cn.foodslab.service.cart;
 
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by Pengwei Ding on 2016-09-05 11:26.
@@ -10,36 +9,84 @@ import java.util.List;
  */
 public interface ICartServices {
 
-    CartEntity create(CartEntity cartEntity);
-
-    CartEntity retrieveById(String mappingId);
+    /**
+     * 用户接口
+     * 判断用户添加的商品是否已经存在于购物车中
+     *
+     * @param cartEntity 购物车产品对象
+     * @return success 购物车产品对象 fail null
+     */
+    CartEntity exist(CartEntity cartEntity);
 
     /**
-     * 读取未支付的format
-     * @param formatId
-     * @return
+     * 用户接口
+     * 向购物车中添加一个产品
+     *
+     * @param cartEntity 购物车产品对象
+     * @return 购物车产品对象 fail null
      */
-    CartEntity retrieveCartByFormatId(String formatId);
+    CartEntity create(CartEntity cartEntity);
 
-    LinkedList<CartEntity> retrieveByIds(String... mappingIds);
-
-    LinkedList<CartEntity> retrieveByOrderId(String orderId);
-
-    LinkedList<CartEntity> retrieveByAccountId(String accountId);
-
+    /**
+     * 用户接口
+     * 用户修改购物车产品的数量
+     *
+     * @param cartEntity 购物车产品对象
+     * @return 购物车产品对象 fail null
+     */
     CartEntity updateAmount(CartEntity cartEntity);
 
     /**
-     * 把购物车中的商品转化为订单商品
-     * 更新orderId，pricing，status
-     * @param cartEntity
-     * @return
+     * 用户接口
+     * 用户删除购物车中的产品
+     *
+     * @param cartEntity 购物车产品对象
+     * @return 购物车产品对象 fail null
      */
-    CartEntity attachToOrder(CartEntity cartEntity);
+    CartEntity deleteById(CartEntity cartEntity);
 
-    List<CartEntity> deleteByIds(String... mappingIds);
+    /**
+     * 用户接口
+     * 用户读取购物车产品集合
+     *
+     * @param accountId 账号ID
+     * @return 购物车产品对象集合 fail null
+     */
+    LinkedList<CartEntity> retrievesByAccountId(String accountId);
 
-    CartEntity isExistInCart(CartEntity cartEntity);
+    /**
+     * 用户接口
+     * 用户读取购物车产品集合
+     *
+     * @param accountIds 账号IDs
+     * @return 购物车产品对象集合 fail null
+     */
+    LinkedList<CartEntity> retrievesByAccountIds(String[] accountIds);
+
+    /**
+     * 用户接口
+     * 通过购物车ID查找
+     * @param accountId 账户ID
+     * @param mappingId 购物车产品ID
+     * @return 购物车产品对象 fail null
+     */
+    CartEntity retrieveById(String accountId,String mappingId);
+
+    /**
+     * 用户接口
+     * 根据IDs批量查找
+     *
+     * @param accountIds 账户ID
+     * @param mappingIds 产品购物车映射ID
+     * @return 购物车产品对象集合 fail null
+     */
+    LinkedList<CartEntity> retrievesByIds(String[] accountIds,String[] mappingIds);
+
+
+
+
+
+
 
 
 }

@@ -2,9 +2,6 @@ package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.model.product.VFormatEntity;
-import cn.foodslab.model.product.VSeriesEntity;
-import cn.foodslab.model.product.VTypeEntity;
 import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;

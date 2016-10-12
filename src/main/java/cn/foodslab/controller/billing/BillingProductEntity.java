@@ -1,4 +1,4 @@
-package cn.foodslab.model.billing;
+package cn.foodslab.controller.billing;
 
 /**
  * Created by Pengwei Ding on 2016-09-13 13:10.

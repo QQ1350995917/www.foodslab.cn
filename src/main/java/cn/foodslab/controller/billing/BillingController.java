@@ -2,9 +2,6 @@ package cn.foodslab.controller.billing;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.model.billing.BillingPageEntity;
-import cn.foodslab.model.billing.BillingProductEntity;
-import cn.foodslab.service.cart.CartEntity;
 import cn.foodslab.service.cart.CartServices;
 import cn.foodslab.service.cart.ICartServices;
 import cn.foodslab.service.product.IProductServices;
@@ -46,7 +43,7 @@ public class BillingController extends Controller implements IBillingController 
                 String[] split = productIds.split(",");
                 for(String productId : split){
                     BillingProductEntity billingProductEntity = new BillingProductEntity();
-                    CartEntity cartEntity = iCartServices.retrieveById(productId);
+//                    CartEntity cartEntity = iCartServices.retrieveById(productId);
 
 //                    FormatEntity formatEntity = iProductServices.retrieveTreeByFormatId(cartEntity.getFormatId());
 ////                    billingProductEntity.setIcon(formatEntity.getParent().getImageEntities().get(0).getFilePath());

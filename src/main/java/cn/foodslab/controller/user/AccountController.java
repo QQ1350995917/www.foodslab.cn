@@ -2,8 +2,6 @@ package cn.foodslab.controller.user;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.model.user.VAccountEntity;
-import cn.foodslab.model.user.VUserEntity;
 import cn.foodslab.service.user.*;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;

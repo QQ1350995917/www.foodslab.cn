@@ -2,7 +2,7 @@ package cn.foodslab.controller.receiver;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.model.user.VUserEntity;
+import cn.foodslab.controller.user.VUserEntity;
 import cn.foodslab.service.receiver.IReceiverService;
 import cn.foodslab.service.receiver.ReceiverEntity;
 import cn.foodslab.service.receiver.ReceiverServices;

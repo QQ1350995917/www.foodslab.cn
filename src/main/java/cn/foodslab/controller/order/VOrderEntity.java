@@ -1,6 +1,6 @@
-package cn.foodslab.model.order;
+package cn.foodslab.controller.order;
 
-import cn.foodslab.model.product.VFormatEntity;
+import cn.foodslab.controller.product.VFormatEntity;
 import cn.foodslab.service.order.OrderEntity;
 import cn.foodslab.service.receiver.ReceiverEntity;
 

@@ -26,11 +26,12 @@ public class PosterServices implements IPosterServices {
         Record record = new Record()
                 .set("posterId",posterEntity.getPosterId())
                 .set("clickable", posterEntity.getClickable())
+                .set("status", posterEntity.getStatus())
                 .set("href", posterEntity.getHref())
                 .set("fileId", posterEntity.getFileId())
                 .set("start",posterEntity.getStart())
                 .set("end", posterEntity.getEnd());
-        boolean poster = Db.update("poster", "posterId", record);
+        boolean poster = Db.save("poster", "posterId", record);
         if (poster) {
             return posterEntity;
         } else {

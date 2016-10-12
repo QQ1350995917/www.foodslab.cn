@@ -1,4 +1,4 @@
-package cn.foodslab.model.product;
+package cn.foodslab.controller.product;
 
 import cn.foodslab.service.product.FormatEntity;
 

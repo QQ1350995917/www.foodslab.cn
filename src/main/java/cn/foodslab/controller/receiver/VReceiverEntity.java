@@ -1,4 +1,4 @@
-package cn.foodslab.model.receiver;
+package cn.foodslab.controller.receiver;
 
 /**
  * Created by Pengwei Ding on 2016-09-21 18:16.

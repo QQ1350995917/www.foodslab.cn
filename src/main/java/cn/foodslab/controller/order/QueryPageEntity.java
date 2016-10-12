@@ -1,4 +1,4 @@
-package cn.foodslab.model.query;
+package cn.foodslab.controller.order;
 
 /**
  * Created by Pengwei Ding on 2016-09-14 13:58.

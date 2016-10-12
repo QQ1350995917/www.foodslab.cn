@@ -1,6 +1,6 @@
-package cn.foodslab.model.cart;
+package cn.foodslab.controller.cart;
 
-import cn.foodslab.model.product.VFormatEntity;
+import cn.foodslab.controller.product.VFormatEntity;
 import cn.foodslab.service.cart.CartEntity;
 
 /**

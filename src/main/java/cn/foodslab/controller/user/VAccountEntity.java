@@ -1,4 +1,4 @@
-package cn.foodslab.model.user;
+package cn.foodslab.controller.user;
 
 import cn.foodslab.service.user.AccountEntity;
 
