@@ -37,8 +37,8 @@ public interface ICartController {
 
     /**
      * 管理员接口
-     * 管理员后台读取用户购物车
+     * 管理员后台根据用户信息读取用户购物车
      */
-    void mRetrieveByUser();
+    void mRetrieve();
 }
 

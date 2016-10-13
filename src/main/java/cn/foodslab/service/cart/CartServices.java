@@ -94,4 +94,35 @@ public class CartServices implements ICartServices {
         return cartEntities;
     }
 
+    @Override
+    public LinkedList<CartEntity> retrievesByOrderId(String[] accountIds, String orderId) {
+        String in = "";
+        for (String accountId:accountIds){
+            in = in + accountId + ",";
+            if (in.length() > 0) {
+                in = in.substring(0, in.length() - 1);
+            }
+        }
+        List<Record> records = Db.find("SELECT * FROM user_cart WHERE orderId = ? AND accountId IN (?)",orderId,in);
+        LinkedList<CartEntity> cartEntities = new LinkedList<>();
+        for (Record record:records){
+            cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
+        }
+        return cartEntities;
+    }
+
+    @Override
+    public LinkedList<CartEntity> mRetrievesByOrderId(String[] accountIds, String orderId) {
+        return this.retrievesByOrderId(accountIds,orderId);
+    }
+
+    @Override
+    public LinkedList<CartEntity> mRetrievesByOrderId(String orderId) {
+        List<Record> records = Db.find("SELECT * FROM user_cart WHERE orderId = ? ",orderId);
+        LinkedList<CartEntity> cartEntities = new LinkedList<>();
+        for (Record record:records){
+            cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
+        }
+        return cartEntities;
+    }
 }

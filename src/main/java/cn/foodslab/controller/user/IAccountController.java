@@ -80,7 +80,7 @@ public interface IAccountController {
      * 管理员接口
      * 管理员分页读取所有的用户信息
      */
-    void mRetrieveUsers();
+    void mRetrieves();
 
     /**
      * 管理员接口

@@ -47,14 +47,14 @@ public class CartController extends Controller implements ICartController {
         CartEntity cartEntityInCart = iCartServices.exist(cartEntity);
         if (cartEntityInCart == null) {
             CartEntity createResult = iCartServices.create(cartEntity);
-            IResultSet iResultSet = new ResultSet(3050, createResult, "success");
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), createResult, "success");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
             int amount = vCartEntity.getAmount() + cartEntityInCart.getAmount();
             cartEntity.setMappingId(cartEntityInCart.getMappingId());
             cartEntity.setAmount(amount);
             CartEntity updateResult = iCartServices.updateAmount(cartEntity);
-            IResultSet iResultSet = new ResultSet(3050, updateResult, "success");
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), updateResult, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -66,7 +66,7 @@ public class CartController extends Controller implements ICartController {
         CartEntity cartEntity = vCartEntity.getCartEntity();
         cartEntity.setAccountId(vCartEntity.getSessionId());
         CartEntity updateResult = iCartServices.updateAmount(cartEntity);
-        IResultSet iResultSet = new ResultSet(3050, updateResult, "success");
+        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), updateResult, "success");
         renderJson(JSON.toJSONString(iResultSet));
     }
 
@@ -84,7 +84,7 @@ public class CartController extends Controller implements ICartController {
             cartEntities = iCartServices.retrievesByAccountId(vCartEntity.getSessionId());
         }
         if (cartEntities == null) {
-            IResultSet iResultSet = new ResultSet(3000, vCartEntity, "fail");
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vCartEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
             LinkedList<VCartEntity> vCartEntities = new LinkedList<>();
@@ -101,7 +101,7 @@ public class CartController extends Controller implements ICartController {
                 responseVCartEntity.setFormatEntity(vFormatEntity);
                 vCartEntities.add(responseVCartEntity);
             }
-            IResultSet iResultSet = new ResultSet(3050, vCartEntities, "success");
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), vCartEntities, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
@@ -113,16 +113,16 @@ public class CartController extends Controller implements ICartController {
         CartEntity cartEntity = vCartEntity.getCartEntity();
         CartEntity delete = iCartServices.deleteById(cartEntity);
         if (delete == null) {
-            IResultSet iResultSet = new ResultSet(3000, vCartEntity, "fail");
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vCartEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050, delete, "success");
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), delete, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
 
     @Override
-    public void mRetrieveByUser() {
+    public void mRetrieve() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
         LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(vUserEntity.getUserId());
@@ -146,8 +146,7 @@ public class CartController extends Controller implements ICartController {
             responseVCartEntity.setFormatEntity(vFormatEntity);
             vCartEntities.add(responseVCartEntity);
         }
-        IResultSet iResultSet = new ResultSet(3050, vCartEntities, "success");
+        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), vCartEntities, "success");
         renderJson(JSON.toJSONString(iResultSet));
-
     }
 }

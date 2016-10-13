@@ -66,27 +66,51 @@ public interface ICartServices {
     /**
      * 用户接口
      * 通过购物车ID查找
+     *
      * @param accountId 账户ID
      * @param mappingId 购物车产品ID
      * @return 购物车产品对象 fail null
      */
-    CartEntity retrieveById(String accountId,String mappingId);
+    CartEntity retrieveById(String accountId, String mappingId);
 
     /**
      * 用户接口
      * 根据IDs批量查找
      *
-     * @param accountIds 账户ID
+     * @param accountIds 账户IDs
      * @param mappingIds 产品购物车映射ID
      * @return 购物车产品对象集合 fail null
      */
-    LinkedList<CartEntity> retrievesByIds(String[] accountIds,String[] mappingIds);
+    LinkedList<CartEntity> retrievesByIds(String[] accountIds, String[] mappingIds);
 
+    /**
+     * 用户接口
+     * 根据用户IDs和订单IDs查找
+     *
+     * @param accountIds 账户IDs
+     * @param orderId    订单ID
+     * @return 购物车产品对象集合 fail null
+     */
+    LinkedList<CartEntity> retrievesByOrderId(String[] accountIds, String orderId);
 
+    /**
+     * 管理员接口
+     * 根据用户IDs和订单IDs分页查找对应关系
+     *
+     * @param accountIds 账户ID
+     * @param orderId    订单ID
+     * @return 购物车产品对象集合 fail null
+     */
+    LinkedList<CartEntity> mRetrievesByOrderId(String[] accountIds, String orderId);
 
-
-
-
+    /**
+     * 管理员接口
+     * 根据用户IDs和订单IDs分页查找对应关系
+     *
+     * @param orderId    订单ID
+     * @return 购物车产品对象集合 fail null
+     */
+    LinkedList<CartEntity> mRetrievesByOrderId(String orderId);
 
 
 }

@@ -122,7 +122,7 @@ public class AccountController extends Controller implements IAccountController 
     }
 
     @Override
-    public void mRetrieveUsers() {
+    public void mRetrieves() {
         LinkedList<UserEntity> userEntities = iAccountServices.mRetrieveUsers(1, 1);
         LinkedList<VUserEntity> vUserEntities = new LinkedList<>();
         for (UserEntity userEntity : userEntities) {
@@ -136,7 +136,7 @@ public class AccountController extends Controller implements IAccountController 
             vUserEntity.setChildren(vAccountEntities);
             vUserEntities.add(vUserEntity);
         }
-        IResultSet iResultSet = new ResultSet(3050, vUserEntities, "success");
+        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), vUserEntities, "success");
         renderJson(JSON.toJSONString(iResultSet));
     }
 
@@ -150,26 +150,20 @@ public class AccountController extends Controller implements IAccountController 
     public void mMark() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
-        if (vUserEntity.getStatus() == 0) {
-            UserEntity userEntity = iAccountServices.mBlock(vUserEntity.getUserEntity());
-            if (userEntity == null) {
-                IResultSet iResultSet = new ResultSet(3000, vUserEntity, "fail");
-                renderJson(JSON.toJSONString(iResultSet));
-            } else {
-                IResultSet iResultSet = new ResultSet(3050, userEntity, "success");
-                renderJson(JSON.toJSONString(iResultSet));
-            }
-        } else if (vUserEntity.getStatus() == 1) {
-            UserEntity userEntity = iAccountServices.mUnBlock(vUserEntity.getUserEntity());
-            if (userEntity == null) {
-                IResultSet iResultSet = new ResultSet(3000, vUserEntity, "fail");
-                renderJson(JSON.toJSONString(iResultSet));
-            } else {
-                IResultSet iResultSet = new ResultSet(3050, userEntity, "success");
-                renderJson(JSON.toJSONString(iResultSet));
-            }
+        UserEntity userEntity = null;
+        if (vUserEntity.getStatus() == 1) {
+            userEntity = iAccountServices.mBlock(vUserEntity.getUserEntity());
+        } else if (vUserEntity.getStatus() == 2) {
+            userEntity = iAccountServices.mUnBlock(vUserEntity.getUserEntity());
         } else {
-            IResultSet iResultSet = new ResultSet(3000, vUserEntity, "fail");
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vUserEntity, "fail");
+            renderJson(JSON.toJSONString(iResultSet));
+        }
+        if (userEntity == null) {
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vUserEntity, "fail");
+            renderJson(JSON.toJSONString(iResultSet));
+        } else {
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), userEntity, "success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }

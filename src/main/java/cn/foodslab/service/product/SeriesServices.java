@@ -30,7 +30,7 @@ public class SeriesServices implements ISeriesServices {
 
     @Override
     public SeriesEntity retrieveById(String seriesId) {
-        List<Record> records = Db.find("SELECT * FROM product_series WHERE seriesId = ? AND status = 1", seriesId);
+        List<Record> records = Db.find("SELECT * FROM product_series WHERE seriesId = ?", seriesId);
         if (records.size() == 1) {
             SeriesEntity result = JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), SeriesEntity.class);
             return result;

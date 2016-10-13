@@ -31,7 +31,7 @@ public class FormatServices implements IFormatServices {
 
     @Override
     public FormatEntity retrieveById(String formatId) {
-        List<Record> records = Db.find("SELECT * FROM product_format WHERE status = 1 AND formatId = ? order by weight ASC, updateTime DESC", formatId);
+        List<Record> records = Db.find("SELECT * FROM product_format WHERE formatId = ? order by weight ASC, updateTime DESC", formatId);
         if (records.size() == 1) {
             return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), FormatEntity.class);
         } else {

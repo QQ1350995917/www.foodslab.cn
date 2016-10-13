@@ -36,10 +36,10 @@ public class OrderServices implements IOrderServices {
     }
 
     @Override
-    public LinkedList<OrderEntity> retrievesByAccounts(String[] accountIds,int status,int pageIndex,int counter) {
+    public LinkedList<OrderEntity> retrievesByAccounts(String[] accountIds, int status, int pageIndex, int counter) {
         LinkedList<OrderEntity> result = new LinkedList<>();
         List<Record> records = Db.find("SELECT * FROM user_order WHERE accountId = ? ", accountIds[0]);
-        for (Record record:records){
+        for (Record record : records) {
             Map<String, Object> orderMap = record.getColumns();
             OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(orderMap), OrderEntity.class);
             result.add(orderEntity);
@@ -50,14 +50,14 @@ public class OrderServices implements IOrderServices {
     @Override
     public OrderEntity expressed(OrderEntity orderEntity) {
         int update = Db.update("UPDATE user_order SET status = 3 WHERE orderId = ? ", orderEntity.getOrderId());
-        if (update == 1){
+        if (update == 1) {
             return orderEntity;
         }
         return null;
     }
 
     @Override
-    public LinkedList<OrderEntity> query(String key,int pageIndex,int counter) {
+    public LinkedList<OrderEntity> query(String key, int pageIndex, int counter) {
         LinkedList<OrderEntity> result = new LinkedList<>();
         List<Record> records = Db.find("SELECT * FROM user_order WHERE orderId = ? ", key);
         OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), OrderEntity.class);
@@ -66,38 +66,73 @@ public class OrderServices implements IOrderServices {
     }
 
     @Override
-    public LinkedList<OrderEntity> mRetrieves(int status,int pageIndex,int counter) {
+    public LinkedList<OrderEntity> mRetrieves(int status, int pageIndex, int counter) {
         LinkedList<OrderEntity> orderEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM user_order WHERE status != -1 ");
-        for (Record record:records){
-            OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(record.getColumns()), OrderEntity.class);
-            orderEntities.add(orderEntity);
+        List<Record> records;
+        if (status == 0) {
+            records = Db.find("SELECT * FROM user_order WHERE status != -1 ");
+        } else {
+            records = Db.find("SELECT * FROM user_order WHERE status = ? AND status != -1 ", status);
         }
-        return orderEntities;
+        if (records == null) {
+            return null;
+        } else {
+            for (Record record : records) {
+                OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(record.getColumns()), OrderEntity.class);
+                orderEntities.add(orderEntity);
+            }
+            return orderEntities;
+        }
     }
 
     @Override
-    public LinkedList<OrderEntity> mRetrievesByUser(String[] accounts, String status, int pageIndex, int counter) {
-        return null;
+    public LinkedList<OrderEntity> mRetrievesByUser(String[] accountIds, int status, int pageIndex, int counter) {
+        String in = "";
+        for (String accountId : accountIds) {
+            in = in + accountId + ",";
+            if (in.length() > 0) {
+                in = in.substring(0, in.length() - 1);
+            }
+        }
+        List<Record> records;
+        if (status == 0) {
+            records = Db.find("SELECT * FROM user_order WHERE accountId IN (?)", in);
+        } else {
+            records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (?)", status, in);
+        }
+        if (records == null) {
+            return null;
+        } else {
+            LinkedList<OrderEntity> orderEntities = new LinkedList<>();
+            for (Record record : records) {
+                orderEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), OrderEntity.class));
+            }
+            return orderEntities;
+        }
     }
 
     @Override
     public OrderEntity mExpressing(OrderEntity orderEntity) {
+        int update = Db.update("UPDATE user_order SET status = 2 ,expressLabel = ?, expressNumber = ? WHERE orderId = ? ",orderEntity.getExpressLabel(), orderEntity.getExpressNumber(), orderEntity.getOrderId());
+        if (update == 1) {
+            return orderEntity;
+        }
         return null;
     }
 
     public LinkedList<OrderEntity> mRetrieveByStatus(int status) {
         LinkedList<OrderEntity> orderEntities = new LinkedList<>();
         List<Record> records = Db.find("SELECT * FROM user_order WHERE status = ? ", status);
-        for (Record record:records){
+        for (Record record : records) {
             OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(record.getColumns()), OrderEntity.class);
             orderEntities.add(orderEntity);
         }
         return orderEntities;
     }
+
     public OrderEntity updateExpress(OrderEntity orderEntity) {
-        int update = Db.update("UPDATE user_order SET status = 2, expressLabel = ?,expressNumber = ? WHERE orderId = ? ",orderEntity.getExpressLabel(),orderEntity.getExpressNumber(),orderEntity.getOrderId());
-        if (update == 1){
+        int update = Db.update("UPDATE user_order SET status = 2, expressLabel = ?,expressNumber = ? WHERE orderId = ? ", orderEntity.getExpressLabel(), orderEntity.getExpressNumber(), orderEntity.getOrderId());
+        if (update == 1) {
             return orderEntity;
         }
         return null;
@@ -107,7 +142,7 @@ public class OrderServices implements IOrderServices {
     public LinkedList<CartEntity> retrievesByOrderId(String orderId) {
         LinkedList<CartEntity> cartEntities = new LinkedList<>();
         List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE orderId = ? ", orderId);
-        for (Record record:records){
+        for (Record record : records) {
             cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
         }
         return cartEntities;
