@@ -139,30 +139,35 @@ public class OrderController extends Controller implements IOrderController {
             renderJson(JSON.toJSONString(iResultSet));
         } else {
             LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(userEntity.getUserId());
-            LinkedList<VOrderEntity> results = new LinkedList<>();
-            for (AccountEntity accountEntity : accountEntities) {
-//                LinkedList<OrderEntity> orderEntities = iOrderServices.retrieveByAccount(accountEntity.getAccountId());
-//                for (OrderEntity orderEntity : orderEntities) {
-//                    VOrderEntity result = new VOrderEntity(orderEntity);
-//                    LinkedList<CartEntity> cartEntities = iOrderServices.retrievesByOrderId(orderEntity.getOrderId());
-//                    LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
-//                    for (CartEntity cartEntity : cartEntities) {
-//                        FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
-//                        TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
-//                        SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
-//                        VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
-//                        VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
-//                        VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
-//                        vTypeEntity.setParent(vSeriesEntity);
-//                        vFormatEntity.setParent(vTypeEntity);
-//                        vFormatEntities.add(vFormatEntity);
-//                    }
-//                    result.setFormatEntities(vFormatEntities);
-//                    results.add(result);
-//                }
+            String[] accountIds = new String[accountEntities.size()];
+            for (int index = 0; index < accountEntities.size(); index++) {
+                accountIds[index] = accountEntities.get(index).getAccountId();
             }
-            Collections.sort(results);
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), results, "success");
+
+            LinkedList<VOrderEntity> result = new LinkedList<>();
+            LinkedList<OrderEntity> orderEntities = iOrderServices.retrievesByAccounts(accountIds, 0, 0, 0);
+            for (int index = 0; index < orderEntities.size(); index++) {
+                OrderEntity orderEntity = orderEntities.get(index);
+                VOrderEntity vOrderEntity1 = new VOrderEntity(orderEntity);
+                LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
+                LinkedList<CartEntity> cartEntities = iCartServices.retrievesByOrderId(accountIds, orderEntity.getOrderId());
+                for (CartEntity cartEntity : cartEntities) {
+                    FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
+                    TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
+                    SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
+                    VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+                    VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+                    VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
+                    vTypeEntity.setParent(vSeriesEntity);
+                    vFormatEntity.setParent(vTypeEntity);
+                    vFormatEntities.add(vFormatEntity);
+                }
+                vOrderEntity1.setFormatEntities(vFormatEntities);
+                result.add(vOrderEntity1);
+            }
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+            iResultSet.setData(result);
+            iResultSet.setMessage("success");
             renderJson(JSON.toJSONString(iResultSet));
         }
     }

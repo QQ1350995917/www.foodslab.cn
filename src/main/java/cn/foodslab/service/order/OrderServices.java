@@ -7,7 +7,6 @@ import com.jfinal.plugin.activerecord.Record;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Pengwei Ding on 2016-08-31 14:21.
@@ -37,14 +36,28 @@ public class OrderServices implements IOrderServices {
 
     @Override
     public LinkedList<OrderEntity> retrievesByAccounts(String[] accountIds, int status, int pageIndex, int counter) {
-        LinkedList<OrderEntity> result = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM user_order WHERE accountId = ? ", accountIds[0]);
-        for (Record record : records) {
-            Map<String, Object> orderMap = record.getColumns();
-            OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(orderMap), OrderEntity.class);
-            result.add(orderEntity);
+        String in = "";
+        for (String accountId : accountIds) {
+            in = in + accountId + ",";
+            if (in.length() > 0) {
+                in = in.substring(0, in.length() - 1);
+            }
         }
-        return result;
+        List<Record> records;
+        if (status == 0) {
+            records = Db.find("SELECT * FROM user_order WHERE accountId IN (?)", in);
+        } else {
+            records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (?)", status, in);
+        }
+        if (records == null) {
+            return null;
+        } else {
+            LinkedList<OrderEntity> orderEntities = new LinkedList<>();
+            for (Record record : records) {
+                orderEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), OrderEntity.class));
+            }
+            return orderEntities;
+        }
     }
 
     @Override
