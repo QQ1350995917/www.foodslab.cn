@@ -51,7 +51,7 @@ public class LinkServices implements ILinkServices {
                 return false;
             }
         } else {
-            List<Record> records = Db.find("SELECT * FROM link WHERE pid = ? AND label = ? OR href = ? AND status != -1", linkEntity.getLabel(), linkEntity.getHref());
+            List<Record> records = Db.find("SELECT * FROM link WHERE pid = ? AND label = ? AND href = ? AND status != -1", linkEntity.getPid(),linkEntity.getLabel(), linkEntity.getHref());
             if (records.size() == 1) {
                 return true;
             } else {
