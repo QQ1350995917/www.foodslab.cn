@@ -41,11 +41,10 @@ public interface IFormatServices {
      * 管理员接口
      * 判断该规格是否已经存在
      *
-     * @param formatLabel 规格名称
-     * @param typeId      类型的ID
+     * @param formatEntity 规格对象
      * @return true exist false not exist
      */
-    boolean mExist(String formatLabel, String typeId);
+    boolean mExist(FormatEntity formatEntity);
 
     /**
      * 管理员接口
@@ -117,11 +116,12 @@ public interface IFormatServices {
     /**
      * 管理员接口（用于推荐设置）
      * 根据权重顺序读取
+     *
      * @param index
      * @param counter
      * @return success 规格数据 fail null
      */
-    LinkedList<FormatEntity> mRetrieveByWeight(int index,int counter);
+    LinkedList<FormatEntity> mRetrieveByWeight(int index, int counter);
 
     /**
      * 管理员接口

@@ -51,14 +51,11 @@ public class SeriesServices implements ISeriesServices {
 
     @Override
     public SeriesEntity mCreate(SeriesEntity seriesEntity) {
-        if (this.mExist(seriesEntity.getLabel())) {
-            Record record = new Record().set("seriesId", seriesEntity.getSeriesId()).set("label", seriesEntity.getLabel());
-            boolean save = Db.save("product_series", record);
-            if (save) {
-                return seriesEntity;
-            } else {
-                return null;
-            }
+        Db.update("UPDATE product_series SET queue = queue + 1");
+        Record record = new Record().set("seriesId", seriesEntity.getSeriesId()).set("label", seriesEntity.getLabel());
+        boolean save = Db.save("product_series", record);
+        if (save) {
+            return seriesEntity;
         } else {
             return null;
         }
@@ -66,13 +63,9 @@ public class SeriesServices implements ISeriesServices {
 
     @Override
     public SeriesEntity mUpdate(SeriesEntity seriesEntity) {
-        if (this.mExist(seriesEntity.getLabel())) {
-            int update = Db.update("UPDATE product_series SET label = ? WHERE seriesId = ? ", seriesEntity.getLabel(), seriesEntity.getSeriesId());
-            if (update == 1) {
-                return seriesEntity;
-            } else {
-                return null;
-            }
+        int update = Db.update("UPDATE product_series SET label = ? WHERE seriesId = ? ", seriesEntity.getLabel(), seriesEntity.getSeriesId());
+        if (update == 1) {
+            return seriesEntity;
         } else {
             return null;
         }
@@ -100,7 +93,12 @@ public class SeriesServices implements ISeriesServices {
 
     @Override
     public SeriesEntity mDelete(SeriesEntity seriesEntity) {
-        return null;
+        int update = Db.update("UPDATE product_series SET status = -1 WHERE seriesId = ? ", seriesEntity.getSeriesId());
+        if (update == 1) {
+            return seriesEntity;
+        } else {
+            return null;
+        }
     }
 
     @Override

@@ -45,8 +45,8 @@ public class FormatServices implements IFormatServices {
     }
 
     @Override
-    public boolean mExist(String formatLabel, String typeId) {
-        List<Record> records = Db.find("SELECT * FROM product_format WHERE label = ? AND typeId = ? AND status != -1 ", formatLabel, typeId);
+    public boolean mExist(FormatEntity formatEntity) {
+        List<Record> records = Db.find("SELECT * FROM product_format WHERE label = ? AND typeId = ? AND formatId != ? AND status != -1 ", formatEntity.getLabel(), formatEntity.getTypeId(),formatEntity.getFormatId());
         if (records.size() == 1) {
             return true;
         } else {
@@ -56,42 +56,39 @@ public class FormatServices implements IFormatServices {
 
     @Override
     public FormatEntity mCreate(FormatEntity formatEntity) {
-        if (this.mExist(formatEntity.getLabel(),formatEntity.getTypeId())) {
-            Record record = new Record()
-                    .set("formatId", formatEntity.getFormatId())
-                    .set("label", formatEntity.getLabel())
-                    .set("meta", formatEntity.getMeta())
-                    .set("amount", formatEntity.getAmount())
-                    .set("amountMeta", formatEntity.getAmountMeta())
-                    .set("price", formatEntity.getPricing())
-                    .set("priceMeta", formatEntity.getPriceMeta())
-                    .set("postage", formatEntity.getPostage())
-                    .set("postageMeta", formatEntity.getPostageMeta())
-                    .set("pricing", formatEntity.getPrice())
-                    .set("pricingDiscount", formatEntity.getPricingDiscount())
-                    .set("pricingStart", formatEntity.getPricingStart())
-                    .set("pricingEnd", formatEntity.getPricingEnd())
-                    .set("pricingStatus", formatEntity.getPricingStatus())
-                    .set("expressCount", formatEntity.getExpressCount())
-                    .set("expressName", formatEntity.getExpressName())
-                    .set("expressStart", formatEntity.getExpressStart())
-                    .set("expressEnd", formatEntity.getExpressEnd())
-                    .set("expressStatus", formatEntity.getExpressStatus())
-                    .set("giftCount", formatEntity.getGiftCount())
-                    .set("giftLabel", formatEntity.getGiftLabel())
-                    .set("giftId", formatEntity.getGiftId())
-                    .set("giftStart", formatEntity.getGiftStart())
-                    .set("giftEnd", formatEntity.getGiftEnd())
-                    .set("giftStatus", formatEntity.getGiftStatus())
-                    .set("queue", formatEntity.getQueue())
-                    .set("status", formatEntity.getStatus())
-                    .set("typeId", formatEntity.getTypeId());
-            boolean save = Db.save("product_format", record);
-            if (save) {
-                return formatEntity;
-            } else {
-                return null;
-            }
+        Db.update("UPDATE product_type SET queue = queue + 1");
+        Record record = new Record()
+                .set("formatId", formatEntity.getFormatId())
+                .set("label", formatEntity.getLabel())
+                .set("meta", formatEntity.getMeta())
+                .set("amount", formatEntity.getAmount())
+                .set("amountMeta", formatEntity.getAmountMeta())
+                .set("price", formatEntity.getPricing())
+                .set("priceMeta", formatEntity.getPriceMeta())
+                .set("postage", formatEntity.getPostage())
+                .set("postageMeta", formatEntity.getPostageMeta())
+                .set("pricing", formatEntity.getPrice())
+                .set("pricingDiscount", formatEntity.getPricingDiscount())
+                .set("pricingStart", formatEntity.getPricingStart())
+                .set("pricingEnd", formatEntity.getPricingEnd())
+                .set("pricingStatus", formatEntity.getPricingStatus())
+                .set("expressCount", formatEntity.getExpressCount())
+                .set("expressName", formatEntity.getExpressName())
+                .set("expressStart", formatEntity.getExpressStart())
+                .set("expressEnd", formatEntity.getExpressEnd())
+                .set("expressStatus", formatEntity.getExpressStatus())
+                .set("giftCount", formatEntity.getGiftCount())
+                .set("giftLabel", formatEntity.getGiftLabel())
+                .set("giftId", formatEntity.getGiftId())
+                .set("giftStart", formatEntity.getGiftStart())
+                .set("giftEnd", formatEntity.getGiftEnd())
+                .set("giftStatus", formatEntity.getGiftStatus())
+                .set("queue", formatEntity.getQueue())
+                .set("status", formatEntity.getStatus())
+                .set("typeId", formatEntity.getTypeId());
+        boolean save = Db.save("product_format", record);
+        if (save) {
+            return formatEntity;
         } else {
             return null;
         }
@@ -99,42 +96,38 @@ public class FormatServices implements IFormatServices {
 
     @Override
     public FormatEntity mUpdate(FormatEntity formatEntity) {
-        if (this.mExist(formatEntity.getLabel(),formatEntity.getTypeId())) {
-            Record record = new Record()
-                    .set("formatId", formatEntity.getFormatId())
-                    .set("label", formatEntity.getLabel())
-                    .set("meta", formatEntity.getMeta())
-                    .set("amount", formatEntity.getAmount())
-                    .set("amountMeta", formatEntity.getAmountMeta())
-                    .set("price", formatEntity.getPricing())
-                    .set("priceMeta", formatEntity.getPriceMeta())
-                    .set("postage", formatEntity.getPostage())
-                    .set("postageMeta", formatEntity.getPostageMeta())
-                    .set("pricing", formatEntity.getPrice())
-                    .set("pricingDiscount", formatEntity.getPricingDiscount())
-                    .set("pricingStart", formatEntity.getPricingStart())
-                    .set("pricingEnd", formatEntity.getPricingEnd())
-                    .set("pricingStatus", formatEntity.getPricingStatus())
-                    .set("expressCount", formatEntity.getExpressCount())
-                    .set("expressName", formatEntity.getExpressName())
-                    .set("expressStart", formatEntity.getExpressStart())
-                    .set("expressEnd", formatEntity.getExpressEnd())
-                    .set("expressStatus", formatEntity.getExpressStatus())
-                    .set("giftCount", formatEntity.getGiftCount())
-                    .set("giftLabel", formatEntity.getGiftLabel())
-                    .set("giftId", formatEntity.getGiftId())
-                    .set("giftStart", formatEntity.getGiftStart())
-                    .set("giftEnd", formatEntity.getGiftEnd())
-                    .set("giftStatus", formatEntity.getGiftStatus())
-                    .set("queue", formatEntity.getQueue())
-                    .set("status", formatEntity.getStatus())
-                    .set("typeId", formatEntity.getTypeId());
-            boolean update = Db.update("product_format", "formatId", record);
-            if (update) {
-                return formatEntity;
-            } else {
-                return null;
-            }
+        Record record = new Record()
+                .set("formatId", formatEntity.getFormatId())
+                .set("label", formatEntity.getLabel())
+                .set("meta", formatEntity.getMeta())
+                .set("amount", formatEntity.getAmount())
+                .set("amountMeta", formatEntity.getAmountMeta())
+                .set("price", formatEntity.getPricing())
+                .set("priceMeta", formatEntity.getPriceMeta())
+                .set("postage", formatEntity.getPostage())
+                .set("postageMeta", formatEntity.getPostageMeta())
+                .set("pricing", formatEntity.getPrice())
+                .set("pricingDiscount", formatEntity.getPricingDiscount())
+                .set("pricingStart", formatEntity.getPricingStart())
+                .set("pricingEnd", formatEntity.getPricingEnd())
+                .set("pricingStatus", formatEntity.getPricingStatus())
+                .set("expressCount", formatEntity.getExpressCount())
+                .set("expressName", formatEntity.getExpressName())
+                .set("expressStart", formatEntity.getExpressStart())
+                .set("expressEnd", formatEntity.getExpressEnd())
+                .set("expressStatus", formatEntity.getExpressStatus())
+                .set("giftCount", formatEntity.getGiftCount())
+                .set("giftLabel", formatEntity.getGiftLabel())
+                .set("giftId", formatEntity.getGiftId())
+                .set("giftStart", formatEntity.getGiftStart())
+                .set("giftEnd", formatEntity.getGiftEnd())
+                .set("giftStatus", formatEntity.getGiftStatus())
+                .set("queue", formatEntity.getQueue())
+                .set("status", formatEntity.getStatus())
+                .set("typeId", formatEntity.getTypeId());
+        boolean update = Db.update("product_format", "formatId", record);
+        if (update) {
+            return formatEntity;
         } else {
             return null;
         }

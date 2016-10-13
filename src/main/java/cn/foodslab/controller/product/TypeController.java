@@ -35,15 +35,25 @@ public class TypeController extends Controller implements ITypeController {
         VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
         String typeId = UUID.randomUUID().toString();
         TypeEntity typeEntity = new TypeEntity(vTypeEntity.getSeriesId(), typeId, vTypeEntity.getLabel());
-        TypeEntity result = iTypeServices.mCreate(typeEntity);
-        if (result == null) {
+        typeEntity.setStatus(1);
+        boolean exist = iTypeServices.mExistInSeries(typeEntity.getLabel(), typeEntity.getSeriesId());
+        if (exist) {
             vTypeEntity.setTypeId(null);
-            IResultSet iResultSet = new ResultSet(3000, vTypeEntity, "fail");
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode());
+            iResultSet.setData(vTypeEntity);
+            iResultSet.setMessage("已经存在同名类型");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            vTypeEntity.setTypeId(typeEntity.getTypeId());
-            IResultSet iResultSet = new ResultSet(3050, vTypeEntity, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+            TypeEntity result = iTypeServices.mCreate(typeEntity);
+            if (result == null) {
+                vTypeEntity.setTypeId(null);
+                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vTypeEntity, "fail");
+                renderJson(JSON.toJSONString(iResultSet));
+            } else {
+                vTypeEntity.setTypeId(typeEntity.getTypeId());
+                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), vTypeEntity, "success");
+                renderJson(JSON.toJSONString(iResultSet));
+            }
         }
     }
 
@@ -59,13 +69,22 @@ public class TypeController extends Controller implements ITypeController {
         typeEntity.setSeriesId(vTypeEntity.getSeriesId());
         typeEntity.setTypeId(vTypeEntity.getTypeId());
         typeEntity.setLabel(vTypeEntity.getLabel());
-        TypeEntity result = iTypeServices.mUpdate(typeEntity);
-        if (result == null) {
-            IResultSet iResultSet = new ResultSet(3000, vTypeEntity, "fail");
+        boolean exist = iTypeServices.mExistInSeries(typeEntity.getLabel(), typeEntity.getSeriesId());
+        if (exist) {
+            vTypeEntity.setTypeId(null);
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode());
+            iResultSet.setData(vTypeEntity);
+            iResultSet.setMessage("已经存在同名类型");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050, vTypeEntity, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+            TypeEntity result = iTypeServices.mUpdate(typeEntity);
+            if (result == null) {
+                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vTypeEntity, "fail");
+                renderJson(JSON.toJSONString(iResultSet));
+            } else {
+                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), vTypeEntity, "success");
+                renderJson(JSON.toJSONString(iResultSet));
+            }
         }
     }
 

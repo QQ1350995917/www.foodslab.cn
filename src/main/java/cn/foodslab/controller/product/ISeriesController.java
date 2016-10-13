@@ -61,5 +61,5 @@ public interface ISeriesController {
      * 管理员接口
      * 读取系列集合
      */
-    void mRetrieve();
+    void mRetrieves();
 }

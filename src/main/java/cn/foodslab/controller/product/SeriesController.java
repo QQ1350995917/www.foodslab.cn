@@ -59,7 +59,7 @@ public class SeriesController extends Controller implements ISeriesController {
         LinkedList<TypeEntity> typeEntities = iTypeServices.retrievesInSeries(seriesEntity);
         for (TypeEntity typeEntity : typeEntities) {
             LinkedList<FormatEntity> formatEntities = iFormatServices.retrievesInType(typeEntity);
-            for (FormatEntity formatEntity:formatEntities){
+            for (FormatEntity formatEntity : formatEntities) {
                 VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
                 VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
                 vTypeEntity.setParent(new VSeriesEntity(seriesEntity));
@@ -77,16 +77,26 @@ public class SeriesController extends Controller implements ISeriesController {
         VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
         String seriesId = UUID.randomUUID().toString();
         SeriesEntity seriesEntity = new SeriesEntity(seriesId, vSeriesEntity.getLabel());
-        SeriesEntity result = iSeriesServices.mCreate(seriesEntity);
-        if (result == null) {
+        boolean mExist = iSeriesServices.mExist(seriesEntity.getLabel());
+        if (mExist) {
             seriesEntity.setSeriesId(null);
-            IResultSet iResultSet = new ResultSet(3000, vSeriesEntity, "fail");
+            IResultSet iResultSet = new ResultSet(ResultSet.ResultCode.EXE_FAIL.getCode());
+            iResultSet.setData(vSeriesEntity);
+            iResultSet.setMessage("已经存在同名系列");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            vSeriesEntity.setSeriesId(result.getSeriesId());
-            IResultSet iResultSet = new ResultSet(3050, vSeriesEntity, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+            SeriesEntity result = iSeriesServices.mCreate(seriesEntity);
+            if (result == null) {
+                seriesEntity.setSeriesId(null);
+                IResultSet iResultSet = new ResultSet(ResultSet.ResultCode.EXE_FAIL.getCode(), vSeriesEntity, "fail");
+                renderJson(JSON.toJSONString(iResultSet));
+            } else {
+                vSeriesEntity.setSeriesId(result.getSeriesId());
+                IResultSet iResultSet = new ResultSet(ResultSet.ResultCode.EXE_SUCCESS.getCode(), vSeriesEntity, "success");
+                renderJson(JSON.toJSONString(iResultSet));
+            }
         }
+
     }
 
     @Override
@@ -94,13 +104,21 @@ public class SeriesController extends Controller implements ISeriesController {
         String params = this.getPara("p");
         VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
         SeriesEntity seriesEntity = new SeriesEntity(vSeriesEntity.getSeriesId(), vSeriesEntity.getLabel());
-        SeriesEntity result = iSeriesServices.mUpdate(seriesEntity);
-        if (result == null) {
-            IResultSet iResultSet = new ResultSet(3000, vSeriesEntity, "fail");
+        boolean mExist = iSeriesServices.mExist(seriesEntity.getLabel());
+        if (mExist) {
+            IResultSet iResultSet = new ResultSet(ResultSet.ResultCode.EXE_FAIL.getCode());
+            iResultSet.setData(vSeriesEntity);
+            iResultSet.setMessage("已经存在同名系列");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            IResultSet iResultSet = new ResultSet(3050, vSeriesEntity, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+            SeriesEntity result = iSeriesServices.mUpdate(seriesEntity);
+            if (result == null) {
+                IResultSet iResultSet = new ResultSet(ResultSet.ResultCode.EXE_FAIL.getCode(), vSeriesEntity, "fail");
+                renderJson(JSON.toJSONString(iResultSet));
+            } else {
+                IResultSet iResultSet = new ResultSet(ResultSet.ResultCode.EXE_SUCCESS.getCode(), vSeriesEntity, "success");
+                renderJson(JSON.toJSONString(iResultSet));
+            }
         }
     }
 
@@ -110,10 +128,12 @@ public class SeriesController extends Controller implements ISeriesController {
         VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
         SeriesEntity seriesEntity = new SeriesEntity(vSeriesEntity.getSeriesId(), null, 0, vSeriesEntity.getStatus());
         SeriesEntity result = null;
-        if (seriesEntity.getStatus() == 0){
+        if (seriesEntity.getStatus() == 1) {
             result = iSeriesServices.mBlock(seriesEntity);
-        }else if (seriesEntity.getStatus() == 1){
+        } else if (seriesEntity.getStatus() == 2) {
             result = iSeriesServices.mUnBlock(seriesEntity);
+        } else if (seriesEntity.getStatus() == -1) {
+            result = iSeriesServices.mDelete(seriesEntity);
         }
         if (result == null) {
             IResultSet iResultSet = new ResultSet(3000, vSeriesEntity, "fail");
@@ -126,7 +146,7 @@ public class SeriesController extends Controller implements ISeriesController {
 
 
     @Override
-    public void mRetrieve() {
+    public void mRetrieves() {
         String params = this.getPara("p");
         VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
         LinkedList<SeriesEntity> seriesEntities = iSeriesServices.mRetrieves();
@@ -143,8 +163,4 @@ public class SeriesController extends Controller implements ISeriesController {
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
-
-
-
-
 }
