@@ -25,10 +25,10 @@ public class SeriesController extends Controller implements ISeriesController {
     }
 
     @Override
-    public void retrieve() {
+    public void retrieves() {
         String params = this.getPara("p");
         VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
-        LinkedList<SeriesEntity> seriesEntities = iSeriesServices.retrieve();
+        LinkedList<SeriesEntity> seriesEntities = iSeriesServices.retrieves();
         if (seriesEntities == null) {
             IResultSet iResultSet = new ResultSet(3000, null, "fail");
             renderJson(JSON.toJSONString(iResultSet));

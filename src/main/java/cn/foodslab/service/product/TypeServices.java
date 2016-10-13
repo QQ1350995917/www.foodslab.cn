@@ -18,7 +18,7 @@ public class TypeServices implements ITypeServices {
     @Override
     public LinkedList<TypeEntity> retrievesInSeries(SeriesEntity seriesEntity) {
         LinkedList<TypeEntity> typeEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM product_type WHERE seriesId = ? AND status = 1", seriesEntity.getSeriesId());
+        List<Record> records = Db.find("SELECT * FROM product_type WHERE seriesId = ? AND status = 2", seriesEntity.getSeriesId());
         for (Record record : records) {
             Map<String, Object> typeMap = record.getColumns();
             typeEntities.add(JSON.parseObject(JSON.toJSONString(typeMap), TypeEntity.class));

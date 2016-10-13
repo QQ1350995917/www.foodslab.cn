@@ -23,7 +23,7 @@ public interface ISeriesController {
      * 应用于首页，系列等页面
      */
     @Clear(Session.class)
-    void retrieve();
+    void retrieves();
 
     /**
      * 用户接口

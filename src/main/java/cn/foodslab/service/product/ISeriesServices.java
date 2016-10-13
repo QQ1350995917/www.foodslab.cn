@@ -14,7 +14,7 @@ public interface ISeriesServices {
      * 读取所有的系列
      * @return fail null success 系列对象集合
      */
-    LinkedList<SeriesEntity> retrieve();
+    LinkedList<SeriesEntity> retrieves();
 
     /**
      * 用户接口

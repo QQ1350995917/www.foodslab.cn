@@ -28,11 +28,11 @@ public class LinkController extends Controller implements ILinkController {
     @Override
     public void retrieves() {
         LinkedList<VLinkEntity> result = new LinkedList<>();
-        LinkedList<LinkEntity> linkEntities = iLinkServices.mRetrieves();
+        LinkedList<LinkEntity> linkEntities = iLinkServices.retrieves();
         for (LinkEntity linkEntity : linkEntities) {
             VLinkEntity vLinkEntity = new VLinkEntity(linkEntity);
             LinkedList<VLinkEntity> childrenVlinkEntities = new LinkedList<>();
-            LinkedList<LinkEntity> children = iLinkServices.mRetrievesByPid(linkEntity.getLinkId());
+            LinkedList<LinkEntity> children = iLinkServices.retrievesByPid(linkEntity.getLinkId());
             for (LinkEntity child : children) {
                 childrenVlinkEntities.add(new VLinkEntity(child));
             }

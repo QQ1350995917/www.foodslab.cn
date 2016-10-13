@@ -21,7 +21,7 @@ public class FormatServices implements IFormatServices {
     @Override
     public LinkedList<FormatEntity> retrievesInType(TypeEntity typeEntity) {
         LinkedList<FormatEntity> formatEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM product_format WHERE status = 1 AND typeId = ? order by weight ASC, updateTime DESC", typeEntity.getTypeId());
+        List<Record> records = Db.find("SELECT * FROM product_format WHERE status = 2 AND typeId = ? order by weight ASC, updateTime DESC", typeEntity.getTypeId());
         for (Record record : records) {
             Map<String, Object> formatMap = record.getColumns();
             formatEntities.add(JSON.parseObject(JSON.toJSONString(formatMap), FormatEntity.class));
@@ -204,7 +204,7 @@ public class FormatServices implements IFormatServices {
     @Override
     public LinkedList<FormatEntity> mRetrieveByWeight(int index,int counter) {
         LinkedList<FormatEntity> result = new LinkedList<>();
-        List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE status = 1 order by weight ASC limit 12 offset 0 ");
+        List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE status = 2 order by weight ASC limit 12 offset 0 ");
         for (Record formatRecord : formatRecords) {
             FormatEntity formatEntity = JSON.parseObject(JSON.toJSONString(formatRecord.getColumns()), FormatEntity.class);
             List<Record> typeIdRecords = Db.find("SELECT * FROM product_type WHERE typeId = ? ", formatEntity.getTypeId());

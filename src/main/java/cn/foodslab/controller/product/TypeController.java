@@ -26,7 +26,23 @@ public class TypeController extends Controller implements ITypeController {
 
     @Override
     public void retrieve() {
-
+        String params = this.getPara("p");
+        VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
+        TypeEntity typeEntity = iTypeServices.retrieveById(vTypeEntity.getTypeId());
+        if (typeEntity == null) {
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode());
+            iResultSet.setData(vTypeEntity);
+            iResultSet.setMessage("");
+            renderJson(JSON.toJSONString(iResultSet));
+        } else {
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+            VTypeEntity result = new VTypeEntity(typeEntity);
+            SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
+            result.setParent(new VSeriesEntity(seriesEntity));
+            iResultSet.setData(result);
+            iResultSet.setMessage("");
+            renderJson(JSON.toJSONString(iResultSet));
+        }
     }
 
     @Override
