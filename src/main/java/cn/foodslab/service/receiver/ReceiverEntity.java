@@ -7,15 +7,15 @@ package cn.foodslab.service.receiver;
  */
 public class ReceiverEntity {
     private String receiverId;
+    private String name;
+    private String phone0;
+    private String phone1;
     private String province;
     private String city;
     private String county;
     private String town;
     private String village;
     private String append;
-    private String name;
-    private String phone0;
-    private String phone1;
     private int status; // -1标示删除，1标示禁用，2标示正常，3标示默认收货地址。数据库中该字段默认为2，目前暂时没有1的状态。
     private String accountId;
     private String createTime;

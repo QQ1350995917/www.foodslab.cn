@@ -152,9 +152,9 @@ public class AccountController extends Controller implements IAccountController 
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
         UserEntity userEntity = null;
         if (vUserEntity.getStatus() == 1) {
-            userEntity = iAccountServices.mBlock(vUserEntity.getUserEntity());
+            userEntity = iAccountServices.mBlock(vUserEntity);
         } else if (vUserEntity.getStatus() == 2) {
-            userEntity = iAccountServices.mUnBlock(vUserEntity.getUserEntity());
+            userEntity = iAccountServices.mUnBlock(vUserEntity);
         } else {
             IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vUserEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));

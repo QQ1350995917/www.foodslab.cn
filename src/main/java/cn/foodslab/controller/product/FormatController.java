@@ -27,12 +27,27 @@ public class FormatController extends Controller implements IFormatController {
 
     @Override
     public void retrieves() {
+        String params = this.getPara("p");
+        VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
+        LinkedList<FormatEntity> formatEntities = iFormatServices.retrievesInType(vTypeEntity);
 
+        LinkedList<VFormatEntity> result = new LinkedList<>();
+        for (FormatEntity formatEntity : formatEntities) {
+            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+            result.add(vFormatEntity);
+        }
+        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), result, "success");
+        renderJson(JSON.toJSONString(iResultSet));
     }
 
     @Override
     public void retrieve() {
-
+        String params = this.getPara("p");
+        VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
+        FormatEntity formatEntity = iFormatServices.retrieveById(vFormatEntity.getFormatId());
+        VFormatEntity result = new VFormatEntity(formatEntity);
+        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), result, "success");
+        renderJson(JSON.toJSONString(iResultSet));
     }
 
     @Override

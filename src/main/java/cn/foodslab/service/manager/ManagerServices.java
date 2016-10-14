@@ -34,7 +34,7 @@ public class ManagerServices implements IManagerServices {
     public IResultSet createManager(ManagerEntity managerEntity) {
         IResultSet existManagerUserName = isExistManagerUserName(managerEntity.getUsername());
         if ("true".equals(existManagerUserName.getData().toString())) {
-            return new ResultSet(JSON.toJSONString(managerEntity), 0, "用户名已存在");
+            return new ResultSet(0, JSON.toJSONString(managerEntity), "用户名已存在");
         } else if ("false".equals(existManagerUserName.getData().toString())) {
             ResultSet resultSet = new ResultSet();
             //开启事务 TODO 更新失败，并且回滚也失败了怎么办？
@@ -80,7 +80,7 @@ public class ManagerServices implements IManagerServices {
             return resultSet;
         } else {
             //用户名重复检测结果在期望值之外的情况
-            return new ResultSet(JSON.toJSONString(managerEntity), 0, "用户名检测结果是:" + existManagerUserName + "超出预定结果范围");
+            return new ResultSet(0, JSON.toJSONString(managerEntity), "用户名检测结果是:" + existManagerUserName + "超出预定结果范围");
         }
     }
 
@@ -110,11 +110,11 @@ public class ManagerServices implements IManagerServices {
             Map<String, Object> columns = record.getColumns();
             LinkedList<Map> menus = new LinkedList<>();
             List<Record> menuRecords = Db.find("SELECT * FROM manager_menu WHERE managerId='" + columns.get("managerId") + "'");
-            for (Record menuRecord:menuRecords){
+            for (Record menuRecord : menuRecords) {
                 Map<String, Object> menuRecordColumns = menuRecord.getColumns();
                 menus.add(menuRecordColumns);
             }
-            columns.put("managerMenuEntitiesMapping",menus);
+            columns.put("managerMenuEntitiesMapping", menus);
             jsonMap.add(columns);
         }
         IResultSet resultSet = new ResultSet(jsonMap);
@@ -201,7 +201,7 @@ public class ManagerServices implements IManagerServices {
                 Record managerMenu = new Record()
                         .set("managerId", managerEntity.getManagerId()) //这里要使用管理员对象中的ID（有可能client在提交的时候在对应关系中无managerID）
                         .set("menuId", managerMenuEntity.getMenuId()).set("menuLabel", managerMenuEntity.getMenuLabel());
-                managerMenuResult = Db.save("manager_menu","managerId,menuId", managerMenu);
+                managerMenuResult = Db.save("manager_menu", "managerId,menuId", managerMenu);
                 //对创建管理员和菜单的映射管理做记录
                 if (managerMenuResult) {
                     resultSet.setMessage(resultSet.getMessage() + "创建管理员-菜单映射[" + managerMenuEntity.getMenuLabel() + "]成功;");

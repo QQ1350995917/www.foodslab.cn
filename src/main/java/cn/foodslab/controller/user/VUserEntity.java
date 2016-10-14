@@ -9,9 +9,8 @@ import java.util.LinkedList;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-public class VUserEntity {
-    private String userId;
-    private int status = -2;
+public class VUserEntity extends UserEntity {
+    private String sessionId;
     private LinkedList<VAccountEntity> children;
 
     public VUserEntity() {
@@ -19,29 +18,21 @@ public class VUserEntity {
     }
 
     public VUserEntity(UserEntity userEntity) {
-        this.userId = userEntity.getUserId();
-        this.status = userEntity.getStatus();
+        this.setUserId(userEntity.getUserId());
+        this.setStatus(userEntity.getStatus());
     }
 
     public VUserEntity(String userId, int status) {
-        this.userId = userId;
-        this.status = status;
+        this.setUserId(userId);
+        this.setStatus(status);
     }
 
-    public String getUserId() {
-        return userId;
+    public String getSessionId() {
+        return sessionId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     public LinkedList<VAccountEntity> getChildren() {
@@ -52,10 +43,4 @@ public class VUserEntity {
         this.children = children;
     }
 
-    public UserEntity getUserEntity(){
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUserId(this.getUserId());
-        userEntity.setStatus(this.getStatus());
-        return userEntity;
-    }
 }

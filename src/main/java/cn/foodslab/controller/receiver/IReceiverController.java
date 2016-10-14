@@ -21,7 +21,7 @@ public interface IReceiverController {
      * 读取收货人
      * 该接口由登录用户调用，读取其用户名下的收货人信息
      */
-    void retrieve();
+    void retrieves();
 
     /**
      * 用户接口

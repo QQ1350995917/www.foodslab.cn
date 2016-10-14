@@ -126,14 +126,14 @@ public class CartController extends Controller implements ICartController {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
         LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(vUserEntity.getUserId());
-        LinkedList<CartEntity> result = new LinkedList<>();
-        for (AccountEntity accountEntity : accountEntities) {
-            LinkedList<CartEntity> cartEntities = iCartServices.retrievesByAccountId(accountEntity.getAccountId());
-            result.addAll(cartEntities);
-        }
 
-        LinkedList<VCartEntity> vCartEntities = new LinkedList<>();
-        for (CartEntity cartEntity : result) {
+        String[] accountIds = new String[accountEntities.size()];
+        for (int index = 0; index < accountEntities.size(); index++) {
+            accountIds[index] = accountEntities.get(index).getAccountId();
+        }
+        LinkedList<CartEntity> cartEntities = iCartServices.retrievesByAccountIds(accountIds);
+        LinkedList<VCartEntity> result = new LinkedList<>();
+        for (CartEntity cartEntity : cartEntities) {
             FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
             TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
             SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
@@ -144,9 +144,9 @@ public class CartController extends Controller implements ICartController {
             vFormatEntity.setParent(vTypeEntity);
             VCartEntity responseVCartEntity = new VCartEntity(cartEntity);
             responseVCartEntity.setFormatEntity(vFormatEntity);
-            vCartEntities.add(responseVCartEntity);
+            result.add(responseVCartEntity);
         }
-        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), vCartEntities, "success");
+        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), result, "success");
         renderJson(JSON.toJSONString(iResultSet));
     }
 }

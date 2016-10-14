@@ -91,7 +91,7 @@ public class AccountServices implements IAccountServices {
     }
 
     @Override
-    public LinkedList<UserEntity> mRetrieveUsers(int page,int counter) {
+    public LinkedList<UserEntity> mRetrieveUsers(int page, int counter) {
         LinkedList<UserEntity> userEntities = new LinkedList<>();
         List<Record> records = Db.find("SELECT * FROM user WHERE status != -1");
         for (Record record : records) {
@@ -127,7 +127,13 @@ public class AccountServices implements IAccountServices {
 
     @Override
     public LinkedList<AccountEntity> mRetrieveByUserId(String userId) {
-        return null;
+        LinkedList<AccountEntity> accountEntities = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM user_account WHERE userId = ? ", userId);
+        for (Record record : records) {
+            AccountEntity accountEntity = JSON.parseObject(JSON.toJSONString(record.getColumns()), AccountEntity.class);
+            accountEntities.add(accountEntity);
+        }
+        return accountEntities;
     }
 
     @Override
@@ -139,14 +145,6 @@ public class AccountServices implements IAccountServices {
         UserEntity userEntity = JSON.parseObject(JSON.toJSONString(userMap), UserEntity.class);
         return userEntity;
     }
-
-
-
-
-
-
-
-
 
 
 }

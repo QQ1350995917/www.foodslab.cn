@@ -1,6 +1,5 @@
 package cn.foodslab.service.order;
 
-import cn.foodslab.service.cart.CartEntity;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
@@ -36,18 +35,24 @@ public class OrderServices implements IOrderServices {
 
     @Override
     public LinkedList<OrderEntity> retrievesByAccounts(String[] accountIds, int status, int pageIndex, int counter) {
+        String[] params = new String[accountIds.length + 1];
+        int index = 0;
+        params[index] = status + "";
+        index ++;
         String in = "";
         for (String accountId : accountIds) {
-            in = in + accountId + ",";
-            if (in.length() > 0) {
-                in = in.substring(0, in.length() - 1);
-            }
+            in = in + " ? ,";
+            params[index] = accountId;
+            index ++;
+        }
+        if (in.length() > 0) {
+            in = in.substring(0, in.length() - 1);
         }
         List<Record> records;
         if (status == 0) {
-            records = Db.find("SELECT * FROM user_order WHERE accountId IN (?)", in);
+            records = Db.find("SELECT * FROM user_order WHERE accountId IN (" + in + ") ORDER BY createTime DESC", accountIds);
         } else {
-            records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (?)", status, in);
+            records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (" + in + ") ORDER BY createTime DESC", params);
         }
         if (records == null) {
             return null;
@@ -83,9 +88,9 @@ public class OrderServices implements IOrderServices {
         LinkedList<OrderEntity> orderEntities = new LinkedList<>();
         List<Record> records;
         if (status == 0) {
-            records = Db.find("SELECT * FROM user_order WHERE status != -1 ");
+            records = Db.find("SELECT * FROM user_order WHERE status != -1 ORDER BY createTime DESC");
         } else {
-            records = Db.find("SELECT * FROM user_order WHERE status = ? AND status != -1 ", status);
+            records = Db.find("SELECT * FROM user_order WHERE status = ? AND status != -1 ORDER BY createTime ASC", status);
         }
         if (records == null) {
             return null;
@@ -100,18 +105,24 @@ public class OrderServices implements IOrderServices {
 
     @Override
     public LinkedList<OrderEntity> mRetrievesByUser(String[] accountIds, int status, int pageIndex, int counter) {
+        String[] params = new String[accountIds.length + 1];
+        int index = 0;
+        params[index] = status + "";
+        index ++;
         String in = "";
         for (String accountId : accountIds) {
-            in = in + accountId + ",";
-            if (in.length() > 0) {
-                in = in.substring(0, in.length() - 1);
-            }
+            in = in + " ? ,";
+            params[index] = accountId;
+            index ++;
+        }
+        if (in.length() > 0) {
+            in = in.substring(0, in.length() - 1);
         }
         List<Record> records;
         if (status == 0) {
-            records = Db.find("SELECT * FROM user_order WHERE accountId IN (?)", in);
+            records = Db.find("SELECT * FROM user_order WHERE accountId IN (" + in + ") ORDER BY createTime DESC", accountIds);
         } else {
-            records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (?)", status, in);
+            records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (" + in + ") ORDER BY createTime DESC", params);
         }
         if (records == null) {
             return null;
@@ -131,42 +142,5 @@ public class OrderServices implements IOrderServices {
             return orderEntity;
         }
         return null;
-    }
-
-    public LinkedList<OrderEntity> mRetrieveByStatus(int status) {
-        LinkedList<OrderEntity> orderEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM user_order WHERE status = ? ", status);
-        for (Record record : records) {
-            OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(record.getColumns()), OrderEntity.class);
-            orderEntities.add(orderEntity);
-        }
-        return orderEntities;
-    }
-
-    public OrderEntity updateExpress(OrderEntity orderEntity) {
-        int update = Db.update("UPDATE user_order SET status = 2, expressLabel = ?,expressNumber = ? WHERE orderId = ? ", orderEntity.getExpressLabel(), orderEntity.getExpressNumber(), orderEntity.getOrderId());
-        if (update == 1) {
-            return orderEntity;
-        }
-        return null;
-    }
-
-
-    public LinkedList<CartEntity> retrievesByOrderId(String orderId) {
-        LinkedList<CartEntity> cartEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT mappingId,formatId,amount,accountId,createTime FROM user_cart WHERE orderId = ? ", orderId);
-        for (Record record : records) {
-            cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
-        }
-        return cartEntities;
-    }
-
-    public CartEntity attachToOrder(CartEntity cartEntity) {
-        int update = Db.update("UPDATE user_cart SET orderId = ?,status = ? WHERE mappingId = ?", cartEntity.getOrderId(), cartEntity.getStatus(), cartEntity.getMappingId());
-        if (update == 1) {
-            return cartEntity;
-        } else {
-            return null;
-        }
     }
 }

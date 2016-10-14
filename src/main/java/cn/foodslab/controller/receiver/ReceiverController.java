@@ -6,9 +6,9 @@ import cn.foodslab.controller.user.VUserEntity;
 import cn.foodslab.service.receiver.IReceiverService;
 import cn.foodslab.service.receiver.ReceiverEntity;
 import cn.foodslab.service.receiver.ReceiverServices;
+import cn.foodslab.service.user.AccountEntity;
 import cn.foodslab.service.user.AccountServices;
 import cn.foodslab.service.user.IAccountServices;
-import cn.foodslab.service.user.UserEntity;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
 
@@ -32,92 +32,126 @@ public class ReceiverController extends Controller implements IReceiverControlle
     }
 
     @Override
-    public void retrieve() {
-        String accountId = getPara("accountId");
-        UserEntity userEntity = iAccountServices.retrieveUserByAccountId(accountId);
-        LinkedList<ReceiverEntity> receiverEntities = iReceiverService.retrieveByUserId(userEntity.getUserId());
+    public void retrieves() {
+        String params = this.getPara("p");
+        VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
+        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(vUserEntity.getSessionId());
+        String[] accountIds = new String[accountEntities.size()];
+        for (int index = 0; index < accountEntities.size(); index++) {
+            accountIds[index] = accountEntities.get(index).getAccountId();
+        }
+        LinkedList<VReceiverEntity> result = new LinkedList<>();
+        LinkedList<ReceiverEntity> receiverEntities = iReceiverService.retrieves(accountIds);
+        for (ReceiverEntity receiverEntity : receiverEntities) {
+            result.add(new VReceiverEntity(receiverEntity));
+        }
         IResultSet resultSet = new ResultSet();
         resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-        resultSet.setData(receiverEntities);
+        resultSet.setData(result);
         renderJson(JSON.toJSONString(resultSet));
     }
 
     @Override
     public void create() {
-        String accountId = getPara("accountId");
+        String params = this.getPara("p");
+        VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
+        vReceiverEntity.setStatus(2);
         String receiverId = UUID.randomUUID().toString();
-        String name = getPara("name");
-        String phone0 = getPara("phone0");
-        String phone1 = getPara("phone1");
-        String province = getPara("province");
-        String city = getPara("city");
-        String county = getPara("county");
-        String town = getPara("town");
-        String village = getPara("village");
-        String append = getPara("append");
-        ReceiverEntity receiverEntity = new ReceiverEntity(receiverId, province, city, county, town, village, append, name, phone0, phone1, 1, accountId);
-        ReceiverEntity receiverEntityResult = iReceiverService.create(receiverEntity);
-        IResultSet resultSet = new ResultSet();
-        resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-        resultSet.setData(receiverEntityResult);
-        renderJson(JSON.toJSONString(resultSet));
+        vReceiverEntity.setReceiverId(receiverId);
+        ReceiverEntity receiverEntity = iReceiverService.create(vReceiverEntity);
+        if (receiverEntity == null) {
+            vReceiverEntity.setReceiverId(null);
+            IResultSet resultSet = new ResultSet();
+            resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
+            resultSet.setData(vReceiverEntity);
+            renderJson(JSON.toJSONString(resultSet));
+        } else {
+            VReceiverEntity result = new VReceiverEntity(receiverEntity);
+            result.setSessionId(vReceiverEntity.getSessionId());
+            IResultSet resultSet = new ResultSet();
+            resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+            resultSet.setData(result);
+            renderJson(JSON.toJSONString(resultSet));
+        }
     }
 
     @Override
     public void update() {
-        String accountId = getPara("accountId");
-        String receiverId = getPara("receiverId");
-        String name = getPara("name");
-        String phone0 = getPara("phone0");
-        String phone1 = getPara("phone1");
-        String province = getPara("province");
-        String city = getPara("city");
-        String county = getPara("county");
-        String town = getPara("town");
-        String village = getPara("village");
-        String append = getPara("append");
-        int status = Integer.parseInt(getPara("status"));
-
-        ReceiverEntity receiverEntity = new ReceiverEntity(receiverId, province, city, county, town, village, append, name, phone0, phone1, status, accountId);
-        ReceiverEntity update = iReceiverService.updateById(receiverEntity);
-        if (update != null) {
-            IResultSet resultSet = new ResultSet();
-            resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-            resultSet.setData(update);
-            renderJson(JSON.toJSONString(resultSet));
-        } else {
+        String params = this.getPara("p");
+        VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
+        ReceiverEntity receiverEntity = iReceiverService.updateById(vReceiverEntity);
+        if (receiverEntity == null) {
             IResultSet resultSet = new ResultSet();
             resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
+            resultSet.setData(vReceiverEntity);
+            renderJson(JSON.toJSONString(resultSet));
+        } else {
+            VReceiverEntity result = new VReceiverEntity(receiverEntity);
+            IResultSet resultSet = new ResultSet();
+            resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+            resultSet.setData(result);
             renderJson(JSON.toJSONString(resultSet));
         }
     }
 
     @Override
     public void delete() {
-        String accountId = getPara("accountId");
-        String receiverId = getPara("receiverId");
-        if (accountId != null) {
-            ReceiverEntity receiverEntity = iReceiverService.deleteById(receiverId);
-            IResultSet resultSet = new ResultSet();
-            resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-            resultSet.setData(receiverEntity);
+        String params = this.getPara("p");
+        VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
+        ReceiverEntity receiverEntity = iReceiverService.deleteById(vReceiverEntity.getReceiverId());
+        if (receiverEntity == null) {
+            IResultSet resultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode());
+            resultSet.setData(vReceiverEntity);
+            renderJson(JSON.toJSONString(resultSet));
+        } else {
+            IResultSet resultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+            resultSet.setData(vReceiverEntity);
             renderJson(JSON.toJSONString(resultSet));
         }
     }
 
     @Override
     public void king() {
-
+        String params = this.getPara("p");
+        VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
+        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(vReceiverEntity.getSessionId());
+        String[] accountIds = new String[accountEntities.size()];
+        for (int index = 0; index < accountEntities.size(); index++) {
+            accountIds[index] = accountEntities.get(index).getAccountId();
+        }
+        ReceiverEntity receiverEntity = iReceiverService.kingReceiverInUser(vReceiverEntity, accountIds);
+        if (receiverEntity == null) {
+            IResultSet resultSet = new ResultSet();
+            resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
+            resultSet.setData(new VReceiverEntity(vReceiverEntity));
+            renderJson(JSON.toJSONString(resultSet));
+        } else {
+            IResultSet resultSet = new ResultSet();
+            resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+            VReceiverEntity result = new VReceiverEntity(receiverEntity);
+            result.setSessionId(vReceiverEntity.getSessionId());
+            resultSet.setData(result);
+            renderJson(JSON.toJSONString(resultSet));
+        }
     }
 
     @Override
     public void mRetrieveByUser() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
-        LinkedList<ReceiverEntity> receiverEntities = iReceiverService.mRetrieveByUserId(vUserEntity.getUserEntity().getUserId());
+        LinkedList<AccountEntity> accountEntities = iAccountServices.mRetrieveByUserId(vUserEntity.getUserId());
+        String[] accountIds = new String[accountEntities.size()];
+        for (int index = 0; index < accountEntities.size(); index++) {
+            accountIds[index] = accountEntities.get(index).getAccountId();
+        }
+        LinkedList<VReceiverEntity> result = new LinkedList<>();
+        LinkedList<ReceiverEntity> receiverEntities = iReceiverService.mRetrieves(accountIds);
+        for (ReceiverEntity receiverEntity : receiverEntities) {
+            result.add(new VReceiverEntity(receiverEntity));
+        }
         IResultSet resultSet = new ResultSet();
         resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-        resultSet.setData(receiverEntities);
+        resultSet.setData(result);
         renderJson(JSON.toJSONString(resultSet));
     }
 }

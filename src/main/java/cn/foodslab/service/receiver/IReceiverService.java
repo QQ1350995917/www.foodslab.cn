@@ -11,11 +11,19 @@ public interface IReceiverService {
 
     /**
      * 用户接口
-     * 读取用户名下的所有状态正常的收货人信息
-     * @param userId 用户ID
+     * 读取账户下的所有状态正常的收货人信息
+     * @param accountId 用户ID
      * @return fail null success 收货人信息集合
      */
-    LinkedList<ReceiverEntity> retrieveByUserId(String userId);
+    LinkedList<ReceiverEntity> retrieves(String accountId);
+
+    /**
+     * 用户接口
+     * 读取账户下的所有状态正常的收货人信息
+     * @param accountIds 用户IDs
+     * @return fail null success 收货人信息集合
+     */
+    LinkedList<ReceiverEntity> retrieves(String[] accountIds);
 
     /**
      * TODO 待处理接口，目前被查询接口调用，应该处理为全文检索
@@ -51,18 +59,26 @@ public interface IReceiverService {
     /**
      * 用户接口
      * 设置用户名下的一个收货人为默认收货人，设置方式为将其用户名下的status重置为1，然后将当前收货人status设置为2
-     * @param receiverId 当前收货人ID
-     * @param userId 当前用户的ID
+     * @param receiverEntity 当前收货人对象
+     * @param accountIds 当前用户的IDs
      * @return fail null success 返回要设置的收货人对象
      */
-    ReceiverEntity kingReceiverInUser(String receiverId,String userId);
+    ReceiverEntity kingReceiverInUser(ReceiverEntity receiverEntity,String[] accountIds);
 
     /**
      * 管理员接口
-     * 在后台读取用户名下的收货人信息
-     * @param userId 用户ID
+     * 在后台读取账户名下的收货人信息
+     * @param accountId 用户ID
      * @return fail null success 收货人信息集合
      */
-    LinkedList<ReceiverEntity> mRetrieveByUserId(String userId);
+    LinkedList<ReceiverEntity> mRetrieves(String accountId);
+
+    /**
+     * 管理员接口
+     * 在后台读取账户名下的收货人信息
+     * @param accountIds 用户IDs
+     * @return fail null success 收货人信息集合
+     */
+    LinkedList<ReceiverEntity> mRetrieves(String[] accountIds);
 
 }

@@ -1,5 +1,6 @@
 package cn.foodslab.service.cart;
 
+import cn.foodslab.service.order.OrderEntity;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
@@ -56,7 +57,6 @@ public class CartServices implements ICartServices {
             Record record = records.get(0);
             boolean delete = Db.delete("user_cart", "mappingId", record);
             return JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class);
-
         } else {
             return null;
         }
@@ -96,31 +96,63 @@ public class CartServices implements ICartServices {
 
     @Override
     public LinkedList<CartEntity> retrievesByOrderId(String[] accountIds, String orderId) {
+        String[] params = new String[accountIds.length + 1];
+        int index = 0;
+        params[index] = orderId;
+        index ++;
         String in = "";
-        for (String accountId:accountIds){
-            in = in + accountId + ",";
-            if (in.length() > 0) {
-                in = in.substring(0, in.length() - 1);
-            }
+        for (String accountId : accountIds) {
+            in = in + " ? ,";
+            params[index] = accountId;
+            index ++;
         }
-        List<Record> records = Db.find("SELECT * FROM user_cart WHERE orderId = ? AND accountId IN (?)",orderId,in);
+        if (in.length() > 0) {
+            in = in.substring(0, in.length() - 1);
+        }
+
+        List<Record> records = Db.find("SELECT * FROM user_cart WHERE orderId = ? AND accountId IN (" + in + ")", params);
         LinkedList<CartEntity> cartEntities = new LinkedList<>();
-        for (Record record:records){
+        for (Record record : records) {
             cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
         }
         return cartEntities;
     }
 
     @Override
+    public boolean attachToOrder(OrderEntity orderEntity, String[] mappingIds) {
+        String[] params = new String[mappingIds.length + 1];
+        int index = 0;
+        params[index] = orderEntity.getOrderId();
+        index ++;
+        String in = "";
+        for (String mappingId : mappingIds) {
+            in = in + " ? ,";
+            params[index] = mappingId;
+            index ++;
+        }
+        if (in.length() > 0) {
+            in = in.substring(0, in.length() - 1);
+        }
+
+        int update = Db.update("UPDATE user_cart SET orderId = ? ,status = 2 WHERE mappingId IN (" + in + ") AND status = 1", params);
+        if (update == mappingIds.length) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    @Override
     public LinkedList<CartEntity> mRetrievesByOrderId(String[] accountIds, String orderId) {
-        return this.retrievesByOrderId(accountIds,orderId);
+        return this.retrievesByOrderId(accountIds, orderId);
     }
 
     @Override
     public LinkedList<CartEntity> mRetrievesByOrderId(String orderId) {
-        List<Record> records = Db.find("SELECT * FROM user_cart WHERE orderId = ? ",orderId);
+        List<Record> records = Db.find("SELECT * FROM user_cart WHERE orderId = ? ", orderId);
         LinkedList<CartEntity> cartEntities = new LinkedList<>();
-        for (Record record:records){
+        for (Record record : records) {
             cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
         }
         return cartEntities;

@@ -1,5 +1,7 @@
 package cn.foodslab.service.cart;
 
+import cn.foodslab.service.order.OrderEntity;
+
 import java.util.LinkedList;
 
 /**
@@ -92,6 +94,15 @@ public interface ICartServices {
      * @return 购物车产品对象集合 fail null
      */
     LinkedList<CartEntity> retrievesByOrderId(String[] accountIds, String orderId);
+
+    /**
+     * 用户接口
+     * 用户下单时把购物车中的对应关系绑定到订单上
+     * @param orderEntity 订单对象
+     * @param mappingIds 映射IDs
+     * @return success true fail false
+     */
+    boolean attachToOrder(OrderEntity orderEntity,String[] mappingIds);
 
     /**
      * 管理员接口

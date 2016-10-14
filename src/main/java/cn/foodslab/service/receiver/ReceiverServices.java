@@ -1,14 +1,9 @@
 package cn.foodslab.service.receiver;
 
-import cn.foodslab.service.user.AccountEntity;
-import cn.foodslab.service.user.AccountServices;
-import cn.foodslab.service.user.IAccountServices;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 
-import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,23 +14,30 @@ import java.util.Map;
  * Description: @TODO
  */
 public class ReceiverServices implements IReceiverService {
-    private IAccountServices iAccountServices = new AccountServices();
 
     @Override
-    public LinkedList<ReceiverEntity> retrieveByUserId(String userId) {
+    public LinkedList<ReceiverEntity> retrieves(String accountId) {
+        return this.retrieves(new String[]{accountId});
+    }
+
+    @Override
+    public LinkedList<ReceiverEntity> retrieves(String[] accountIds) {
+        String in = "";
+        for (String accountId : accountIds) {
+            in = in + " ? ,";
+        }
+        if (in.length() > 0) {
+            in = in.substring(0, in.length() - 1);
+        }
         LinkedList<ReceiverEntity> result = new LinkedList<>();
-        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(userId);
-        for (AccountEntity accountEntity : accountEntities) {
-            List<Record> receiverRecords = Db.find("SELECT * FROM user_receiver WHERE accountId = ? AND status != -1", accountEntity.getAccountId());
-            for (Record receiverRecord : receiverRecords) {
-                Map<String, Object> receiverMap = receiverRecord.getColumns();
-                ReceiverEntity receiverEntity = JSON.parseObject(JSON.toJSONString(receiverMap), ReceiverEntity.class);
-                result.add(receiverEntity);
-            }
+        List<Record> records = Db.find("SELECT * FROM user_receiver WHERE accountId IN (" + in + ") AND status > 1 ORDER BY createTime ASC", accountIds);
+        for (Record record : records) {
+            Map<String, Object> receiverMap = record.getColumns();
+            ReceiverEntity receiverEntity = JSON.parseObject(JSON.toJSONString(receiverMap), ReceiverEntity.class);
+            result.add(receiverEntity);
         }
         return result;
     }
-
 
     @Override
     public ReceiverEntity retrieveById(String receiverId) {
@@ -69,20 +71,23 @@ public class ReceiverServices implements IReceiverService {
 
     @Override
     public ReceiverEntity updateById(ReceiverEntity receiverEntity) {
-        boolean succeed = Db.tx(new IAtom() {
-            public boolean run() throws SQLException {
-                Db.update("UPDATE user_receiver SET status = 1 WHERE accountId = ? ", receiverEntity.getAccountId());
-                int update = Db.update("UPDATE user_receiver SET name = ? ,phone0 = ? ,phone1 = ? ,province = ?, city = ?," +
-                                " county = ?, town = ?, village = ?, append = ?, status = ? " +
-                                " WHERE accountId = ? AND receiverId = ? ",
-                        receiverEntity.getName(), receiverEntity.getPhone0(), receiverEntity.getPhone1(),
-                        receiverEntity.getProvince(), receiverEntity.getCity(), receiverEntity.getCounty(),
-                        receiverEntity.getTown(), receiverEntity.getVillage(), receiverEntity.getAppend(),
-                        receiverEntity.getStatus(), receiverEntity.getAccountId(), receiverEntity.getReceiverId());
-                return update == 1;
-            }
-        });
-        return succeed ? receiverEntity : null;
+        Record record = new Record()
+                .set("receiverId", receiverEntity.getReceiverId())
+                .set("name", receiverEntity.getName())
+                .set("phone0", receiverEntity.getPhone0())
+                .set("phone1", receiverEntity.getPhone1())
+                .set("province", receiverEntity.getProvince())
+                .set("city", receiverEntity.getCity())
+                .set("county", receiverEntity.getCounty())
+                .set("town", receiverEntity.getTown())
+                .set("village", receiverEntity.getVillage())
+                .set("append", receiverEntity.getAppend());
+        boolean update = Db.update("user_receiver", "receiverId", record);
+        if (update) {
+            return receiverEntity;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -94,21 +99,43 @@ public class ReceiverServices implements IReceiverService {
 
 
     @Override
-    public ReceiverEntity kingReceiverInUser(String receiverId, String userId) {
-        return null;
+    public ReceiverEntity kingReceiverInUser(ReceiverEntity receiverEntity, String[] accountIds) {
+        String in = "";
+        for (String accountId : accountIds) {
+            in = in + " ? ,";
+        }
+        if (in.length() > 0) {
+            in = in.substring(0, in.length() - 1);
+        }
+        Db.update("UPDATE user_receiver SET status = 2 WHERE accountId IN (" + in + ") AND status != -1", accountIds);
+        int update = Db.update("UPDATE user_receiver SET status = 3 WHERE receiverId = ? ", receiverEntity.getReceiverId());
+        if (update == 1) {
+            return receiverEntity;
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public LinkedList<ReceiverEntity> mRetrieveByUserId(String userId) {
+    public LinkedList<ReceiverEntity> mRetrieves(String accountId) {
+        return this.mRetrieves(new String[]{accountId});
+    }
+
+    @Override
+    public LinkedList<ReceiverEntity> mRetrieves(String[] accountIds) {
+        String in = "";
+        for (String accountId : accountIds) {
+            in = in + " ? ,";
+        }
+        if (in.length() > 0) {
+            in = in.substring(0, in.length() - 1);
+        }
         LinkedList<ReceiverEntity> result = new LinkedList<>();
-        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(userId);
-        for (AccountEntity accountEntity : accountEntities) {
-            List<Record> receiverRecords = Db.find("SELECT * FROM user_receiver WHERE accountId = ? ", accountEntity.getAccountId());
-            for (Record receiverRecord : receiverRecords) {
-                Map<String, Object> receiverMap = receiverRecord.getColumns();
-                ReceiverEntity receiverEntity = JSON.parseObject(JSON.toJSONString(receiverMap), ReceiverEntity.class);
-                result.add(receiverEntity);
-            }
+        List<Record> records = Db.find("SELECT * FROM user_receiver WHERE accountId IN (" + in + ") AND status > 1", accountIds);
+        for (Record record : records) {
+            Map<String, Object> receiverMap = record.getColumns();
+            ReceiverEntity receiverEntity = JSON.parseObject(JSON.toJSONString(receiverMap), ReceiverEntity.class);
+            result.add(receiverEntity);
         }
         return result;
     }
