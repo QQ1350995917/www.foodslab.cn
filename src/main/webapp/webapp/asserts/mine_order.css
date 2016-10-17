@@ -1,0 +1,39 @@
+div.itemContainer{
+    width: 1000px;
+}
+div.itemTitleContainer{
+    width: 1000px;
+    min-height: 40px;
+    line-height: 40px;
+    color: #000000;
+    background-color: #F2F2F2;
+}
+div.productContainer{
+    float: left;
+    border: 1px solid #CCCCCC;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+}
+div.productItemView{
+    width: 500px;
+    min-height: 100px;
+    border: 0px solid #CCCCCC;
+    border-bottom-width: 1px;
+}
+div.icon{
+    width: 79px;
+    height: 100px;
+    float: left;
+    border: 0px solid #CCCCCC;
+    border-right-width: 1px;
+}
+
+div.orderReceiverView{
+    float: left;
+    width: 119px;
+    border: 1px solid #CCCCCC;
+    border-top-width: 0px;
+    border-left-width: 0px;
+    color: #000000;
+    text-align: center;
+}

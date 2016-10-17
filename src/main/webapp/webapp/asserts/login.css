@@ -1,0 +1,122 @@
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+}
+
+div.loginContainer {
+    width: 400px;
+    height: 500px;
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    margin-left: -200px;
+    background-color: #FFFFFF;
+    z-index: 10;
+    border: 0px solid #FFFFFF;
+    border-radius: 10px;
+}
+
+div.functionPanel{
+    width: 400px;
+    height: 260px;
+}
+
+div.titleRowView {
+    width: 400px;
+    height: 20px;
+    margin-top: 5px;
+}
+
+div.titleMessage {
+    width: 365px;
+    height: 20px;
+    float: left;
+    margin-left: 5px;
+    line-height: 20px;
+}
+
+div.closer {
+    width: 19px;
+    height: 18px;
+    float: right;
+    margin-right: 5px;
+    color: #FF0000;
+    border: 1px solid #CCCCCC;
+    border-radius: 9px;
+    text-align: center;
+    line-height: 19px;
+    cursor: pointer;
+}
+
+div.authRowView {
+    width: 400px;
+    height: 180px;
+    border: 0px solid #CCCCCC;
+    border-bottom-width: 1px;
+}
+
+img.login {
+    width: 180px;
+    height: 180px;
+    float: left;
+}
+
+hr.authLine {
+    width: 1px;
+    height: 180px;
+    border: 0px;
+    margin: auto 19px;
+    background-color: #CCCCCC;
+    float: left;
+}
+
+div.inputRow {
+    width: 100%;
+    height: 55px;
+    border: 0px;
+}
+
+input.login {
+    width: 384px;
+    height: 30px;
+    margin: 5px 5px 0px 5px;
+    font-size: 1rem;
+}
+
+div.loginError {
+    width: 100%;
+    height: 15px;
+    color: #FF0000;
+    font-size: 0.7rem;
+    margin: 0px 5px;
+    visibility: hidden;
+}
+
+img.manualCode {
+    float: right;
+    width: 180px;
+    height: 36px;
+    margin: 5px 5px 0px 5px;
+}
+
+div.loginAction{
+    width: 100%;
+    height: 40px;
+    color: #FFFFFF;
+    line-height: 40px;
+    text-align: center;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+div.functionAction{
+    float: right;
+    height: 30px;
+    color: #000000;
+    line-height: 30px;
+    text-align: right;
+    margin-right: 10px;
+    margin-left: 10px;
+    cursor: pointer;
+
+}

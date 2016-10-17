@@ -1,0 +1,29 @@
+div.receiverItemContainer{
+    width: 999px;
+    height: 40px;
+    line-height: 40px;
+    border: 0px solid #CCCCCC;
+    border-left-width: 1px;
+    text-align: center;
+    color: #000000;
+}
+
+div.receiverLabel{
+    float: left;
+    height: 28px;
+    line-height: 28px;
+    margin-top: 4px;
+    border: 1px solid #CCCCCC;
+    text-align: center;
+    cursor: pointer;
+    color: #000000;
+}
+
+hr.connectLineH{
+    float: left;
+    width: 20px;
+    height: 1px;
+    border: 0px;
+    margin-top: 15px;
+    background-color: #CCCCCC;
+}

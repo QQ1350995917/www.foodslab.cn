@@ -1,0 +1,60 @@
+div.accountItemContainer {
+    float: left;
+    width: 328px;
+    height: 560px;
+    border: 1px solid #CCCCCC;
+}
+div.accountItem{
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    border: 0px solid #CCCCCC;
+    color: #000000;
+    margin-bottom: 5px;
+}
+
+div.labelLeft{
+    float: left;
+    width: 50px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border: 0px solid #CCCCCC;
+    color: #000000;
+}
+
+div.labelRight{
+    float: left;
+    width: 265px;
+    height: 28px;
+    line-height: 28px;
+    border: 1px solid #CCCCCC;
+    color: #000000;
+}
+
+input.labelInput{
+    float: left;
+    width: 265px;
+    height: 26px;
+    line-height: 28px;
+    font-size: 1.0rem;
+    border: 1px solid #CCCCCC;
+    color: #000000;
+}
+
+img.headerImage{
+    width: 120px;
+    height: 120px;
+}
+
+img.scanner{
+    width: 260px;
+    height: 260px;
+    margin-left: 34px;
+}
+input.genderRadio{
+    float: left;
+    width: 20px;
+    height: 26px;
+    line-height: 30px;
+}

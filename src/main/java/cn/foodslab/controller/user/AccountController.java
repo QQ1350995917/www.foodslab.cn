@@ -1,11 +1,20 @@
 package cn.foodslab.controller.user;
 
+import cn.foodslab.common.cache.SessionContext;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.service.user.*;
+import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.SessionInterceptor;
+import cn.foodslab.service.user.AccountEntity;
+import cn.foodslab.service.user.AccountServices;
+import cn.foodslab.service.user.IAccountServices;
+import cn.foodslab.service.user.UserEntity;
 import com.alibaba.fastjson.JSON;
+import com.jfinal.aop.Before;
+import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
 
+import javax.servlet.http.HttpSession;
 import java.util.LinkedList;
 import java.util.UUID;
 
@@ -14,80 +23,106 @@ import java.util.UUID;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
+@Before(SessionInterceptor.class)
 public class AccountController extends Controller implements IAccountController {
     IAccountServices iAccountServices = new AccountServices();
 
+    @Clear(SessionInterceptor.class)
     @Override
     public void index() {
 
     }
 
+    @Clear(SessionInterceptor.class)
     @Override
     public void exist() {
 
     }
 
+    @Clear(SessionInterceptor.class)
     @Override
     public void smsCode() {
 
     }
 
+    @Clear(SessionInterceptor.class)
     @Override
     public void create() {
-        String telephone = this.getPara("telephone");
-        AccountEntity accountEntity = new AccountEntity(UUID.randomUUID().toString(), telephone, null, 0, null, null, null, 0, UUID.randomUUID().toString());
-        AccountEntity result = iAccountServices.create(accountEntity);
+        String params = this.getPara("p");
+        VAccountEntity vAccountEntity = JSON.parseObject(params, VAccountEntity.class);
         IResultSet resultSet = new ResultSet();
-        if (result != null) {
-            resultSet.setCode(200);
-            resultSet.setData(result);
+        if (vAccountEntity.getIdentity() != null && vAccountEntity.getPassword() != null) {
+            boolean existAccount = iAccountServices.existAccount(vAccountEntity.getIdentity());
+            if (existAccount) {
+                resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
+                resultSet.setData(vAccountEntity);
+                resultSet.setMessage("账户已经存在，请直接登录");
+                renderJson(JSON.toJSONString(resultSet));
+            } else {
+                vAccountEntity.setAccountId(UUID.randomUUID().toString());
+                vAccountEntity.setUserId(UUID.randomUUID().toString());
+                AccountEntity result = iAccountServices.create(vAccountEntity);
+                if (result == null) {
+                    vAccountEntity.setAccountId(null);
+                    vAccountEntity.setUserId(null);
+                    resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
+                    resultSet.setData(vAccountEntity);
+                    resultSet.setMessage("创建账户失败");
+                    renderJson(JSON.toJSONString(resultSet));
+                } else {
+                    resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+                    resultSet.setData(result);
+                    resultSet.setMessage("创建账户成功");
+                    renderJson(JSON.toJSONString(resultSet));
+                }
+            }
         } else {
-            resultSet.setCode(500);
-            resultSet.setMessage("创建账户失败");
+            resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
+            resultSet.setData(vAccountEntity);
+            resultSet.setMessage("参数错误");
+            renderJson(JSON.toJSONString(resultSet));
         }
-        renderJson(JSON.toJSONString(resultSet));
     }
 
+    @Clear(SessionInterceptor.class)
     @Override
     public void login() {
-        String phone = this.getPara("phone");
-        AccountEntity retrieve = iAccountServices.retrieveByIdentity(phone);
+        String params = this.getPara("p");
+        VAccountEntity vAccountEntity = JSON.parseObject(params, VAccountEntity.class);
         IResultSet resultSet = new ResultSet();
-        if (retrieve != null) {
-            resultSet.setCode(200);
-            resultSet.setData(retrieve);
+        if (vAccountEntity.getIdentity() != null && vAccountEntity.getPassword() != null) {
+            AccountEntity result = iAccountServices.retrieve(vAccountEntity);
+            if (result == null) {
+                resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
+                resultSet.setData(vAccountEntity);
+                resultSet.setMessage("用户名或密码错误");
+                renderJson(JSON.toJSONString(resultSet));
+            } else {
+                LinkedList<VAccountEntity> vAccountEntities = new LinkedList<>();
+                LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(result.getUserId());
+                for (AccountEntity accountEntity:accountEntities){
+                    vAccountEntities.add(new VAccountEntity(accountEntity.getAccountId(), accountEntity.getIdentity(), accountEntity.getSource(), accountEntity.getUserId()));
+                }
+                HttpSession session = this.getSession(true);
+                String sessionId = session.getId();
+                VUserEntity vUserEntity = new VUserEntity(sessionId,vAccountEntities);
+                session.setAttribute(SessionContext.KEY_USER, vUserEntity);
+                resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+                resultSet.setData(vUserEntity);
+                resultSet.setMessage("登录成功");
+                renderJson(JSON.toJSONString(resultSet));
+            }
         } else {
-            resultSet.setCode(500);
-            resultSet.setMessage("不存在该用户");
+            resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
+            resultSet.setData(vAccountEntity);
+            resultSet.setMessage("参数错误");
+            renderJson(JSON.toJSONString(resultSet));
         }
-        renderJson(JSON.toJSONString(resultSet));
     }
-
-
 
     @Override
     public void update() {
-        String userId = this.getPara("userId");
-        String accountId = this.getPara("accountId");
-        String telephone = this.getPara("telephone");
-        String name = this.getPara("name");
-        String address = this.getPara("address");
-        int gender = -1;
-        if (isParaExists("gender")) {
-            gender = this.getParaToInt("gender");
-        }
-        String birthday = this.getPara("birthday");
-        AccountEntity accountEntity = new AccountEntity(accountId, telephone, name, gender, address, null, birthday, 0, userId);
-        AccountEntity result = iAccountServices.update(accountEntity);
-        IResultSet resultSet = new ResultSet();
-        if (result != null) {
-            resultSet.setCode(200);
-            resultSet.setData(result);
-        } else {
-            resultSet.setCode(500);
-            resultSet.setMessage("更新失败");
-        }
-        renderJson(JSON.toJSONString(resultSet));
+
     }
 
 
@@ -106,6 +141,7 @@ public class AccountController extends Controller implements IAccountController 
 
     }
 
+    @Clear(SessionInterceptor.class)
     @Override
     public void password() {
 
@@ -118,9 +154,32 @@ public class AccountController extends Controller implements IAccountController 
 
     @Override
     public void retrieve() {
+        String params = this.getPara("p");
+        VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
+        HttpSession session = SessionContext.getSession(vUserEntity.getCs());
+        if (session == null) {
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vUserEntity, "success");
+            renderJson(JSON.toJSONString(iResultSet));
+        } else {
+            LinkedList<VAccountEntity> result = new LinkedList<>();
+            LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(session.getAttribute("userId").toString());
+            for (AccountEntity accountEntity:accountEntities){
+                accountEntity.setAccountId(null);
+                result.add(new VAccountEntity(accountEntity));
+            }
+            vUserEntity.setChildren(result);
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), vUserEntity, "success");
+            renderJson(JSON.toJSONString(iResultSet));
+        }
+    }
+
+    @Before(ManagerInterceptor.class)
+    @Override
+    public void mLogin() {
 
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mRetrieves() {
         LinkedList<UserEntity> userEntities = iAccountServices.mRetrieveUsers(1, 1);
@@ -140,12 +199,13 @@ public class AccountController extends Controller implements IAccountController 
         renderJson(JSON.toJSONString(iResultSet));
     }
 
-
+    @Before(ManagerInterceptor.class)
     @Override
     public void mQueryUsers() {
 
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mMark() {
         String params = this.getPara("p");
@@ -168,6 +228,7 @@ public class AccountController extends Controller implements IAccountController 
         }
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mRetrieveAccounts() {
 

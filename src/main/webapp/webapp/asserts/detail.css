@@ -1,0 +1,103 @@
+div.typeMainTopView {
+    width: 1000px;
+    height: 350px;
+    margin: 0px;
+    border: 0px solid #CCCCCC;
+    border-bottom: 10px;
+}
+
+div.typeMainTopLeft {
+    float: left;
+    width: 248px;
+    height: 344px;
+    border: 1px solid #CCCCCC;
+}
+
+div.typeMainTopRight {
+    float: right;
+    width: 745px;
+    height: 295px;
+    border: 0px solid #CCCCCC;
+}
+
+hr.typeMainLine {
+    width: 1000px;
+    height: 1px;
+    border: 0px;
+    margin: 0px;
+    background-color: #CCCCCC;
+}
+
+div.typeMainDownView {
+    width: 1000px;
+    margin: 0px;
+    border: 0px solid #CCCCCC;
+    color: #000000;
+}
+
+div.formatItem {
+    width: 745px;
+    height: 40px;
+    color: #000000;
+    border: 0px solid #CCCCCC;
+}
+
+div.formatLabel {
+    float: left;
+    width: 80px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    margin-right: 10px;
+    cursor: pointer;
+    color: #000000;
+    border: 1px solid #CCCCCC;
+}
+
+div.formatExpendLabel {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    text-align: left;
+    cursor: default;
+    border: 1px solid #CCCCCC;
+}
+
+div.formatLabelSelected {
+    float: left;
+    width: 80px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    margin-right: 10px;
+    cursor: pointer;
+    color: #000000;
+    border: 1px solid #FF0000;
+}
+
+hr.diagonal {
+    width: 80px;
+    height: 1px;
+    border: 0px solid #CCCCCC;
+    margin: 0px;
+    -webkit-transform: translateY(-15px) translateX(0px) rotate(-20deg);
+    background-color: #FF0000;
+}
+
+div.counter{
+    width: 30px;
+    height: 14px;
+    border: 0px;
+    color: #000000;
+    line-height: 15px;
+    text-align: center;
+    border: 1px solid #CCCCCC;
+}
+
+div.button{
+    width: 120px;
+    cursor: pointer;
+    color: #FFFFFF;
+    border: 0px solid #CCCCCC;
+    background-color: #FF0000;
+}

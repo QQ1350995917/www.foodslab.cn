@@ -78,6 +78,12 @@ public interface IAccountController {
 
     /**
      * 管理员接口
+     * 管理员登录
+     */
+    void mLogin();
+
+    /**
+     * 管理员接口
      * 管理员分页读取所有的用户信息
      */
     void mRetrieves();

@@ -1,6 +1,7 @@
 package cn.foodslab.service.cart;
 
 import cn.foodslab.service.order.OrderEntity;
+import cn.foodslab.service.user.AccountEntity;
 
 import java.util.LinkedList;
 
@@ -42,10 +43,11 @@ public interface ICartServices {
      * 用户接口
      * 用户删除购物车中的产品
      *
+     * @param accountEntities 账户对象集合
      * @param cartEntity 购物车产品对象
      * @return 购物车产品对象 fail null
      */
-    CartEntity deleteById(CartEntity cartEntity);
+    CartEntity deleteById(LinkedList<? extends AccountEntity> accountEntities, CartEntity cartEntity);
 
     /**
      * 用户接口
@@ -60,10 +62,10 @@ public interface ICartServices {
      * 用户接口
      * 用户读取购物车产品集合
      *
-     * @param accountIds 账号IDs
+     * @param accountEntities 用户名下的账号集合
      * @return 购物车产品对象集合 fail null
      */
-    LinkedList<CartEntity> retrievesByAccountIds(String[] accountIds);
+    LinkedList<CartEntity> retrievesByAccounts(LinkedList<? extends AccountEntity> accountEntities);
 
     /**
      * 用户接口
@@ -77,48 +79,49 @@ public interface ICartServices {
 
     /**
      * 用户接口
-     * 根据IDs批量查找
+     * 根据账户和购物车映射IDs批量查找
      *
-     * @param accountIds 账户IDs
-     * @param mappingIds 产品购物车映射ID
+     * @param accountEntities 用户下的账户集合
+     * @param mappingIds      产品购物车映射ID
      * @return 购物车产品对象集合 fail null
      */
-    LinkedList<CartEntity> retrievesByIds(String[] accountIds, String[] mappingIds);
+    LinkedList<CartEntity> retrievesByIds(LinkedList<? extends AccountEntity> accountEntities, String[] mappingIds);
 
     /**
      * 用户接口
      * 根据用户IDs和订单IDs查找
      *
-     * @param accountIds 账户IDs
+     * @param accountEntities 账户集合
      * @param orderId    订单ID
      * @return 购物车产品对象集合 fail null
      */
-    LinkedList<CartEntity> retrievesByOrderId(String[] accountIds, String orderId);
+    LinkedList<CartEntity> retrievesByOrderId(LinkedList<? extends AccountEntity> accountEntities, String orderId);
 
     /**
      * 用户接口
      * 用户下单时把购物车中的对应关系绑定到订单上
+     *
      * @param orderEntity 订单对象
-     * @param mappingIds 映射IDs
+     * @param mappingIds  映射IDs
      * @return success true fail false
      */
-    boolean attachToOrder(OrderEntity orderEntity,String[] mappingIds);
+    boolean attachToOrder(OrderEntity orderEntity, String[] mappingIds);
 
     /**
      * 管理员接口
      * 根据用户IDs和订单IDs分页查找对应关系
      *
-     * @param accountIds 账户ID
+     * @param accountEntities 账户集合
      * @param orderId    订单ID
      * @return 购物车产品对象集合 fail null
      */
-    LinkedList<CartEntity> mRetrievesByOrderId(String[] accountIds, String orderId);
+    LinkedList<CartEntity> mRetrievesByOrderId(LinkedList<? extends AccountEntity> accountEntities, String orderId);
 
     /**
      * 管理员接口
      * 根据用户IDs和订单IDs分页查找对应关系
      *
-     * @param orderId    订单ID
+     * @param orderId 订单ID
      * @return 购物车产品对象集合 fail null
      */
     LinkedList<CartEntity> mRetrievesByOrderId(String orderId);

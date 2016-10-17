@@ -1,7 +1,13 @@
 package cn.foodslab.controller.page;
 
+import cn.foodslab.common.cache.SessionContext;
+import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.SessionInterceptor;
+import com.alibaba.fastjson.JSON;
+import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 
+import javax.servlet.http.HttpSession;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -17,9 +23,12 @@ public class PageController extends Controller implements IPageController {
     public void index() {
         this.setAttr("title", "食坊");
         LinkedList<String> styleSheets = new LinkedList<>();
+        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.css\">");
         styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.css\">");
         this.setAttr("styleSheets", styleSheets);
         LinkedList<String> javaScripts = new LinkedList<>();
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/mask.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");
@@ -28,6 +37,7 @@ public class PageController extends Controller implements IPageController {
     @Override
     public void ps() {
         this.setAttr("title", "食坊-系列");
+
         LinkedList<Map<String, String>> metas = new LinkedList<>();
         String seriesId = this.getPara("seriesId");
         if (seriesId != null) {
@@ -37,7 +47,12 @@ public class PageController extends Controller implements IPageController {
             metas.add(formatMap);
             this.setAttr("metas", metas);
         }
+        LinkedList<String> styleSheets = new LinkedList<>();
+        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.css\">");
+        this.setAttr("styleSheets", styleSheets);
         LinkedList<String> javaScripts = new LinkedList<>();
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/mask.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/series.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");
@@ -64,12 +79,14 @@ public class PageController extends Controller implements IPageController {
         this.setAttr("metas", metas);
 
         LinkedList<String> styleSheets = new LinkedList<>();
+        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.css\">");
         styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/detail.css\">");
         this.setAttr("styleSheets", styleSheets);
 
         LinkedList<String> javaScripts = new LinkedList<>();
-        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/detail.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/mask.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/detail.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");
     }
@@ -114,11 +131,14 @@ public class PageController extends Controller implements IPageController {
 
         this.setAttr("title", "食坊-支付");
         LinkedList<String> styleSheets = new LinkedList<>();
+        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.css\">");
         styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/billing.css\">");
         styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/billing_receiver.css\">");
         this.setAttr("styleSheets", styleSheets);
 
         LinkedList<String> javaScripts = new LinkedList<>();
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/mask.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/toast.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/billing.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/billing_receiver.js\"></script>");
@@ -127,32 +147,6 @@ public class PageController extends Controller implements IPageController {
         this.render("/webapp/widgets/index.html");
     }
 
-    @Override
-    public void po() {
-        this.setAttr("title", "食坊-订单");
-        LinkedList<String> javaScripts = new LinkedList<>();
-        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.js\"></script>");
-        this.setAttr("javaScripts", javaScripts);
-        this.render("/webapp/widgets/index.html");
-    }
-
-    @Override
-    public void pe() {
-        this.setAttr("title", "食坊");
-        LinkedList<String> javaScripts = new LinkedList<>();
-        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.js\"></script>");
-        this.setAttr("javaScripts", javaScripts);
-        this.render("/webapp/widgets/index.html");
-    }
-
-    @Override
-    public void pr() {
-        this.setAttr("title", "食坊-预约");
-        LinkedList<String> javaScripts = new LinkedList<>();
-        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.js\"></script>");
-        this.setAttr("javaScripts", javaScripts);
-        this.render("/webapp/widgets/index.html");
-    }
 
     @Override
     public void pq() {
@@ -169,38 +163,37 @@ public class PageController extends Controller implements IPageController {
         this.setAttr("metas", metas);
 
         LinkedList<String> styleSheets = new LinkedList<>();
+        styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.css\">");
         styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/query.css\">");
         this.setAttr("styleSheets", styleSheets);
 
         LinkedList<String> javaScripts = new LinkedList<>();
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/mask.js\"></script>");
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/toast.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/query.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");
     }
 
+    @Before(SessionInterceptor.class)
     @Override
     public void pm() {
-        String dir = this.getPara("dir");
-        String account = this.getPara("accountId");
-        if (dir == null) {
-            dir = "cart";
+
+        String params = this.getPara("p");
+        VPageEntity vPageEntity = JSON.parseObject(params, VPageEntity.class);
+        if (vPageEntity.getDir() == null) {
+            vPageEntity.setDir("cart");
         }
 
         LinkedList<Map<String, String>> metas = new LinkedList<>();
 
         LinkedHashMap<String, String> dirMap = new LinkedHashMap<>();
         dirMap.put("metaId", "dir");
-        dirMap.put("metaValue", dir);
+        dirMap.put("metaValue", vPageEntity.getDir());
         metas.add(dirMap);
 
-        LinkedHashMap<String, String> accountMap = new LinkedHashMap<>();
-        accountMap.put("metaId", "account");
-        accountMap.put("metaValue", account);
-        metas.add(accountMap);
-
         this.setAttr("metas", metas);
-
         this.setAttr("title", "食坊-我的");
 
         LinkedList<String> styleSheets = new LinkedList<>();
@@ -226,7 +219,7 @@ public class PageController extends Controller implements IPageController {
     }
 
     @Override
-    public void ppr() {
+    public void pp() {
         this.setAttr("title", "食坊-协议");
         LinkedList<String> javaScripts = new LinkedList<>();
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.js\"></script>");
@@ -234,11 +227,7 @@ public class PageController extends Controller implements IPageController {
         this.render("/webapp/widgets/index.html");
     }
 
-    @Override
-    public void login() {
-        this.render("/webapp/widgets/login.html");
-    }
-
+    @Before(ManagerInterceptor.class)
     @Override
     public void frame() {
         this.render("/webapp/widgets/frame.html");

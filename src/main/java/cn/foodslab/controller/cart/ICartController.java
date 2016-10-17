@@ -25,6 +25,7 @@ public interface ICartController {
     void update();
 
     /**
+     * 用户接口
      * 读取购物车
      */
     void retrieves();

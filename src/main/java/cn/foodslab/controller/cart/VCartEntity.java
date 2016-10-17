@@ -8,14 +8,9 @@ import cn.foodslab.service.cart.CartEntity;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-public class VCartEntity {
-
-    private String sessionId;
-    private String mappingId;//返回单个的mappingId
-    private String mappingIds;//支持一个或多个的mappingIds查找
-    private String formatId;
-    private int amount;
-    private int status = 1;
+public class VCartEntity extends CartEntity {
+    private String cs;
+    private String[] mappingIds;//支持一个或多个的mappingIds查找
     private VFormatEntity formatEntity;
 
     public VCartEntity() {
@@ -23,65 +18,25 @@ public class VCartEntity {
     }
 
     public VCartEntity(CartEntity cartEntity) {
-        this.mappingId = cartEntity.getMappingId();
-        this.formatId = cartEntity.getFormatId();
-        this.amount = cartEntity.getAmount();
+        this.setMappingId(cartEntity.getMappingId());;
+        this.setFormatId(cartEntity.getFormatId());;
+        this.setAmount(cartEntity.getAmount());;
     }
 
-    public VCartEntity(String sessionId, String mappingId, String formatId, int amount, int status) {
-        this.sessionId = sessionId;
-        this.mappingId = mappingId;
-        this.formatId = formatId;
-        this.amount = amount;
-        this.status = status;
+    public String getCs() {
+        return cs;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public void setCs(String cs) {
+        this.cs = cs;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public String getMappingId() {
-        return mappingId;
-    }
-
-    public void setMappingId(String mappingId) {
-        this.mappingId = mappingId;
-    }
-
-    public String getFormatId() {
-        return formatId;
-    }
-
-    public void setFormatId(String formatId) {
-        this.formatId = formatId;
-    }
-
-    public String getMappingIds() {
+    public String[] getMappingIds() {
         return mappingIds;
     }
 
-    public void setMappingIds(String mappingIds) {
+    public void setMappingIds(String[] mappingIds) {
         this.mappingIds = mappingIds;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 
     public VFormatEntity getFormatEntity() {
@@ -92,12 +47,4 @@ public class VCartEntity {
         this.formatEntity = formatEntity;
     }
 
-    public CartEntity getCartEntity(){
-        CartEntity cartEntity = new CartEntity();
-        cartEntity.setMappingId(this.getMappingId());
-        cartEntity.setFormatId(this.getFormatId());
-        cartEntity.setAmount(this.getAmount());
-        cartEntity.setStatus(this.getStatus());
-        return cartEntity;
-    }
 }

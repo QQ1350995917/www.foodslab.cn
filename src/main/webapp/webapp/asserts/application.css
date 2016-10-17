@@ -1,0 +1,207 @@
+body, html {
+    padding: 0;
+    margin: 0;
+    color: #FFFFFF;
+}
+
+input:focus, textarea:focus,select:focus {
+    outline: none;
+}
+
+a {
+    color: #CCCCCC;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #000000;
+}
+
+div.header {
+    position: fixed;
+    width: 1000px;
+    height: 70px;
+    left: 50%;
+    top: 0px;
+    margin-left: -500px;
+    background-color: #6AB344;
+}
+
+div.header_icon {
+    float: left;
+    width: 199px;
+    height: 70px;
+    border-right: 1px solid #CCCCCC;
+    cursor: pointer;
+}
+
+div.header_menu {
+    float: right;
+    width: 800px;
+    height: 70px;
+    border: 0px solid #CCCCCC;
+}
+
+div.header_menu_top {
+    width: 800px;
+    height: 29px;
+    border-bottom: 1px solid #CCCCCC;
+}
+
+div.header_menu_top_item {
+    float: right;
+    width: 90px;
+    height: 29px;
+    text-align: center;
+    line-height: 29px;
+    font-size: 1.2rem;
+    color: #FFFFFF;
+    border: 0px solid #CCCCCC;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+div.header_menu_down {
+    width: 800px;
+    height: 40px;
+    border: 0px solid #CCCCCC;
+}
+
+div.main {
+    width: 1000px;
+    height: 600px;
+    margin: 75px auto 0px;
+}
+
+div.HFillContainer{
+    width: 100%;
+}
+
+div.footer {
+    width: 1000px;
+    height: 0px;
+    margin: 10px auto 0px;
+    border-top: 1px solid #CCCCCC;
+    color: #CCCCCC;
+}
+
+div.footer_link {
+    width: 1000px;
+    height: 30px;
+    border: 0px solid #CCCCCC;
+    color: #CCCCCC;
+}
+
+div.footer_link_item{
+    float: right;
+    width: 100px;
+    border: 0px solid #CCCCCC;
+}
+
+div.footer_link_linker {
+    float: right;
+    width: 70px;
+    height: 30px;
+    line-height: 28px;
+    text-align: center;
+    border: 0px solid #CCCCCC;
+    color: #CCCCCC;
+    font-size: 0.8rem;
+    text-underline: none;
+}
+
+hr.footer_link_line {
+    width: 400px;
+    height: 1px;
+    border: 0px;
+    margin: 0 auto;
+    background-color: #CCCCCC;
+}
+
+div.tabItem_normal {
+    float: left;
+    line-height: 35px;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #FFFFFF;
+    border: 0px solid transparent;
+    border-right-width: 5px;
+    border-bottom-wdith: 5px;
+    border-left-width: 5px;
+    cursor: pointer;
+
+}
+
+div.tabItem_selected {
+    float: left;
+    line-height: 35px;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #ffffff;
+    border: 0px solid transparent;
+    border-right-width: 5px;
+    border-bottom: 5px solid #FFFFFF;
+    border-left-width: 5px;
+}
+
+div.clearFloat {
+    clear: both;
+}
+
+div.productItem {
+    float: left;
+    width: 246px;
+    height: 398px;
+    border: 0px;
+    margin: 1px 1px;
+    border: 1px solid #CCCCCC;
+}
+
+div.productItem_title {
+    width: 244px;
+    height: 40px;
+    border: 0px;
+    line-height: 40px;
+    text-align: center;
+    margin: 1px auto;
+    cursor: pointer;
+}
+
+img.productItem_img {
+    width: 244px;
+    height: 280px;
+    border: none;
+    padding: 0px;
+    margin: 0px 1px;
+    cursor: pointer;
+}
+
+div.productItem_link {
+    width: 244px;
+    height: 30px;
+    border: none;
+    margin: 0px 1px;
+}
+
+div.productItem_link_label {
+    float: left;
+    width: 79px;
+    height: 26px;
+    border: none;
+    margin: 1px;
+    color: #000;
+    line-height: 26px;
+    text-align: center;
+    cursor: pointer;
+}
+
+div.productItem_buy {
+    width: 244px;
+    height: 40px;
+    border: none;
+    margin: 0px 1px;
+    text-align: center;
+    line-height: 40px;
+    background-color: red;
+    cursor: pointer;
+}

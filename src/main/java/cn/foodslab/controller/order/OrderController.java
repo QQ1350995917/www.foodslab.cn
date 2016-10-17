@@ -1,12 +1,16 @@
 package cn.foodslab.controller.order;
 
+import cn.foodslab.common.cache.SessionContext;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.controller.manager.VManagerEntity;
 import cn.foodslab.controller.product.VFormatEntity;
 import cn.foodslab.controller.product.VSeriesEntity;
 import cn.foodslab.controller.product.VTypeEntity;
 import cn.foodslab.controller.receiver.VReceiverEntity;
 import cn.foodslab.controller.user.VUserEntity;
+import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.cart.CartEntity;
 import cn.foodslab.service.cart.CartServices;
 import cn.foodslab.service.cart.ICartServices;
@@ -20,8 +24,8 @@ import cn.foodslab.service.receiver.ReceiverServices;
 import cn.foodslab.service.user.AccountEntity;
 import cn.foodslab.service.user.AccountServices;
 import cn.foodslab.service.user.IAccountServices;
-import cn.foodslab.service.user.UserEntity;
 import com.alibaba.fastjson.JSON;
+import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 
 import java.util.LinkedList;
@@ -46,12 +50,13 @@ public class OrderController extends Controller implements IOrderController {
 
     }
 
+    @Before(SessionInterceptor.class)
     @Override
     public void create() {
         String params = this.getPara("p");
         VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
         vOrderEntity.setStatus(1);
-        if (vOrderEntity.getSessionId() == null) {
+        if (vOrderEntity.getCs() == null) {
             /**
              * 保存匿名订单的收货人信息
              */
@@ -62,7 +67,6 @@ public class OrderController extends Controller implements IOrderController {
                 String orderId = UUID.randomUUID().toString();
                 vOrderEntity.setOrderId(orderId);
                 vOrderEntity.setReceiverId(resultReceiver.getReceiverId());
-                vOrderEntity.setAccountId(vOrderEntity.getSessionId());
                 /**
                  * 保存匿名订单的订单信息
                  */
@@ -95,7 +99,8 @@ public class OrderController extends Controller implements IOrderController {
         } else {
             String orderId = UUID.randomUUID().toString();
             float orderTotalPrice = 0.0f;
-            vOrderEntity.setAccountId(vOrderEntity.getSessionId());
+            VUserEntity vUserEntity = (VUserEntity)SessionContext.getSession(vOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
+            vOrderEntity.setAccountId(vUserEntity.getChildren().get(0).getAccountId());
             vOrderEntity.setOrderId(orderId);
             vOrderEntity.setCost(orderTotalPrice);
             vOrderEntity.setPostage(0);
@@ -118,11 +123,13 @@ public class OrderController extends Controller implements IOrderController {
         }
     }
 
+    @Before(SessionInterceptor.class)
     @Override
     public void expressed() {
         String params = this.getPara("p");
         VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
-        OrderEntity result = iOrderServices.expressed(vOrderEntity);
+        VUserEntity vUserEntity = (VUserEntity)SessionContext.getSession(vOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
+        OrderEntity result = iOrderServices.expressed(vUserEntity.getChildren(),vOrderEntity);
         if (result == null) {
             IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
@@ -132,47 +139,37 @@ public class OrderController extends Controller implements IOrderController {
         }
     }
 
+    @Before(SessionInterceptor.class)
     @Override
     public void retrieves() {
         String params = this.getPara("p");
         VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
-        UserEntity userEntity = iAccountServices.retrieveUserByAccountId(vOrderEntity.getSessionId());
-        if (userEntity == null) {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "fail");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(userEntity.getUserId());
-            String[] accountIds = new String[accountEntities.size()];
-            for (int index = 0; index < accountEntities.size(); index++) {
-                accountIds[index] = accountEntities.get(index).getAccountId();
+        VUserEntity vUserEntity = (VUserEntity)SessionContext.getSession(vOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
+        LinkedList<VOrderEntity> result = new LinkedList<>();
+        LinkedList<OrderEntity> orderEntities = iOrderServices.retrievesByAccounts(vUserEntity.getChildren(), 0, 0, 0);
+        for (int index = 0; index < orderEntities.size(); index++) {
+            OrderEntity orderEntity = orderEntities.get(index);
+            VOrderEntity vOrderEntity1 = new VOrderEntity(orderEntity);
+            LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
+            LinkedList<CartEntity> cartEntities = iCartServices.retrievesByOrderId(vUserEntity.getChildren(), orderEntity.getOrderId());
+            for (CartEntity cartEntity : cartEntities) {
+                FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
+                TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
+                SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
+                VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+                VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+                VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
+                vTypeEntity.setParent(vSeriesEntity);
+                vFormatEntity.setParent(vTypeEntity);
+                vFormatEntities.add(vFormatEntity);
             }
-
-            LinkedList<VOrderEntity> result = new LinkedList<>();
-            LinkedList<OrderEntity> orderEntities = iOrderServices.retrievesByAccounts(accountIds, 0, 0, 0);
-            for (int index = 0; index < orderEntities.size(); index++) {
-                OrderEntity orderEntity = orderEntities.get(index);
-                VOrderEntity vOrderEntity1 = new VOrderEntity(orderEntity);
-                LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
-                LinkedList<CartEntity> cartEntities = iCartServices.retrievesByOrderId(accountIds, orderEntity.getOrderId());
-                for (CartEntity cartEntity : cartEntities) {
-                    FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
-                    TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
-                    SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
-                    VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
-                    VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
-                    VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
-                    vTypeEntity.setParent(vSeriesEntity);
-                    vFormatEntity.setParent(vTypeEntity);
-                    vFormatEntities.add(vFormatEntity);
-                }
-                vOrderEntity1.setFormatEntities(vFormatEntities);
-                result.add(vOrderEntity1);
-            }
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-            iResultSet.setData(result);
-            iResultSet.setMessage("success");
-            renderJson(JSON.toJSONString(iResultSet));
+            vOrderEntity1.setFormatEntities(vFormatEntities);
+            result.add(vOrderEntity1);
         }
+        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+        iResultSet.setData(result);
+        iResultSet.setMessage("success");
+        renderJson(JSON.toJSONString(iResultSet));
     }
 
 
@@ -199,28 +196,24 @@ public class OrderController extends Controller implements IOrderController {
             iResultSet.setCode(200);
             iResultSet.setData(queryPageEntity);
             renderJson(JSON.toJSONString(iResultSet));
-
         } else {
 
         }
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mRetrievesByUser() {
         String params = this.getPara("p");
-        VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
-        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(vUserEntity.getUserId());
-        String[] accountIds = new String[accountEntities.size()];
-        for (int index = 0; index < accountEntities.size(); index++) {
-            accountIds[index] = accountEntities.get(index).getAccountId();
-        }
+        VManagerEntity vManagerEntity = JSON.parseObject(params, VManagerEntity.class);
         LinkedList<VOrderEntity> result = new LinkedList<>();
-        LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrievesByUser(accountIds, 0, 0, 0);
+        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(vManagerEntity.getUser().getUserId());
+        LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrievesByUser(accountEntities, 0, 0, 0);
         for (int index = 0; index < orderEntities.size(); index++) {
             OrderEntity orderEntity = orderEntities.get(index);
             VOrderEntity vOrderEntity = new VOrderEntity(orderEntity);
             LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
-            LinkedList<CartEntity> cartEntities = iCartServices.mRetrievesByOrderId(accountIds, orderEntity.getOrderId());
+            LinkedList<CartEntity> cartEntities = iCartServices.mRetrievesByOrderId(accountEntities, orderEntity.getOrderId());
             for (CartEntity cartEntity : cartEntities) {
                 FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
                 TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
@@ -241,6 +234,7 @@ public class OrderController extends Controller implements IOrderController {
         renderJson(JSON.toJSONString(iResultSet));
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mRetrieves() {
         String params = this.getPara("p");
@@ -270,6 +264,7 @@ public class OrderController extends Controller implements IOrderController {
         renderJson(JSON.toJSONString(iResultSet));
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mExpressing() {
         String params = this.getPara("p");

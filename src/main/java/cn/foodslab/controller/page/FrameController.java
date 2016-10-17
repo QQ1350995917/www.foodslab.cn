@@ -1,5 +1,7 @@
 package cn.foodslab.controller.page;
 
+import cn.foodslab.interceptor.ManagerInterceptor;
+import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 
 /**
@@ -7,6 +9,7 @@ import com.jfinal.core.Controller;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: 后台管理页面控制器
  */
+@Before(ManagerInterceptor.class)
 public class FrameController extends Controller implements IFrameController{
 
     @Override

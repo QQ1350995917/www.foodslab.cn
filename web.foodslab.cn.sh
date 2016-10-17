@@ -90,7 +90,9 @@ curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/sr
 
 echo "=============================login============================="
 echo "login.css"
-curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/backend/login/login.css
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/login.css
+echo "login.js"
+curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/frontend/asserts/login.js
 
 #cd ../widgets/
 #rm frame.html

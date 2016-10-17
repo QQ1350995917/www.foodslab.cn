@@ -2,10 +2,12 @@ package cn.foodslab.controller.poster;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.service.poster.IPosterServices;
 import cn.foodslab.service.poster.PosterEntity;
 import cn.foodslab.service.poster.PosterServices;
 import com.alibaba.fastjson.JSON;
+import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 
 import java.util.LinkedList;
@@ -39,12 +41,14 @@ public class PosterController extends Controller implements IPosterController {
         renderJson(JSON.toJSONString(resultSet));
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mCreate() {
         String params = this.getPara("p");
         VPosterEntity vPosterEntity = JSON.parseObject(params, VPosterEntity.class);
         String posterId = UUID.randomUUID().toString();
         vPosterEntity.setPosterId(posterId);
+        vPosterEntity.setStatus(1);
         PosterEntity result = iPosterServices.mCreate(vPosterEntity);
         IResultSet resultSet = new ResultSet();
         if (result == null) {
@@ -58,6 +62,7 @@ public class PosterController extends Controller implements IPosterController {
         renderJson(JSON.toJSONString(resultSet));
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mUpdate() {
         String params = this.getPara("p");
@@ -75,6 +80,7 @@ public class PosterController extends Controller implements IPosterController {
         renderJson(JSON.toJSONString(resultSet));
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mMark() {
         String params = this.getPara("p");
@@ -98,6 +104,7 @@ public class PosterController extends Controller implements IPosterController {
         renderJson(JSON.toJSONString(resultSet));
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mSwap() {
         String params = this.getPara("p");
@@ -116,6 +123,7 @@ public class PosterController extends Controller implements IPosterController {
         renderJson(JSON.toJSONString(resultSet));
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mRetrieves() {
         LinkedList<VPosterEntity> result = new LinkedList<>();

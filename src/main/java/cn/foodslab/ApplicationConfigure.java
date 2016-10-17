@@ -9,7 +9,6 @@ import cn.foodslab.controller.order.OrderController;
 import cn.foodslab.controller.page.PageController;
 import cn.foodslab.controller.poster.PosterController;
 import cn.foodslab.controller.product.FormatController;
-import cn.foodslab.controller.product.ProductController;
 import cn.foodslab.controller.product.SeriesController;
 import cn.foodslab.controller.product.TypeController;
 import cn.foodslab.controller.receiver.ReceiverController;
@@ -69,6 +68,7 @@ public class ApplicationConfigure extends JFinalConfig {
         me.addGlobalActionInterceptor(new Interceptor() {
             @Override
             public void intercept(Invocation inv) {
+//                inv.getController().getResponse().setHeader("Access-Control-Allow-Origin", "http://localhost:63343");
                 inv.getController().getResponse().setHeader("Access-Control-Allow-Origin", "*");
                 inv.invoke();
             }
@@ -86,7 +86,6 @@ public class ApplicationConfigure extends JFinalConfig {
         me.add("/meta", MetaController.class);
         me.add("/menus", MenuController.class);
         me.add("/manager", ManagerController.class);
-        me.add("/product", ProductController.class);
         me.add("/series", SeriesController.class);
         me.add("/type", TypeController.class);
         me.add("/format", FormatController.class);

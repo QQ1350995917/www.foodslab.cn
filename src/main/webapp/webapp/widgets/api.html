@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        body, html {
+            padding: 0;
+            margin: 0;
+            color: #000000;
+        }
+
+        div {
+            margin-top: 10px;
+        }
+
+        div.container {
+            position: relative;
+            width: 1000px;
+            margin-top: 20px;
+            left: 50%;
+            margin-left: -500px;
+        }
+
+        input {
+            width: 100%;
+            height: 30px;
+            font-size: 1rem;
+        }
+
+        input.button {
+            width: 100px;
+            height: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+        }
+
+        textarea {
+            width: 100%;
+            height: 220px;
+            margin-top: 5px;
+            overflow: scroll;
+            resize: none;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div style="margin-top: 0px;float: left;width: 200px;">请求地址:</div>
+    <input id="address" value="">
+    <div>
+        请求参数:
+        <!--<input class="button" type="button" value="明文显示" onclick="onDecodeClick('request')">-->
+        <!--<input class="button" type="button" value="加密显示" onclick="onEncodeClick('request')">-->
+        <input class="button" type="button" value="发起请求" onclick="onRequest()">
+    </div>
+    <textarea id="request"></textarea>
+    <div>
+        响应参数:
+        <!--<input class="button" type="button" value="明文显示" onclick="onEncodeClick('response')">-->
+        <!--<input class="button" type="button" value="加密显示" onclick="onDecodeClick('response')">-->
+    </div>
+    <textarea id="response"></textarea>
+</div>
+</body>
+<script type="text/javascript">
+    const secret = "passwordPassword";
+    function onRequest() {
+        let url = document.getElementById("address").value + "?";
+        let param = "p=" + document.getElementById("request").value;
+        asyncRequestByPost(url, param, function (data) {
+                    onRequestCallback(data);
+                },
+                function () {
+                    console.log("error");
+                },
+                function () {
+                    console.log("timeout");
+                });
+    }
+
+    function onRequestCallback(data) {
+        console.log(data);
+        let response = document.getElementById("response");
+        response.value = data;
+    }
+
+//    function onEncodeClick(id) {
+//        let textarea = document.getElementById(id);
+//        let text = textarea.value;
+//        var encrypted = CryptoJS.AES.encrypt(text, secret);
+//        textarea.value =encrypted;
+//    }
+//
+//    function onDecodeClick(id) {
+//        let textarea = document.getElementById(id);
+//        let text = textarea.value;
+//        var decrypted = CryptoJS.AES.decrypt(text, secret).toString(CryptoJS.enc.Utf8);
+//        textarea.value =decrypted;
+//    }
+//
+//    function encode() {
+//
+//    }
+//
+//    function decode() {
+//
+//    }
+
+    function asyncRequestByPost(url, params, onDataCallback, onErrorCallback, onTimeoutCallback) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.timeout = 5000;
+        xmlHttp.ontimeout = onTimeoutCallback;
+        xmlHttp.open("POST", url, true);
+        xmlHttp.setRequestHeader("cache-control", "no-cache");
+        xmlHttp.setRequestHeader("contentType", "text/html;charset=uft-8");
+        xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xmlHttp.send(encodeURI(params));
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                onDataCallback(xmlHttp.responseText);
+            } else {
+                onErrorCallback();
+            }
+        }
+    }
+
+</script>
+</html>

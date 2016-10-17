@@ -3,6 +3,8 @@ package cn.foodslab.controller.receiver;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
 import cn.foodslab.controller.user.VUserEntity;
+import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.receiver.IReceiverService;
 import cn.foodslab.service.receiver.ReceiverEntity;
 import cn.foodslab.service.receiver.ReceiverServices;
@@ -10,6 +12,8 @@ import cn.foodslab.service.user.AccountEntity;
 import cn.foodslab.service.user.AccountServices;
 import cn.foodslab.service.user.IAccountServices;
 import com.alibaba.fastjson.JSON;
+import com.jfinal.aop.Before;
+import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
 
 import java.util.LinkedList;
@@ -20,12 +24,13 @@ import java.util.UUID;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-
+@Before(SessionInterceptor.class)
 public class ReceiverController extends Controller implements IReceiverController {
 
     private IAccountServices iAccountServices = new AccountServices();
     private IReceiverService iReceiverService = new ReceiverServices();
 
+    @Clear(SessionInterceptor.class)
     @Override
     public void index() {
 
@@ -35,7 +40,7 @@ public class ReceiverController extends Controller implements IReceiverControlle
     public void retrieves() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
-        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(vUserEntity.getSessionId());
+        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(vUserEntity.getCs());
         String[] accountIds = new String[accountEntities.size()];
         for (int index = 0; index < accountEntities.size(); index++) {
             accountIds[index] = accountEntities.get(index).getAccountId();
@@ -135,6 +140,7 @@ public class ReceiverController extends Controller implements IReceiverControlle
         }
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mRetrieveByUser() {
         String params = this.getPara("p");

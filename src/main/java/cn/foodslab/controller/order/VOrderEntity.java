@@ -12,7 +12,7 @@ import java.util.LinkedList;
  * Description: 支付页面提交订单的数据模型，兼容匿名订单和非匿名订单
  */
 public class VOrderEntity extends OrderEntity implements Comparable {
-    private String sessionId;
+    private String cs;
     private String[] productIds;//请求字段 匿名下单的产品ID或用户购物车中的产品映射IDs
     private VReceiverEntity receiver;//请求字段 兼容匿名订单中的收货人信息
     private LinkedList<VFormatEntity> formatEntities;//响应字段
@@ -34,12 +34,12 @@ public class VOrderEntity extends OrderEntity implements Comparable {
         this.setCreateTime(orderEntity.getCreateTime());
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getCs() {
+        return cs;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setCs(String cs) {
+        this.cs = cs;
     }
 
     public String[] getProductIds() {

@@ -7,6 +7,7 @@ package cn.foodslab.service.poster;
  */
 public class PosterEntity {
     private String posterId;
+    private String name;
     private int status;
     private int clickable;
     private String href;
@@ -26,8 +27,9 @@ public class PosterEntity {
         this.weight = weight;
     }
 
-    public PosterEntity(String posterId, int status, int clickable, String href,String fileId, int weight,String start, String end) {
+    public PosterEntity(String posterId, String name,int status, int clickable, String href,String fileId, int weight,String start, String end) {
         this.posterId = posterId;
+        this.name = name;
         this.status = status;
         this.clickable = clickable;
         this.href = href;
@@ -43,6 +45,14 @@ public class PosterEntity {
 
     public void setPosterId(String posterId) {
         this.posterId = posterId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getStatus() {

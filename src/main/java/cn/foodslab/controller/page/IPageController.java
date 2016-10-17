@@ -31,24 +31,6 @@ public interface IPageController {
     void pb();
 
     /**
-     * short of Page Order
-     * 跳转到订单页面
-     */
-    void po();
-
-    /**
-     * short of Page Exit
-     * 退出跳转到首页
-     */
-    void pe();
-
-    /**
-     * short of Page Reservation
-     * 跳转到预约页面
-     */
-    void pr();
-
-    /**
      * short of Page Look
      * 跳转到订单查询页面
      */
@@ -64,12 +46,7 @@ public interface IPageController {
      * short of Page Protocol
      * 跳转到网站协议页面
      */
-    void ppr();
-
-    /**
-     * 管理员登录
-     */
-    void login();
+    void pp();
 
     /**
      * 管理员界面

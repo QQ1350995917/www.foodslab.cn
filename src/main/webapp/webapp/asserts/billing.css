@@ -1,0 +1,107 @@
+
+div.containerStyle{
+    width: 1000px;
+    height: 160px;
+    min-height: 160px;
+    border: 0px solid #CCCCCC;
+    border-top-width: 1px;
+}
+
+div.receiverContainer {
+    height: 120px;
+}
+div.billingReceiverItem{
+    width: 998px;
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #FF0000;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: #000000;
+}
+div.payStyleContainer {
+
+
+}
+
+div.productContainer{
+
+}
+
+div.payBarContainer{
+    width: 1000px;
+    height: 38px;
+    border: 1px solid #CCCCCC;
+}
+
+
+div.messageLabel {
+    width: 1000px;
+    height: 30px;
+    line-height: 30px;
+    color: #000000;
+    border: 0px solid #CCCCCC;
+}
+
+img.payStyleNormal {
+    height: 124px;
+    cursor: pointer;
+}
+
+img.payStyleSelect {
+    height: 120px;
+    border: 2px solid #FF0000;
+}
+
+div.productItemView {
+    width: 998px;
+    height: 119px;
+    border: 1px solid #CCCCCC;
+    border-top-width: 0px;
+    color: #000000;
+    background-color: #F5FBFE;
+}
+div.productImg{
+    float: left;
+    width: 99px;
+    height: 117px;
+    border: 1px solid #CCCCCC;
+    border-left-width: 0px;
+}
+
+div.messageLabelInItem {
+    float: left;
+    margin: 5px;
+    height: 30px;
+    line-height: 30px;
+}
+
+div.payBarItem {
+    float: right;
+    width: 200px;
+    height: 40px;
+    line-height: 40px;
+    color: #000000;
+}
+
+
+input {
+    width: 120px;
+    height: 24px;
+    font-size: 1rem;
+}
+
+input.editor {
+    border: 1px solid #000000;
+}
+
+div.blockView {
+    width: 1000px;
+    height: 120px;
+    margin-top: 10px;
+    border: 0px solid #CCCCCC;
+    border-top: 1px solid #CCCCCC;
+}
+
+
+

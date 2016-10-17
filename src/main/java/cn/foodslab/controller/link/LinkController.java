@@ -2,10 +2,13 @@ package cn.foodslab.controller.link;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.service.link.ILinkServices;
 import cn.foodslab.service.link.LinkEntity;
 import cn.foodslab.service.link.LinkServices;
 import com.alibaba.fastjson.JSON;
+import com.jfinal.aop.Before;
+import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
 
 import java.util.LinkedList;
@@ -16,15 +19,18 @@ import java.util.UUID;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
+@Before(ManagerInterceptor.class)
 public class LinkController extends Controller implements ILinkController {
 
     ILinkServices iLinkServices = new LinkServices();
 
+    @Clear(ManagerInterceptor.class)
     @Override
     public void index() {
 
     }
 
+    @Clear(ManagerInterceptor.class)
     @Override
     public void retrieves() {
         LinkedList<VLinkEntity> result = new LinkedList<>();

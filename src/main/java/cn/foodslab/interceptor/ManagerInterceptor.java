@@ -4,14 +4,13 @@ import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 
 /**
- * Created by Pengwei Ding on 2016-09-21 18:11.
+ * Created by Pengwei Ding on 2016-10-17 17:22.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
- * Description: @TODO
+ * Description: 管理员权限拦截
  */
-public class Session implements Interceptor {
-
+public class ManagerInterceptor implements Interceptor {
     @Override
     public void intercept(Invocation inv) {
-        inv.invoke();
+
     }
 }

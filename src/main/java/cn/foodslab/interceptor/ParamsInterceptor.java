@@ -12,9 +12,9 @@ import java.security.SecureRandom;
 /**
  * Created by Pengwei Ding on 2016-09-20 16:48.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
- * Description: @TODO
+ * Description: 参数与加解密拦截器
  */
-public class Params implements Interceptor {
+public class ParamsInterceptor implements Interceptor {
     private static String password = "passwordPassword";
     private static Cipher cipher = null;
     static {

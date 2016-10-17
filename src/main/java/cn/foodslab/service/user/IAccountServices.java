@@ -28,10 +28,10 @@ public interface IAccountServices {
     /**
      * 用户接口
      * 通过账户的身份ID读取账户（登录接口）
-     * @param identity 账户身份ID
+     * @param accountEntity 账户身份ID
      * @return fail null success 账户对象
      */
-    AccountEntity retrieveByIdentity(String identity);
+    AccountEntity retrieve(AccountEntity accountEntity);
 
     /**
      * 用户接口

@@ -2,8 +2,11 @@ package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
+import com.jfinal.aop.Before;
+import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
 
 import java.util.LinkedList;
@@ -15,6 +18,7 @@ import java.util.UUID;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
+@Before(ManagerInterceptor.class)
 public class FormatController extends Controller implements IFormatController {
     private ISeriesServices iSeriesServices = new SeriesServices();
     private ITypeServices iTypeServices = new TypeServices();
@@ -24,7 +28,7 @@ public class FormatController extends Controller implements IFormatController {
     public void index() {
 
     }
-
+    @Clear(ManagerInterceptor.class)
     @Override
     public void retrieves() {
         String params = this.getPara("p");
@@ -40,6 +44,7 @@ public class FormatController extends Controller implements IFormatController {
         renderJson(JSON.toJSONString(iResultSet));
     }
 
+    @Clear(ManagerInterceptor.class)
     @Override
     public void retrieve() {
         String params = this.getPara("p");
@@ -50,11 +55,13 @@ public class FormatController extends Controller implements IFormatController {
         renderJson(JSON.toJSONString(iResultSet));
     }
 
+    @Clear(ManagerInterceptor.class)
     @Override
     public void retrieveTree() {
 
     }
 
+    @Clear(ManagerInterceptor.class)
     @Override
     public void retrieveTreeInversion() {
         String params = this.getPara("p");
@@ -75,6 +82,7 @@ public class FormatController extends Controller implements IFormatController {
         }
     }
 
+    @Clear(ManagerInterceptor.class)
     @Override
     public void recommends() {
         LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
@@ -97,6 +105,7 @@ public class FormatController extends Controller implements IFormatController {
         }
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mCreate() {
         String params = this.getPara("p");
@@ -122,6 +131,7 @@ public class FormatController extends Controller implements IFormatController {
         }
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mUpdate() {
         String params = this.getPara("p");
@@ -142,6 +152,7 @@ public class FormatController extends Controller implements IFormatController {
         }
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mMark() {
         String params = this.getPara("p");
@@ -168,6 +179,7 @@ public class FormatController extends Controller implements IFormatController {
     }
 
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mKingWeight() {
         String params = this.getPara("p");
@@ -185,6 +197,7 @@ public class FormatController extends Controller implements IFormatController {
         }
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mSwapWeight() {
         String params = this.getPara("p");
@@ -213,6 +226,7 @@ public class FormatController extends Controller implements IFormatController {
         }
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mWeights() {
         LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
@@ -235,7 +249,7 @@ public class FormatController extends Controller implements IFormatController {
         }
     }
 
-
+    @Before(ManagerInterceptor.class)
     @Override
     public void mRetrieves() {
         String params = this.getPara("p");
@@ -250,6 +264,7 @@ public class FormatController extends Controller implements IFormatController {
         renderJson(JSON.toJSONString(iResultSet));
     }
 
+    @Before(ManagerInterceptor.class)
     @Override
     public void mRetrieve() {
 

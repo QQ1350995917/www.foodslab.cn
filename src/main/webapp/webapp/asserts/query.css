@@ -1,0 +1,40 @@
+div.searchContainer{
+    width: 100%;
+    height: 40px;
+}
+input.searchInput{
+    float: left;
+    border: 1px solid #CCCCCC;
+    width: 650px;
+    height:30px;
+    margin-top: 3px;
+    margin-left: 3px;
+    font-size: 1rem;
+    color: #FFFFFF;
+    background-color: transparent;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+div.searchButton{
+    float: left;
+    width: 143px;
+    height:34px;
+    margin-top: 3px;
+    background-color: red;
+    text-align: center;
+    line-height: 34px;
+    cursor: pointer;
+}
+div.searchResultView{
+    width: 100%;
+    height: 0px;
+    color: #000000;
+    text-align: center;
+}
+div.recommendView{
+    width: 100%;
+    height: 100px;
+}
+div.orderItem{
+    text-align: left;
+}

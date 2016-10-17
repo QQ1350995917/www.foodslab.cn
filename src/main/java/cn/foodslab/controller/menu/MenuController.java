@@ -1,9 +1,10 @@
 package cn.foodslab.controller.menu;
 
-import cn.foodslab.controller.menu.IMenuController;
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.service.menu.IMenuServices;
 import cn.foodslab.service.menu.MenuServices;
 import com.alibaba.fastjson.JSON;
+import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 
 /**
@@ -11,6 +12,7 @@ import com.jfinal.core.Controller;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
+@Before(ManagerInterceptor.class)
 public class MenuController extends Controller implements IMenuController {
     private IMenuServices iMenuServices = new MenuServices();
     @Override

@@ -19,6 +19,7 @@ public class VPosterEntity extends PosterEntity {
 
     public VPosterEntity(PosterEntity posterEntity) {
         this.setPosterId(posterEntity.getPosterId());
+        this.setName(posterEntity.getName());
         this.setStatus(posterEntity.getStatus());
         this.setClickable(posterEntity.getClickable());
         this.setHref(posterEntity.getHref());

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta nickName="viewport" content="width=device-width, initial-scale=1 maximum-scale=1, user-scalable=no">
+    <title>登录</title>
+    <style type="text/css">
+        html {
+            width: 100%;
+            height: 100%;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        div.backgroundContainer {
+            float: left;
+            width: 80%;
+        }
+
+        img.background {
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        div.loginPanelContainer {
+            float: right;
+            width: 20%;
+            height: 120px;
+            margin-top: 10px;
+            border: 0px solid #000000;
+        }
+
+        input {
+            width: 98%;
+            height: 20px;
+            margin: 5px auto;
+            background-color: transparent;
+            border: 1px solid #000000;
+            max-lines: 1;
+        }
+
+        div.loginButton {
+            width: 99%;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            border: 1px solid #000000;
+            cursor: pointer;
+        }
+
+        input:hover {
+            cursor: pointer;
+            border-color: dodgerblue;
+            color: dodgerblue;
+        }
+
+        .loginButton:hover {
+            cursor: pointer;
+            border-color: dodgerblue;
+            color: dodgerblue;
+        }
+    </style>
+</head>
+<body>
+<div class="backgroundContainer">
+    <img id="background" class="background" src="${basePath}/webapp/asserts/images/lan.jpg"/>
+</div>
+<div class="loginPanelContainer">
+    <input id="loginName" type="text" maxlength="20" placeholder="请输入用户名">
+    <input id="loginPassword" type="password" maxlength="12" placeholder="请输入密码">
+    <div id="loginButton" class="loginButton" onclick="loginAction()">登录</div>
+</div>
+</body>
+<script>
+    window.onload = function () {
+        let background = document.getElementById("background");
+        background.style.height = window.innerHeight + "px";
+        background.style.width = window.innerHeight * 1.5 + "px";
+    };
+    window.onresize = function () {
+        let background = document.getElementById("background");
+        background.style.height = window.innerHeight + "px";
+        background.style.width = window.innerHeight * 1.5 + "px";
+    };
+
+    let frame = "http://localhost:8080/foodslab/frame";
+    function loginAction() {
+        let accountEntity = new Object();
+        accountEntity.identity = "test";
+        let url = "http://localhost:8080/foodslab/account/login?p=" + JSON.stringify(accountEntity);
+        asyncRequestByGet(url, function (data) {
+            console.log(data);
+            console.log(document.cookie);
+            var arrStr = document.cookie.split("; ");
+            for (var i = 0; i < arrStr.length; i++) {
+                var temp = arrStr[i].split("=");
+                if (temp[0] == "cs"){
+                    console.log(unescape(temp[1]));
+                } // url编码了，所以应该解码
+            }
+        }, function () {
+
+        }, function () {
+
+        });
+    }
+
+
+    function setCookie(NameOfCookie, value) {
+        var ExpireDate = new Date();
+        ExpireDate.setTime(ExpireDate.getTime() + (10 * 1000));
+        document.cookie = NameOfCookie + "=" +escape(value) + ((expiredays == null) ? "" : ";expires =" +ExpireDate.toGMTString());
+    }
+
+
+    function asyncRequestByGet(url, onDataCallback, onErrorCallback, onTimeoutCallback) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                onDataCallback(xmlHttp.responseText);
+            } else {
+                onErrorCallback;
+            }
+        }
+        xmlHttp.timeout = 5000;
+        xmlHttp.ontimeout = onTimeoutCallback;
+        xmlHttp.open("GET", url, true);
+        xmlHttp.withCredentials = true;
+        xmlHttp.send(null);
+    }
+</script>
+</html>

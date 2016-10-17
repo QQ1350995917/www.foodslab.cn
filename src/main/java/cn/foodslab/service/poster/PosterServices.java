@@ -18,13 +18,21 @@ import java.util.Map;
 public class PosterServices implements IPosterServices {
     @Override
     public LinkedList<PosterEntity> retrieves() {
-        return null;
+        LinkedList<PosterEntity> result = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM poster WHERE status = 2 ORDER BY weight DESC");
+        for (Record record : records) {
+            Map<String, Object> columns = record.getColumns();
+            PosterEntity posterEntity = JSON.parseObject(JSON.toJSONString(columns), PosterEntity.class);
+            result.add(posterEntity);
+        }
+        return result;
     }
 
     @Override
     public PosterEntity mCreate(PosterEntity posterEntity) {
         Record record = new Record()
                 .set("posterId",posterEntity.getPosterId())
+                .set("name",posterEntity.getName())
                 .set("clickable", posterEntity.getClickable())
                 .set("status", posterEntity.getStatus())
                 .set("href", posterEntity.getHref())
@@ -42,12 +50,12 @@ public class PosterServices implements IPosterServices {
     @Override
     public PosterEntity mUpdate(PosterEntity posterEntity) {
         Record record = new Record()
-                .set("posterId",posterEntity.getPosterId())
+                .set("posterId", posterEntity.getPosterId())
+                .set("name", posterEntity.getName())
                 .set("clickable", posterEntity.getClickable())
                 .set("href", posterEntity.getHref())
                 .set("fileId", posterEntity.getFileId())
-                .set("status", posterEntity.getStatus())
-                .set("start",posterEntity.getStart())
+                .set("start", posterEntity.getStart())
                 .set("end", posterEntity.getEnd());
         boolean poster = Db.update("poster", "posterId", record);
         if (poster) {

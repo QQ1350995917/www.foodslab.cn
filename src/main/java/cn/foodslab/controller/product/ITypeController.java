@@ -1,15 +1,10 @@
 package cn.foodslab.controller.product;
 
-import cn.foodslab.interceptor.Session;
-import com.jfinal.aop.Before;
-import com.jfinal.aop.Clear;
-
 /**
  * Created by Pengwei Ding on 2016-09-22 16:15.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-@Before(Session.class)
 public interface ITypeController {
     /**
      * 导向404
@@ -20,7 +15,6 @@ public interface ITypeController {
      * 用户接口
      * 根据类型的ID读取类型的详情
      */
-    @Clear(Session.class)
     void retrieve();
 
     /**

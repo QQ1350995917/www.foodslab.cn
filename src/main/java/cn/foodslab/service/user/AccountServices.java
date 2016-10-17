@@ -2,8 +2,10 @@ package cn.foodslab.service.user;
 
 import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -17,21 +19,33 @@ public class AccountServices implements IAccountServices {
 
     @Override
     public boolean existAccount(String identity) {
-        return false;
+        List<Record> records = Db.find("SELECT * FROM user_account WHERE identity = ? ", identity);
+        if (records.size() > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public AccountEntity create(AccountEntity accountEntity) {
-        Record userRecord = new Record()
-                .set("userId", accountEntity.getUserId())
-                .set("status", 1);
-        Record userAccountRecord = new Record()
-                .set("accountId", accountEntity.getAccountId())
-                .set("identity", accountEntity.getIdentity())
-                .set("userId", accountEntity.getUserId());
-        boolean user = Db.save("user", userRecord);
-        boolean account = Db.save("user_account", userAccountRecord);
-        if (user && account) {
+        boolean succeed = Db.tx(new IAtom() {
+            public boolean run() throws SQLException {
+                Record userRecord = new Record()
+                        .set("userId", accountEntity.getUserId())
+                        .set("status", 2);
+                Record userAccountRecord = new Record()
+                        .set("accountId", accountEntity.getAccountId())
+                        .set("identity", accountEntity.getIdentity())
+                        .set("password", accountEntity.getIdentity())
+                        .set("userId", accountEntity.getUserId());
+                boolean user = Db.save("user", userRecord);
+                boolean account = Db.save("user_account", userAccountRecord);
+                return user && account;
+            }
+        });
+
+        if (succeed) {
             return accountEntity;
         } else {
             return null;
@@ -39,11 +53,14 @@ public class AccountServices implements IAccountServices {
     }
 
     @Override
-    public AccountEntity retrieveByIdentity(String identity) {
-        List<Record> accountRecords = Db.find("SELECT * FROM user_account WHERE identity = ? ", identity);
-        Map<String, Object> accountMap = accountRecords.get(0).getColumns();
-        AccountEntity accountEntity = JSON.parseObject(JSON.toJSONString(accountMap), AccountEntity.class);
-        return accountEntity;
+    public AccountEntity retrieve(AccountEntity accountEntity) {
+        List<Record> records = Db.find("SELECT * FROM user_account WHERE identity = ? AND password = ? ", accountEntity.getIdentity(), accountEntity.getPassword());
+        if (records.size() > 0) {
+            Map<String, Object> accountMap = records.get(0).getColumns();
+            return JSON.parseObject(JSON.toJSONString(accountMap), AccountEntity.class);
+        } else {
+            return null;
+        }
     }
 
 
@@ -81,7 +98,7 @@ public class AccountServices implements IAccountServices {
     @Override
     public LinkedList<AccountEntity> retrieveByUserId(String userId) {
         LinkedList<AccountEntity> result = new LinkedList<>();
-        List<Record> accountRecords = Db.find("SELECT * FROM user_account WHERE userId = ? ", userId);
+        List<Record> accountRecords = Db.find("SELECT * FROM user_account WHERE userId = ? ORDER BY source ASC ", userId);
         for (Record accountRecord : accountRecords) {
             Map<String, Object> accountMap = accountRecord.getColumns();
             AccountEntity accountEntity = JSON.parseObject(JSON.toJSONString(accountMap), AccountEntity.class);

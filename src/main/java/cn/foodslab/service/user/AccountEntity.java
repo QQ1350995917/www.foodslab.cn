@@ -7,8 +7,9 @@ package cn.foodslab.service.user;
  */
 public class AccountEntity {
     private String accountId;
-    private String identity;//电话号码或auth的openId
-    private String name;
+    private String identity;// 账户名称，电话号码或auth的openId
+    private String password;// 账户密码，用户Identity+Password的sha1摘要
+    private String nickName;
     private int gender;
     private String address;
     private String portrait;
@@ -22,17 +23,17 @@ public class AccountEntity {
         super();
     }
 
-    public AccountEntity(String accountId, String identity, String name, int gender, String address, String portrait, String birthday, int source, String userId) {
-        this.accountId = accountId;
-        this.identity = identity;
-        this.name = name;
-        this.gender = gender;
-        this.address = address;
-        this.portrait = portrait;
-        this.birthday = birthday;
-        this.source = source;
-        this.userId = userId;
-    }
+//    public AccountEntity(String accountId, String identity, String nickName, int gender, String address, String portrait, String birthday, int source, String userId) {
+//        this.accountId = accountId;
+//        this.identity = identity;
+//        this.nickName = nickName;
+//        this.gender = gender;
+//        this.address = address;
+//        this.portrait = portrait;
+//        this.birthday = birthday;
+//        this.source = source;
+//        this.userId = userId;
+//    }
 
     public String getAccountId() {
         return accountId;
@@ -50,12 +51,20 @@ public class AccountEntity {
         this.identity = identity;
     }
 
-    public String getName() {
-        return name;
+    public String getPassword() {
+        return password;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 
     public int getGender() {

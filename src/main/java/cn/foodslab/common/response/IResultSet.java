@@ -9,6 +9,7 @@ public interface IResultSet {
     enum ResultCode {
 
         EXE_FAIL(3000),
+        EXE_SESSION_TIME_OUT(3011),
         EXE_SUCCESS(3050);
 
         private int code;
