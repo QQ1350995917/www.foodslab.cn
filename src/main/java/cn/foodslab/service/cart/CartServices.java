@@ -32,6 +32,7 @@ public class CartServices implements ICartServices {
                 .set("mappingId", cartEntity.getMappingId())
                 .set("formatId", cartEntity.getFormatId())
                 .set("amount", cartEntity.getAmount())
+                .set("orderId", cartEntity.getOrderId())
                 .set("accountId", cartEntity.getAccountId());
         boolean save = Db.save("user_cart", record);
         if (save) {
@@ -56,12 +57,12 @@ public class CartServices implements ICartServices {
         String[] params = new String[accountEntities.size() + 1];
         int index = 0;
         params[index] = cartEntity.getMappingId();
-        index ++;
+        index++;
         String in = "";
         for (AccountEntity accountEntity : accountEntities) {
             in = in + " ? ,";
             params[index] = accountEntity.getAccountId();
-            index ++;
+            index++;
         }
         if (in.length() > 0) {
             in = in.substring(0, in.length() - 1);
@@ -70,9 +71,9 @@ public class CartServices implements ICartServices {
         if (records.size() > 0) {
             Record record = records.get(0);
             boolean delete = Db.delete("user_cart", "mappingId", record);
-            if (delete){
+            if (delete) {
                 return JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class);
-            }else{
+            } else {
                 return null;
             }
         } else {
@@ -100,7 +101,7 @@ public class CartServices implements ICartServices {
         for (AccountEntity accountEntity : accountEntities) {
             inAccountIds = inAccountIds + " ? ,";
             params[index] = accountEntity.getAccountId();
-            index ++;
+            index++;
         }
         if (inAccountIds.length() > 0) {
             inAccountIds = inAccountIds.substring(0, inAccountIds.length() - 1);
@@ -129,22 +130,22 @@ public class CartServices implements ICartServices {
         for (AccountEntity accountEntity : accountEntities) {
             inAccountIds = inAccountIds + " ? ,";
             params[index] = accountEntity.getAccountId();
-            index ++;
+            index++;
         }
         if (inAccountIds.length() > 0) {
             inAccountIds = inAccountIds.substring(0, inAccountIds.length() - 1);
         }
         String inMappingIds = "";
-        for (String mappingId : mappingIds){
+        for (String mappingId : mappingIds) {
             inMappingIds = inMappingIds + " ? ,";
             params[index] = mappingId;
-            index ++;
+            index++;
         }
         if (inMappingIds.length() > 0) {
             inMappingIds = inMappingIds.substring(0, inMappingIds.length() - 1);
         }
 
-        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND mappingId = (" + inMappingIds + ") AND accountId IN (" + inAccountIds + ") ORDER BY updateTime DESC", params);
+        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND accountId IN (" + inMappingIds + ") AND mappingId IN (" + inAccountIds + ") ORDER BY updateTime DESC", params);
         for (Record record : records) {
             cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
         }
@@ -152,16 +153,16 @@ public class CartServices implements ICartServices {
     }
 
     @Override
-    public LinkedList<CartEntity> retrievesByOrderId(String[] accountIds, String orderId) {
-        String[] params = new String[accountIds.length + 1];
+    public LinkedList<CartEntity> retrievesByOrderId(LinkedList<? extends AccountEntity> accountEntities, String orderId) {
+        String[] params = new String[accountEntities.size() + 1];
         int index = 0;
         params[index] = orderId;
-        index ++;
+        index++;
         String in = "";
-        for (String accountId : accountIds) {
+        for (AccountEntity accountEntity : accountEntities) {
             in = in + " ? ,";
-            params[index] = accountId;
-            index ++;
+            params[index] = accountEntity.getAccountId();
+            index++;
         }
         if (in.length() > 0) {
             in = in.substring(0, in.length() - 1);
@@ -180,12 +181,12 @@ public class CartServices implements ICartServices {
         String[] params = new String[mappingIds.length + 1];
         int index = 0;
         params[index] = orderEntity.getOrderId();
-        index ++;
+        index++;
         String in = "";
         for (String mappingId : mappingIds) {
             in = in + " ? ,";
             params[index] = mappingId;
-            index ++;
+            index++;
         }
         if (in.length() > 0) {
             in = in.substring(0, in.length() - 1);
@@ -201,8 +202,8 @@ public class CartServices implements ICartServices {
     }
 
     @Override
-    public LinkedList<CartEntity> mRetrievesByOrderId(String[] accountIds, String orderId) {
-        return this.retrievesByOrderId(accountIds, orderId);
+    public LinkedList<CartEntity> mRetrievesByOrderId(LinkedList<? extends AccountEntity> accountEntities, String orderId) {
+        return this.retrievesByOrderId(accountEntities, orderId);
     }
 
     @Override

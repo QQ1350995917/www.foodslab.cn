@@ -1,9 +1,12 @@
 package cn.foodslab.service.receiver;
 
+import cn.foodslab.service.user.AccountEntity;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,21 +19,25 @@ import java.util.Map;
 public class ReceiverServices implements IReceiverService {
 
     @Override
-    public LinkedList<ReceiverEntity> retrieves(String accountId) {
-        return this.retrieves(new String[]{accountId});
+    public LinkedList<ReceiverEntity> retrieves(AccountEntity accountEntity) {
+        return this.retrieves(accountEntity);
     }
 
     @Override
-    public LinkedList<ReceiverEntity> retrieves(String[] accountIds) {
+    public LinkedList<ReceiverEntity> retrieves(LinkedList<? extends AccountEntity> accountEntities) {
+        String[] params = new String[accountEntities.size()];
         String in = "";
-        for (String accountId : accountIds) {
+        int index = 0;
+        for (AccountEntity accountEntity : accountEntities) {
             in = in + " ? ,";
+            params[index] = accountEntity.getAccountId();
+            index++;
         }
         if (in.length() > 0) {
             in = in.substring(0, in.length() - 1);
         }
         LinkedList<ReceiverEntity> result = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM user_receiver WHERE accountId IN (" + in + ") AND status > 1 ORDER BY createTime ASC", accountIds);
+        List<Record> records = Db.find("SELECT * FROM user_receiver WHERE status > 1 AND accountId IN (" + in + ") ORDER BY createTime ASC", params);
         for (Record record : records) {
             Map<String, Object> receiverMap = record.getColumns();
             ReceiverEntity receiverEntity = JSON.parseObject(JSON.toJSONString(receiverMap), ReceiverEntity.class);
@@ -47,7 +54,7 @@ public class ReceiverServices implements IReceiverService {
     }
 
     @Override
-    public ReceiverEntity create(ReceiverEntity receiverEntity) {
+    public ReceiverEntity create(AccountEntity accountEntity,ReceiverEntity receiverEntity) {
         Record record = new Record()
                 .set("receiverId", receiverEntity.getReceiverId())
                 .set("name", receiverEntity.getName())
@@ -59,8 +66,10 @@ public class ReceiverServices implements IReceiverService {
                 .set("town", receiverEntity.getTown())
                 .set("village", receiverEntity.getVillage())
                 .set("append", receiverEntity.getAppend())
-                .set("status", receiverEntity.getStatus())
-                .set("accountId", receiverEntity.getAccountId());
+                .set("status", receiverEntity.getStatus());
+        if (accountEntity != null){
+            record.set("accountId", accountEntity.getAccountId());
+        }
         boolean save = Db.save("user_receiver", record);
         if (save) {
             return receiverEntity;
@@ -70,7 +79,7 @@ public class ReceiverServices implements IReceiverService {
     }
 
     @Override
-    public ReceiverEntity updateById(ReceiverEntity receiverEntity) {
+    public ReceiverEntity updateById(LinkedList<? extends AccountEntity> accountEntities,ReceiverEntity receiverEntity) {
         Record record = new Record()
                 .set("receiverId", receiverEntity.getReceiverId())
                 .set("name", receiverEntity.getName())
@@ -91,7 +100,7 @@ public class ReceiverServices implements IReceiverService {
     }
 
     @Override
-    public ReceiverEntity deleteById(String receiverId) {
+    public ReceiverEntity deleteById(LinkedList<? extends AccountEntity> accountEntities,String receiverId) {
         ReceiverEntity receiverEntity = this.retrieveById(receiverId);
         int update = Db.update("UPDATE user_receiver SET status = -1 WHERE receiverId = ? ", receiverId);
         return update == 1 ? receiverEntity : null;
@@ -99,17 +108,28 @@ public class ReceiverServices implements IReceiverService {
 
 
     @Override
-    public ReceiverEntity kingReceiverInUser(ReceiverEntity receiverEntity, String[] accountIds) {
+    public ReceiverEntity kingReceiverInUser(LinkedList<? extends AccountEntity> accountEntities, ReceiverEntity receiverEntity) {
+        String[] params = new String[accountEntities.size()];
         String in = "";
-        for (String accountId : accountIds) {
+        int index = 0;
+        for (AccountEntity accountEntity : accountEntities) {
             in = in + " ? ,";
+            params[index] = accountEntity.getAccountId();
+            index ++;
         }
         if (in.length() > 0) {
             in = in.substring(0, in.length() - 1);
         }
-        Db.update("UPDATE user_receiver SET status = 2 WHERE accountId IN (" + in + ") AND status != -1", accountIds);
-        int update = Db.update("UPDATE user_receiver SET status = 3 WHERE receiverId = ? ", receiverEntity.getReceiverId());
-        if (update == 1) {
+        final String IN = in;
+        boolean succeed = Db.tx(new IAtom() {
+            public boolean run() throws SQLException {
+                int update1 = Db.update("UPDATE user_receiver SET status = 2 WHERE accountId IN (" + IN + ") AND status != -1", params);
+                int update2 = Db.update("UPDATE user_receiver SET status = 3 WHERE receiverId = ? ", receiverEntity.getReceiverId());
+                return update1 > 0 && update2 == 1;
+            }
+        });
+
+        if (succeed) {
             return receiverEntity;
         } else {
             return null;

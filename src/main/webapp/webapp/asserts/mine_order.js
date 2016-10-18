@@ -1,11 +1,9 @@
 /**
  * Created by dingpengwei on 9/8/16.
  */
-let tempAccountId = undefined;
-function requestOrder(accountId) {
-    tempAccountId = accountId;
+function requestMineOrder(cs) {
     let orderEntity = new Object();
-    orderEntity.sessionId = accountId;
+    orderEntity.cs = cs;
     let url = BASE_PATH + "order/retrieves?p=" + JSON.stringify(orderEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
@@ -150,7 +148,7 @@ function createOrderStatusView(orderEntity) {
                 if (result) {
                     var jsonData = JSON.parse(data);
                     if (jsonData.code == RESPONSE_SUCCESS) {
-                        requestOrder(tempAccountId);
+                        requestMineOrder(tempAccountId);
                     } else {
                         new Toast().show("操作失败");
                     }

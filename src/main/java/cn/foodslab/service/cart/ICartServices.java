@@ -125,7 +125,4 @@ public interface ICartServices {
      * @return 购物车产品对象集合 fail null
      */
     LinkedList<CartEntity> mRetrievesByOrderId(String orderId);
-
-
 }
-

@@ -87,18 +87,10 @@ public class ManagerServices implements IManagerServices {
     @Override
     public IResultSet updateManager(ManagerEntity managerEntity) {
         ResultSet resultSet = new ResultSet();
-        if (managerEntity.isUsernameU()) {
-            resultSet.addIResultSet(this.updateManagerUsername(managerEntity));
-        }
-        if (managerEntity.isStatusU()) {
-            resultSet.addIResultSet(this.updateManagerStatus(managerEntity));
-        }
-        if (managerEntity.isPasswordU()) {
-            resultSet.addIResultSet(this.updateManagerPassword(managerEntity));
-        }
-        if (managerEntity.isManagerMenusMappingU()) {
-            resultSet.addIResultSet(this.updateManagerMenusMapping(managerEntity));
-        }
+        resultSet.addIResultSet(this.updateManagerUsername(managerEntity));
+        resultSet.addIResultSet(this.updateManagerStatus(managerEntity));
+        resultSet.addIResultSet(this.updateManagerPassword(managerEntity));
+        resultSet.addIResultSet(this.updateManagerMenusMapping(managerEntity));
         return resultSet;
     }
 

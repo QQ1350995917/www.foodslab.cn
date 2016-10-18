@@ -1,5 +1,6 @@
 package cn.foodslab.controller.receiver;
 
+import cn.foodslab.common.cache.SessionContext;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
 import cn.foodslab.controller.user.VUserEntity;
@@ -40,13 +41,9 @@ public class ReceiverController extends Controller implements IReceiverControlle
     public void retrieves() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
-        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(vUserEntity.getCs());
-        String[] accountIds = new String[accountEntities.size()];
-        for (int index = 0; index < accountEntities.size(); index++) {
-            accountIds[index] = accountEntities.get(index).getAccountId();
-        }
+        VUserEntity sessionUserEntity = (VUserEntity)SessionContext.getSession(vUserEntity.getCs()).getAttribute(SessionContext.KEY_USER);
         LinkedList<VReceiverEntity> result = new LinkedList<>();
-        LinkedList<ReceiverEntity> receiverEntities = iReceiverService.retrieves(accountIds);
+        LinkedList<ReceiverEntity> receiverEntities = iReceiverService.retrieves(sessionUserEntity.getChildren());
         for (ReceiverEntity receiverEntity : receiverEntities) {
             result.add(new VReceiverEntity(receiverEntity));
         }
@@ -61,9 +58,10 @@ public class ReceiverController extends Controller implements IReceiverControlle
         String params = this.getPara("p");
         VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
         vReceiverEntity.setStatus(2);
+        VUserEntity sessionUser = SessionContext.getSessionUser(vReceiverEntity.getCs());
         String receiverId = UUID.randomUUID().toString();
         vReceiverEntity.setReceiverId(receiverId);
-        ReceiverEntity receiverEntity = iReceiverService.create(vReceiverEntity);
+        ReceiverEntity receiverEntity = iReceiverService.create(sessionUser.getChildren().get(0),vReceiverEntity);
         if (receiverEntity == null) {
             vReceiverEntity.setReceiverId(null);
             IResultSet resultSet = new ResultSet();
@@ -72,7 +70,6 @@ public class ReceiverController extends Controller implements IReceiverControlle
             renderJson(JSON.toJSONString(resultSet));
         } else {
             VReceiverEntity result = new VReceiverEntity(receiverEntity);
-            result.setSessionId(vReceiverEntity.getSessionId());
             IResultSet resultSet = new ResultSet();
             resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
             resultSet.setData(result);
@@ -84,7 +81,8 @@ public class ReceiverController extends Controller implements IReceiverControlle
     public void update() {
         String params = this.getPara("p");
         VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
-        ReceiverEntity receiverEntity = iReceiverService.updateById(vReceiverEntity);
+        VUserEntity sessionUser = SessionContext.getSessionUser(vReceiverEntity.getCs());
+        ReceiverEntity receiverEntity = iReceiverService.updateById(sessionUser.getChildren(),vReceiverEntity);
         if (receiverEntity == null) {
             IResultSet resultSet = new ResultSet();
             resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
@@ -103,7 +101,8 @@ public class ReceiverController extends Controller implements IReceiverControlle
     public void delete() {
         String params = this.getPara("p");
         VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
-        ReceiverEntity receiverEntity = iReceiverService.deleteById(vReceiverEntity.getReceiverId());
+        VUserEntity sessionUser = SessionContext.getSessionUser(vReceiverEntity.getCs());
+        ReceiverEntity receiverEntity = iReceiverService.deleteById(sessionUser.getChildren(),vReceiverEntity.getReceiverId());
         if (receiverEntity == null) {
             IResultSet resultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode());
             resultSet.setData(vReceiverEntity);
@@ -119,12 +118,8 @@ public class ReceiverController extends Controller implements IReceiverControlle
     public void king() {
         String params = this.getPara("p");
         VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
-        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(vReceiverEntity.getSessionId());
-        String[] accountIds = new String[accountEntities.size()];
-        for (int index = 0; index < accountEntities.size(); index++) {
-            accountIds[index] = accountEntities.get(index).getAccountId();
-        }
-        ReceiverEntity receiverEntity = iReceiverService.kingReceiverInUser(vReceiverEntity, accountIds);
+        VUserEntity sessionUser = SessionContext.getSessionUser(vReceiverEntity.getCs());
+        ReceiverEntity receiverEntity = iReceiverService.kingReceiverInUser(sessionUser.getChildren(), vReceiverEntity);
         if (receiverEntity == null) {
             IResultSet resultSet = new ResultSet();
             resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
@@ -134,7 +129,6 @@ public class ReceiverController extends Controller implements IReceiverControlle
             IResultSet resultSet = new ResultSet();
             resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
             VReceiverEntity result = new VReceiverEntity(receiverEntity);
-            result.setSessionId(vReceiverEntity.getSessionId());
             resultSet.setData(result);
             renderJson(JSON.toJSONString(resultSet));
         }

@@ -19,6 +19,12 @@ public interface IOrderController {
     void create();
 
     /**
+     * 匿名用户接口
+     * 用户创建一个订单
+     */
+    void createAnonymous();
+
+    /**
      * 用户接口
      * 用户确认收货
      */

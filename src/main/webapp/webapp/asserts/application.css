@@ -69,7 +69,8 @@ div.header_menu_down {
 
 div.main {
     width: 1000px;
-    height: 600px;
+    height: 400px;
+    min-height: 400px;
     margin: 75px auto 0px;
 }
 

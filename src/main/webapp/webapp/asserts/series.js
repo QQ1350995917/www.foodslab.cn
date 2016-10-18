@@ -2,10 +2,10 @@
  * Created by dingpengwei on 8/21/16.
  */
 window.onload = function () {
-    initTitleView();
+    this.initFrameView();
+    requestSessionStatus(onRequestSessionStatusCommonCallback);
     let seriesId = document.getElementById("seriesId") == undefined ? null : document.getElementById("seriesId").content;
     requestSeries(seriesId);
-    requestLinker();
 };
 // + JSON.stringify(seriesEntity)
 function requestSeries(seriesId) {
@@ -20,7 +20,7 @@ function requestSeries(seriesId) {
 }
 
 function createSeriesView(seriesId,seriesEntities,callback) {
-    let seriesEntitiesView = document.getElementById(HEADER_MENU_DOWN);
+    let seriesEntitiesView = document.getElementById(ID_HEADER_MENU_DOWN);
     seriesEntitiesView.innerHTML = null;
     let length = seriesEntities == undefined ? 0:seriesEntities.length;
     for (let i = 0; i < length; i++) {

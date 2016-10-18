@@ -2,46 +2,18 @@
  * Created by dingpengwei on 8/19/16.
  */
 const BASE_PATH = "http://localhost:8080/foodslab/";
-const HEADER_MENU_TOP = "header_menu_top";
-const HEADER_MENU_DOWN = "header_menu_down";
+const ID_HEADER_ICON = "headerIcon";
+const ID_HEADER_MENU_TOP = "headerMenuTop";
+const ID_HEADER_MENU_QUERY = "headerMenuTopQuery";
+const ID_HEADER_MENU_LOGIN = "headerMenuTopLogin";
+const ID_HEADER_MENU_LOGOUT = "headerMenuTopLogout";
+const ID_HEADER_MENU_DOWN = "headerMenuDown";
 const MAIN = "main";
+const KEY_CS = "cs";
 
 const RESPONSE_SUCCESS = 3050;
 
 const COLORS = new Array("#715595", "#006AA8", "#3EAF5C", "#F0DB4F", "#715595", "#006AA8", "#3EAF5C", "#F0DB4F", "#715595", "#006AA8", "#3EAF5C", "#F0DB4F");
-
-function asyncRequestByGet(url, onDataCallback, onErrorCallback, onTimeoutCallback) {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.timeout = 5000;
-    xmlHttp.ontimeout = onTimeoutCallback;
-    xmlHttp.open("GET", url, true);
-    xmlHttp.send(null);
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-            onDataCallback(xmlHttp.responseText);
-        } else {
-            onErrorCallback;
-        }
-    }
-}
-
-function asyncRequestByPost(url, params, onDataCallback, onErrorCallback, onTimeoutCallback) {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.timeout = 5000;
-    xmlHttp.ontimeout = onTimeoutCallback;
-    xmlHttp.open("POST", url, true);
-    xmlHttp.setRequestHeader("cache-control", "no-cache");
-    xmlHttp.setRequestHeader("contentType", "text/html;charset=uft-8");
-    xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xmlHttp.send(encodeURI(params));
-    xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-            onDataCallback(xmlHttp.responseText);
-        } else {
-            onErrorCallback();
-        }
-    }
-}
 
 /**
  * 通用函数,检测服务器返回的数据格式是否正确
@@ -60,38 +32,125 @@ function onTimeoutCallback() {
 
 }
 
-function initTitleView() {
-    let header = document.getElementById("header");
-    header.innerHTML = "<div id='header_icon' class='header_icon' onclick='onIndexClick()'>foodslab.cn</div> <div id='header_menu' class='header_menu'> <div id='header_menu_top' class='header_menu_top'></div> <div id='header_menu_down' class='header_menu_down'></div> </div>";
-    requestAccount();
+function initFrameView() {
+    setTitleViewLogoutStatus();
+    requestLinker();
 }
 
-function requestAccount() {
-    if (sessionStorage.cs) {
+/**
+ * 初始化登录状态面板
+ */
+function setTitleViewLogoutStatus() {
+    document.getElementById(ID_HEADER_ICON).onclick = function () {
+        window.open(BASE_PATH, "_blank");
+    }
 
-    } else {
-        let topMenuPanel = document.getElementById(HEADER_MENU_TOP);
-        let loginAction = document.createElement("div");
-        loginAction.className = "header_menu_top_item";
-        loginAction.innerHTML = "登录/注册";
-        let queryAction = document.createElement("div");
-        queryAction.className = "header_menu_top_item";
-        queryAction.style.widths = "100px";
-        queryAction.innerHTML = "订单查询";
-        topMenuPanel.appendChild(loginAction);
-        topMenuPanel.appendChild(queryAction);
-        loginAction.onclick = function () {
-            showLoginView();
-        }
-        
-        queryAction.onclick = function () {
-            window.open(BASE_PATH + "pq");
-        }
+    let headerMenuTop = document.getElementById(ID_HEADER_MENU_TOP);
+    headerMenuTop.innerHTML = null;
+    let loginAction = document.createElement("div");
+    loginAction.id = ID_HEADER_MENU_LOGIN;
+    loginAction.className = "header_menu_top_item";
+    loginAction.innerHTML = "登录/注册";
+    headerMenuTop.appendChild(loginAction);
+
+    let queryAction = document.createElement("div");
+    queryAction.id = ID_HEADER_MENU_QUERY;
+    queryAction.className = "header_menu_top_item";
+    queryAction.style.widths = "100px";
+    queryAction.innerHTML = "订单查询";
+    headerMenuTop.appendChild(queryAction);
+
+    loginAction.onclick = function () {
+        showLoginView(function () {
+            requestSessionStatus(onRequestSessionStatusCommonCallback);
+        });
+    };
+
+    queryAction.onclick = function () {
+        window.open(BASE_PATH + "pq", "_blank");
+    };
+}
+
+/**
+ * 设置登录状态面板为登录状态
+ * @param userEntity
+ */
+function setTitleViewLoginStatus(userEntity) {
+    let accountEntity = userEntity.children[0];
+    let headerMenuTop = document.getElementById(ID_HEADER_MENU_TOP);
+    headerMenuTop.innerHTML = null;
+    let logoutAction = document.createElement("div");
+    logoutAction.id = ID_HEADER_MENU_LOGOUT;
+    logoutAction.className = "header_menu_top_item";
+    logoutAction.innerHTML = "退出";
+    logoutAction.onclick = function () {
+        let requestUserEntity = new Object();
+        requestUserEntity.cs = getCookie(KEY_CS);
+        let url = BASE_PATH + "account/logout?p=" + JSON.stringify(requestUserEntity);
+        asyncRequestByGet(url, function (data) {
+            var result = checkResponseDataFormat(data);
+            if (result) {
+                var jsonData = JSON.parse(data);
+                if (jsonData.code == RESPONSE_SUCCESS) {
+                    setTitleViewLogoutStatus();
+                } else {
+                    new Toast().show("退出失败");
+                }
+            }
+        }, onErrorCallback, onTimeoutCallback);
+    }
+    headerMenuTop.appendChild(logoutAction);
+    let loginAction = document.createElement("div");
+    loginAction.className = "header_menu_top_item";
+    loginAction.innerHTML = accountEntity.nickName == undefined ? accountEntity.identity : accountEntity.nickName;
+    headerMenuTop.appendChild(loginAction);
+    let queryAction = document.createElement("div");
+    queryAction.className = "header_menu_top_item";
+    queryAction.style.widths = "100px";
+    queryAction.innerHTML = "订单查询";
+    headerMenuTop.appendChild(queryAction);
+    loginAction.onclick = function () {
+        let requestPageEntity = new Object();
+        requestPageEntity.cs = getCookie("cs");
+        requestPageEntity.dir = getCookie("order");
+        window.open(BASE_PATH + "pm?p=" + JSON.stringify(requestPageEntity));
+    }
+    queryAction.onclick = function () {
+        let requestPageEntity = new Object();
+        requestPageEntity.cs = getCookie("cs");
+        window.open(BASE_PATH + "pm?p=" + JSON.stringify(requestPageEntity));
     }
 }
 
-function onIndexClick() {
-    window.open(BASE_PATH, "_blank");
+/**
+ * 查询登录状态
+ * @param onRequestCallback
+ */
+function requestSessionStatus(onRequestCallback) {
+    let cs = getCookie(KEY_CS);
+    if (!isNullValue(cs)) {
+        let requestUserEntity = new Object();
+        requestUserEntity.cs = cs;
+        let url = BASE_PATH + "account/retrieve?p=" + JSON.stringify(requestUserEntity);
+        asyncRequestByGet(url, function (data) {
+            onRequestCallback(data);
+        }, onErrorCallback, onTimeoutCallback);
+    }
+}
+
+/**
+ * 查询登录状态完成时候的一般处理方式
+ * @param data
+ */
+function onRequestSessionStatusCommonCallback(data) {
+    var jsonData = JSON.parse(data);
+    if (jsonData.code == RESPONSE_SUCCESS) {
+        let userEntity = jsonData.data;
+        setTitleViewLoginStatus(userEntity);
+    } else {
+        setTitleViewLogoutStatus();
+        delCookie(KEY_CS);
+    }
 }
 
 function requestLinker() {
@@ -169,6 +228,61 @@ function createSiteInfoContainer(data) {
     return linkerSiteContainer;
 }
 
+/**
+ * 网络请求工具方法
+ * 以GET的方式进行网络请求
+ * @param url 请求的地址
+ * @param onDataCallback 请求完成的回调
+ * @param onErrorCallback 请求错误的回调
+ * @param onTimeoutCallback 请求超时的回调
+ */
+function asyncRequestByGet(url, onDataCallback, onErrorCallback, onTimeoutCallback) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.timeout = 5000;
+    xmlHttp.ontimeout = onTimeoutCallback;
+    xmlHttp.open("GET", url, true);
+    xmlHttp.send(null);
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            onDataCallback(xmlHttp.responseText);
+        } else {
+            onErrorCallback;
+        }
+    }
+}
+
+/**
+ * 网络请求工具方法
+ * 以POST的方式进行网络请求
+ * @param url 请求的地址
+ * @param params 请求的参数
+ * @param onDataCallback 请求完成的回调
+ * @param onErrorCallback 请求错误的回调
+ * @param onTimeoutCallback 请求超时的回调
+ */
+function asyncRequestByPost(url, params, onDataCallback, onErrorCallback, onTimeoutCallback) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.timeout = 5000;
+    xmlHttp.ontimeout = onTimeoutCallback;
+    xmlHttp.open("POST", url, true);
+    xmlHttp.setRequestHeader("cache-control", "no-cache");
+    xmlHttp.setRequestHeader("contentType", "text/html;charset=uft-8");
+    xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xmlHttp.send(encodeURI(params));
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            onDataCallback(xmlHttp.responseText);
+        } else {
+            onErrorCallback();
+        }
+    }
+}
+
+/**
+ * view层工具方法
+ * 获取滚动的长度
+ * @returns {*}
+ */
 function getScrollTop() {
     var scrollPos;
     if (window.pageYOffset) {
@@ -183,13 +297,12 @@ function getScrollTop() {
     return scrollPos;
 }
 
-function isNullValue(value) {
-    if (value == undefined || value == null || value == "") {
-        return true;
-    }
-    return false;
-}
-
+/**
+ * view层工具方法
+ * 格式化显示的时间字符串
+ * @param format
+ * @returns {*}
+ */
 Date.prototype.format = function (format) {
     var o = {
         "M+": this.getMonth() + 1,
@@ -209,4 +322,66 @@ Date.prototype.format = function (format) {
         }
     }
     return format;
-}   
+}
+
+/**
+ * 数据层工具方法
+ * 判定字符串是否是泛义上的空
+ * @param value
+ * @returns {boolean}
+ */
+function isNullValue(value) {
+    if (value == undefined || value == null || value == "") {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * 数据层工具方法
+ * 设置本地cookie存储
+ * @param key
+ * @param value
+ * @param expireDays
+ */
+function setCookie(key, value, expireDays) {
+    if (isNullValue(expireDays)) {
+        expireDays = 30;
+    }
+    var expireDate = new Date()
+    expireDate.setDate(expireDate.getDate() + expireDays)
+    document.cookie = key + "=" + encodeURI(value) + ((expireDays == null) ? "" : ";expires=" + expireDate.toGMTString())
+}
+
+/**
+ * 数据层工具方法
+ * 获取本地cookie存储
+ * @param key
+ * @returns {*}
+ */
+function getCookie(key) {
+    if (document.cookie.length > 0) {
+        let indexStart = document.cookie.indexOf(key + "=")
+        if (indexStart != -1) {
+            indexStart = indexStart + key.length + 1
+            let indexEnd = document.cookie.indexOf(";", indexStart)
+            if (indexEnd == -1) indexEnd = document.cookie.length
+            return decodeURI(document.cookie.substring(indexStart, indexEnd))
+        }
+    }
+    return ""
+}
+
+/**
+ * 数据层工具方法
+ * 删除本地cookie存储
+ * @param key
+ */
+function delCookie(key) {
+    var exp = new Date();
+    exp.setTime(exp.getTime() - 1);
+    var del = getCookie(key);
+    if (del != null) {
+        document.cookie = key + "=" + del + ";expires=" + exp.toGMTString();
+    }
+}

@@ -2,19 +2,18 @@
  * Created by dingpengwei on 9/7/16.
  */
 
-function showLoginView() {
+function showLoginView(loginSuccessCallback) {
     showMaskView();
-    createLoginView();
-    document.body.appendChild(createLoginView());
+    document.body.appendChild(createLoginView(loginSuccessCallback));
 }
 
-function createLoginView() {
+function createLoginView(loginSuccessCallback) {
     let loginContainer = document.createElement("div")
     loginContainer.id = "loginContainer";
     loginContainer.className = "loginContainer";
     loginContainer.appendChild(crateTitleRowView());
     loginContainer.appendChild(createAuthRowView());
-    loginContainer.appendChild(createFunctionContainer());
+    loginContainer.appendChild(createFunctionContainer(loginSuccessCallback));
     return loginContainer;
 }
 
@@ -55,10 +54,10 @@ function createAuthRowView() {
     return authRowView;
 }
 
-function createFunctionContainer() {
+function createFunctionContainer(loginSuccessCallback) {
     let functionContainer = document.createElement("div");
     functionContainer.className = "functionPanel";
-    addLoginContainer(functionContainer);
+    addLoginContainer(functionContainer,loginSuccessCallback);
     return functionContainer;
 }
 
@@ -66,7 +65,7 @@ function createFunctionContainer() {
  * 添加登录的容器
  * @param container
  */
-function addLoginContainer(container) {
+function addLoginContainer(container,loginSuccessCallback) {
     container.innerHTML = null;
     let titleMessage = document.createElement("div");
     titleMessage.style.float = "none";
@@ -94,6 +93,14 @@ function addLoginContainer(container) {
     loginAction.style.height = "40px";
     loginAction.style.marginLeft = "5px";
     container.appendChild(loginAction);
+    loginAction.onclick = function () {
+        let identity = phoneNumberInput.value;
+        let password = passwordInput.value;
+        let requestAccount = new Object();
+        requestAccount.identity = identity;
+        requestAccount.password = password;
+        requestLogin(requestAccount,loginSuccessCallback);
+    }
 
     let functionAction = document.createElement("div")
     functionAction.className = "login";
@@ -107,7 +114,7 @@ function addLoginContainer(container) {
     registerAction.innerHTML = "注册账户";
     functionAction.appendChild(registerAction);
     registerAction.onclick = function () {
-        addRegisterContainer(container);
+        addRegisterContainer(container,loginSuccessCallback);
     };
 
     let passwordAction = document.createElement("div")
@@ -115,7 +122,7 @@ function addLoginContainer(container) {
     passwordAction.innerHTML = "忘记密码";
     functionAction.appendChild(passwordAction);
     passwordAction.onclick = function () {
-        addResetPasswordContainer(container);
+        addResetPasswordContainer(container,loginSuccessCallback);
     };
 }
 
@@ -123,7 +130,7 @@ function addLoginContainer(container) {
  * 添加注册的容器
  * @param container
  */
-function addRegisterContainer(container) {
+function addRegisterContainer(container,loginSuccessCallback) {
     container.innerHTML = null;
     let titleMessage = document.createElement("div");
     titleMessage.style.float = "none";
@@ -159,7 +166,7 @@ function addRegisterContainer(container) {
     dCodeInput.style.marginRight = "0px";
     dCodeInput.placeholder = "请输入短信码";
     let dCodeDiv = document.createElement("div");
-    dCodeDiv.style.width= "85px";
+    dCodeDiv.style.width = "85px";
     dCodeDiv.style.height = "34px";
     dCodeDiv.style.marginTop = "5px";
     dCodeDiv.style.borderWidth = "1px";
@@ -200,6 +207,14 @@ function addRegisterContainer(container) {
     submitAction.style.height = "40px";
     submitAction.style.marginLeft = "5px";
     container.appendChild(submitAction);
+    submitAction.onclick = function () {
+        let identity = phoneNumberInput.value;
+        let password = password0Input.value;
+        let requestAccount = new Object();
+        requestAccount.identity = identity;
+        requestAccount.password = password;
+        requestCreateAccount(requestAccount);
+    }
 
     let functionAction = document.createElement("div")
     functionAction.className = "login";
@@ -220,7 +235,7 @@ function addRegisterContainer(container) {
  * 添加重置密码的容器
  * @param container
  */
-function addResetPasswordContainer(container) {
+function addResetPasswordContainer(container,loginSuccessCallback) {
     container.innerHTML = null;
     let titleMessage = document.createElement("div");
     titleMessage.style.float = "none";
@@ -256,7 +271,7 @@ function addResetPasswordContainer(container) {
     dCodeInput.style.marginRight = "0px";
     dCodeInput.placeholder = "请输入短信码";
     let dCodeDiv = document.createElement("div");
-    dCodeDiv.style.width= "85px";
+    dCodeDiv.style.width = "85px";
     dCodeDiv.style.height = "34px";
     dCodeDiv.style.marginTop = "5px";
     dCodeDiv.style.borderWidth = "1px";
@@ -309,7 +324,7 @@ function addResetPasswordContainer(container) {
     loginAction.innerHTML = "返回登录";
     functionAction.appendChild(loginAction);
     loginAction.onclick = function () {
-        addLoginContainer(container);
+        addLoginContainer(container,loginSuccessCallback);
     };
 
     let registerAction = document.createElement("div")
@@ -317,12 +332,40 @@ function addResetPasswordContainer(container) {
     registerAction.innerHTML = "注册账户";
     functionAction.appendChild(registerAction);
     registerAction.onclick = function () {
-        addRegisterContainer(container);
+        addRegisterContainer(container,loginSuccessCallback);
     };
-
 }
 
 function dismissLoginView() {
     document.body.removeChild(document.getElementById("loginContainer"));
     dismissMaskView();
+}
+
+function requestLogin(accountEntity,loginSuccessCallback) {
+    let url = BASE_PATH + "account/login?p=" + JSON.stringify(accountEntity);
+    asyncRequestByGet(url, function (data) {
+        var result = checkResponseDataFormat(data);
+        if (result) {
+            var jsonData = JSON.parse(data);
+            if (jsonData.code == RESPONSE_SUCCESS) {
+                setCookie("cs",jsonData.data.cs);
+                new Toast().show(jsonData.message);
+                dismissLoginView();
+                loginSuccessCallback();
+            } else {
+                new Toast().show(jsonData.message);
+            }
+        }
+    }, onErrorCallback, onTimeoutCallback);
+}
+
+function requestCreateAccount(accountEntity) {
+    let url = BASE_PATH + "account/create?p=" + JSON.stringify(accountEntity);
+    asyncRequestByGet(url, function (data) {
+        var result = checkResponseDataFormat(data);
+        if (result) {
+            var jsonData = JSON.parse(data);
+            console.log(jsonData);
+        }
+    }, onErrorCallback, onTimeoutCallback);
 }

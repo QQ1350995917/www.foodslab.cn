@@ -25,9 +25,10 @@ public class SessionInterceptor implements Interceptor {
         if (cs == null || SessionContext.getSession(cs.toString()) == null) {
             VUserEntity vUserEntity = new VUserEntity();
             IResultSet resultSet = new ResultSet(IResultSet.ResultCode.EXE_SESSION_TIME_OUT);
-            vUserEntity.setCs(cs.toString());
+            vUserEntity.setCs(cs == null ? null : cs.toString());
             resultSet.setData(vUserEntity);
             resultSet.setMessage("登录超时");
+            inv.getController().renderJson(resultSet);
         } else {
             inv.invoke();
         }

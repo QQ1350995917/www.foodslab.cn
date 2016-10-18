@@ -1,7 +1,7 @@
 /**
  * Created by dingpengwei on 9/8/16.
  */
-function requestAccount(accountId) {
+function requestMineAccount(cs) {
     onRequestAccountCallback(undefined);
 }
 

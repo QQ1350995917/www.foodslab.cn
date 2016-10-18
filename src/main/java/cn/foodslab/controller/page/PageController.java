@@ -1,13 +1,11 @@
 package cn.foodslab.controller.page;
 
-import cn.foodslab.common.cache.SessionContext;
 import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 
-import javax.servlet.http.HttpSession;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -27,6 +25,7 @@ public class PageController extends Controller implements IPageController {
         styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.css\">");
         this.setAttr("styleSheets", styleSheets);
         LinkedList<String> javaScripts = new LinkedList<>();
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/toast.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/mask.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.js\"></script>");
@@ -51,6 +50,7 @@ public class PageController extends Controller implements IPageController {
         styleSheets.add("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.css\">");
         this.setAttr("styleSheets", styleSheets);
         LinkedList<String> javaScripts = new LinkedList<>();
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/toast.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/mask.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/series.js\"></script>");
@@ -84,6 +84,7 @@ public class PageController extends Controller implements IPageController {
         this.setAttr("styleSheets", styleSheets);
 
         LinkedList<String> javaScripts = new LinkedList<>();
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/toast.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/mask.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/login.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/detail.js\"></script>");
@@ -93,39 +94,14 @@ public class PageController extends Controller implements IPageController {
 
     @Override
     public void pb() {
+        String params = this.getPara("p");
+        Map<String,Object> objectMap = JSON.parseObject(params, Map.class);
+
         LinkedList<Map<String, String>> metas = new LinkedList<>();
-        String accountId = this.getPara("accountId");
-        if (accountId != null) {
-            LinkedHashMap<String, String> accountMap = new LinkedHashMap<>();
-            accountMap.put("metaId", "accountId");
-            accountMap.put("metaValue", accountId);
-            metas.add(accountMap);
-            String mappingIds = this.getPara("mappingIds");
-            if (mappingIds != null) {
-                LinkedHashMap<String, String> mappingIdsMap = new LinkedHashMap<>();
-                mappingIdsMap.put("metaId", "productIds");
-                mappingIdsMap.put("metaValue", mappingIds);
-                metas.add(mappingIdsMap);
-            } else {
-                /**
-                 * TODO 错误页面
-                 */
-            }
-
-        } else {
-            String formatId = this.getPara("formatId");
-            if (formatId != null) {
-                LinkedHashMap<String, String> formatMap = new LinkedHashMap<>();
-                formatMap.put("metaId", "productIds");
-                formatMap.put("metaValue", formatId);
-                metas.add(formatMap);
-            } else {
-                /**
-                 * TODO 错误页面
-                 */
-            }
-        }
-
+        LinkedHashMap<String, String> mappingIdsMap = new LinkedHashMap<>();
+        mappingIdsMap.put("metaId", "productIds");
+        mappingIdsMap.put("metaValue", objectMap.get("productIds").toString());
+        metas.add(mappingIdsMap);
 
         this.setAttr("metas", metas);
 
@@ -222,6 +198,7 @@ public class PageController extends Controller implements IPageController {
     public void pp() {
         this.setAttr("title", "食坊-协议");
         LinkedList<String> javaScripts = new LinkedList<>();
+        javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/toast.js\"></script>");
         javaScripts.add("<script type=\"text/javascript\" src=\"" + this.getRequest().getContextPath() + "/webapp/asserts/index.js\"></script>");
         this.setAttr("javaScripts", javaScripts);
         this.render("/webapp/widgets/index.html");

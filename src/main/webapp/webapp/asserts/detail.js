@@ -2,29 +2,28 @@
  * Created by dingpengwei on 8/22/16.
  */
 window.onload = function () {
-    initTitleView();
+    this.initFrameView();
+    requestSessionStatus(onRequestSessionStatusCommonCallback);
     let typeId = document.getElementById("typeId") == undefined ? null : document.getElementById("typeId").content;
     let formatId = document.getElementById("formatId") == undefined ? null : document.getElementById("formatId").content;
     let typeEntity = new Object();
     typeEntity.typeId = typeId;
-    requestType(typeEntity,formatId);
-    requestLinker();
+    requestType(typeEntity, formatId);
 };
 
-function requestType(typeEntity,selectedFormatId) {
+function requestType(typeEntity, selectedFormatId) {
     let url = BASE_PATH + "type/retrieve?p=" + JSON.stringify(typeEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
             var jsonData = JSON.parse(data);
             createTypeTitle(jsonData.data);
-            createTypeMainView(jsonData.data,selectedFormatId);
+            createTypeMainView(jsonData.data, selectedFormatId);
         }
     }, onErrorCallback, onTimeoutCallback);
 }
 
 function requestPutInCart(formatEntity) {
-    formatEntity.sessionId = "test";
     let url = BASE_PATH + "cart/create?p=" + JSON.stringify(formatEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
@@ -36,12 +35,12 @@ function requestPutInCart(formatEntity) {
 }
 
 function onRequestPutInCartCallback(data) {
-    showMaskView(undefined,"#CCCCCC");
+    showMaskView(undefined, "#CCCCCC");
     createPutInCartResultView(data);
 }
 
 function createTypeTitle(typeEntity) {
-    let typeEntityView = document.getElementById(HEADER_MENU_DOWN);
+    let typeEntityView = document.getElementById(ID_HEADER_MENU_DOWN);
     typeEntityView.innerHTML = null;
 
     let arrow1 = document.createElement("div");
@@ -72,7 +71,7 @@ function createTypeTitle(typeEntity) {
     typeEntityView.appendChild(typeLabelView);
 }
 
-function createTypeMainView(typeEntity,selectedFormatId) {
+function createTypeMainView(typeEntity, selectedFormatId) {
     let typeMainTopView = document.createElement("div");
     typeMainTopView.className = "typeMainTopView";
 
@@ -97,7 +96,7 @@ function createTypeMainView(typeEntity,selectedFormatId) {
     let formatEntitiesView = document.createElement("div");
     formatEntitiesView.style.height = "231px";
     formatEntitiesView.style.marginTop = "20px";
-    requestFormat(typeEntity,formatEntitiesView,selectedFormatId);
+    requestFormat(typeEntity, formatEntitiesView, selectedFormatId);
     typeMainTopRight.appendChild(formatEntitiesView);
 
     typeMainTopView.appendChild(typeMainTopRight);
@@ -115,13 +114,13 @@ function createTypeMainView(typeEntity,selectedFormatId) {
     mainView.style.height = typeMainTopView.clientHeight + typeMainLine.clientHeight + typeMainDownView.clientHeight + "px";
 }
 
-function requestFormat(typeEntity,containerView,selectedFormatId) {
+function requestFormat(typeEntity, containerView, selectedFormatId) {
     let url = BASE_PATH + "format/retrieves?p=" + JSON.stringify(typeEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
             var jsonData = JSON.parse(data);
-            createFormatView(containerView,jsonData.data,selectedFormatId);
+            createFormatView(containerView, jsonData.data, selectedFormatId);
         }
     }, onErrorCallback, onTimeoutCallback);
 }
@@ -179,7 +178,7 @@ function createFormatDiscountItemView(formatEntity) {
     let formatDiscountView = document.createElement("div");
     formatDiscountView.className = "formatItem";
 
-    if (formatEntity.price != formatEntity.pricing){
+    if (formatEntity.price != formatEntity.pricing) {
         /**
          * 定价
          */
@@ -248,7 +247,7 @@ function createFormatDiscountItemView(formatEntity) {
     formatCounterMinus.style.borderBottomWidth = "0px";
     formatCounterMinus.innerHTML = "-";
     formatCounterMinus.onclick = function () {
-        if (parseInt(formatCounterEdit.value) > 1){
+        if (parseInt(formatCounterEdit.value) > 1) {
             formatCounterEdit.value = parseInt(formatCounterEdit.value) - 1;
         }
     };
@@ -269,10 +268,40 @@ function createFormatDiscountItemView(formatEntity) {
     putInCart.className = "formatLabel button";
     putInCart.innerHTML = "加入购物车";
     putInCart.onclick = function () {
-        let requestFormatEntity = new Object();
-        requestFormatEntity.formatId = formatEntity.formatId;
-        requestFormatEntity.amount = formatCounterEdit.value;
-        requestPutInCart(requestFormatEntity);
+        let cs = getCookie(KEY_CS);
+        if (!isNullValue(cs)) {
+            requestSessionStatus(function (data) {
+                var result = checkResponseDataFormat(data);
+                if (result) {
+                    var jsonData = JSON.parse(data);
+                    if (jsonData.code == RESPONSE_SUCCESS) {
+                        let requestFormatEntity = new Object();
+                        requestFormatEntity.cs = getCookie(KEY_CS);
+                        requestFormatEntity.formatId = formatEntity.formatId;
+                        requestFormatEntity.amount = formatCounterEdit.value;
+                        requestPutInCart(requestFormatEntity);
+                    } else {
+                        showLoginView(function () {
+                            requestSessionStatus(onRequestSessionStatusCommonCallback);
+                            let requestFormatEntity = new Object();
+                            requestFormatEntity.cs = getCookie(KEY_CS);
+                            requestFormatEntity.formatId = formatEntity.formatId;
+                            requestFormatEntity.amount = formatCounterEdit.value;
+                            requestPutInCart(requestFormatEntity);
+                        });
+                    }
+                }
+            });
+        } else {
+            showLoginView(function () {
+                requestSessionStatus(onRequestSessionStatusCommonCallback);
+                let requestFormatEntity = new Object();
+                requestFormatEntity.cs = getCookie(KEY_CS);
+                requestFormatEntity.formatId = formatEntity.formatId;
+                requestFormatEntity.amount = formatCounterEdit.value;
+                requestPutInCart(requestFormatEntity);
+            });
+        }
     };
     formatDiscountView.appendChild(putInCart);
     return formatDiscountView;
@@ -324,7 +353,7 @@ function createPutInCartResultView(data) {
         dismissMaskView();
         document.body.removeChild(keepGoon.parentNode);
         let url = BASE_PATH + "pm?accountId=test&dir=cart";
-        window.open(url,"_self");
+        window.open(url, "_self");
     };
     resultView.appendChild(keepGoon);
     resultView.appendChild(goToCart);

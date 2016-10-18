@@ -18,8 +18,9 @@ public class VUserEntity extends UserEntity implements ISessionEntity {
         super();
     }
 
-    public VUserEntity(String cs,LinkedList<VAccountEntity> children) {
+    public VUserEntity(String cs,String userId,LinkedList<VAccountEntity> children) {
         this.cs = cs;
+        this.setUserId(userId);
         this.children = children;
     }
 

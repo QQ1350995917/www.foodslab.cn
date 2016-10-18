@@ -2,165 +2,153 @@
  * Created by dingpengwei on 8/23/16.
  */
 window.onload = function () {
-    initTitleView();
-    requestLinker();
-    let accountId = document.getElementById("accountId") == undefined ? null : document.getElementById("accountId").content;
-    if (accountId == undefined || accountId == null || accountId == "") {
-        requestBillingByAnonymous();
+    this.initFrameView();
+    requestSessionStatus(onBillingRequestSessionStatusCommonCallback);
+
+    let mainView = document.getElementById(MAIN);
+    let receiverContainer = document.createElement("div");
+    receiverContainer.className = "HFillContainer BHContainer";
+    mainView.appendChild(receiverContainer);
+
+    let payStyleContainer = document.createElement("div");
+    payStyleContainer.className = "HFillContainer BHContainer";
+    payStyleContainer.style.height = "170px";
+    mainView.appendChild(payStyleContainer);
+
+    let productContainer = document.createElement("div");
+    productContainer.className = "HFillContainer BHContainer";
+    mainView.appendChild(productContainer);
+
+    let payBarContainer = document.createElement("div");
+    payBarContainer.className = "HFillContainer";
+    payBarContainer.style.height = "38px";
+    mainView.appendChild(payBarContainer);
+
+    let cs = getCookie(KEY_CS);
+    if (isNullValue(cs)) {
+        attachAnonymousReceiverContainer(receiverContainer, function (data) {
+        });
+
+        attachPayStyleContainer(payStyleContainer, function () {
+        });
+
+        let formatIds = document.getElementById("productIds") == undefined ? null : document.getElementById("productIds").content;
+        let formatEntity = new Object();
+        formatEntity.formatId = formatIds;
+        let url = BASE_PATH + "format/retrieveTreeInversion?p=" + JSON.stringify(formatEntity);
+        asyncRequestByGet(url, function (data) {
+            var result = checkResponseDataFormat(data);
+            if (result) {
+                var jsonData = JSON.parse(data);
+                let formatEntities = new Array();
+                formatEntities.push(jsonData.data);
+                attachProductContainer(productContainer, formatEntities, function (height) {
+                    productContainer.style.height = height + "px";
+                    mainView.style.height = (mainView.clientHeight + height) + "px";
+                });
+                attachPayBarContainer(payBarContainer, formatEntities);
+            }
+        }, onErrorCallback, onTimeoutCallback);
     } else {
-        let mainView = document.getElementById(MAIN);
-        mainView.innerHTML = null;
-        mainView.style.height = "280px";
-        let receiverContainer = document.createElement("div");
-        receiverContainer.className = "containerStyle";
-        receiverContainer.style.height = "120px";
-        receiverContainer.style.minHeight = "120px";
-        let payStyleContainer = document.createElement("div");
-        payStyleContainer.className = "containerStyle";
-        payStyleContainer.appendChild(createPayStyleContainer());
-        let productContainer = document.createElement("div");
-        productContainer.className = "containerStyle";
-        mainView.appendChild(receiverContainer);
-        mainView.appendChild(payStyleContainer);
-        mainView.appendChild(productContainer);
-        let userEntity = new Object();
-        userEntity.sessionId = accountId;
-        requestUserReceiver(userEntity,receiverContainer);
-        requestCart(productContainer);
+        requestSessionStatus(function (data) {
+            var result = checkResponseDataFormat(data);
+            if (result) {
+                var jsonData = JSON.parse(data);
+                if (jsonData.code == RESPONSE_SUCCESS) {
+                    let userEntity = new Object();
+                    userEntity.sc = getCookie(KEY_CS);
+                    asyncRequestByGet(BASE_PATH + "receiver/retrieves?p=" + JSON.stringify(userEntity), function (data) {
+                        var result = checkResponseDataFormat(data);
+                        if (result) {
+                            var jsonData = JSON.parse(data);
+                            attachUserReceiverContainer(receiverContainer,jsonData.data, function (height) {
+                                receiverContainer.parentNode.style.height = (receiverContainer.parentNode.clientHeight + height) + "px";
+                            })
+                        }
+                    }, onErrorCallback, onTimeoutCallback);
+
+                    attachPayStyleContainer(payStyleContainer, function () {
+                    });
+
+                    let productIds = document.getElementById("productIds") == undefined ? null : document.getElementById("productIds").content;
+                    let cartEntity = new Object();
+                    cartEntity.cs = getCookie(KEY_CS);
+                    cartEntity.mappingIds = productIds.split(",");
+                    asyncRequestByGet(BASE_PATH + "cart/retrieves?p=" + JSON.stringify(cartEntity), function (data) {
+                        var result = checkResponseDataFormat(data);
+                        if (result) {
+                            var jsonData = JSON.parse(data);
+                            console.log(jsonData);
+                            attachProductContainer(productContainer,jsonData.data,function (height) {
+                                productContainer.parentNode.style.height = (productContainer.parentNode.clientHeight + height) + "px";
+                            });
+                        }
+                    }, onErrorCallback, onTimeoutCallback);
+                } else {
+                    delCookie(KEY_CS);
+                }
+            }
+        });
+
     }
 };
 
-function requestBillingByAnonymous() {
-    let formatIds = document.getElementById("productIds") == undefined ? null : document.getElementById("productIds").content;
-    let formatEntity = new Object();
-    formatEntity.formatId = formatIds;
-    let url = BASE_PATH + "format/retrieveTreeInversion?p=" + JSON.stringify(formatEntity);
-    asyncRequestByGet(url, function (data) {
-        var result = checkResponseDataFormat(data);
-        if (result) {
-            var jsonData = JSON.parse(data);
-            createBillingByAnonymous(jsonData.data);
-        }
-    }, onErrorCallback, onTimeoutCallback);
-}
-
-function requestUserReceiver(userEntity,receiverContainer) {
-    let url = BASE_PATH + "receiver/retrieves?p=" + JSON.stringify(userEntity);
-    asyncRequestByGet(url, function (data) {
-        var result = checkResponseDataFormat(data);
-        if (result) {
-            var jsonData = JSON.parse(data);
-            receiverContainer.appendChild(createUserReceiverContainer(jsonData.data,function (height) {
-                receiverContainer.parentNode.style.height = (receiverContainer.parentNode.clientHeight + height) + "px";
-            }));
-        }
-    }, onErrorCallback, onTimeoutCallback);
-}
-
-function requestCart(productContainer) {
-    let mappingIds = document.getElementById("productIds") == undefined ? null : document.getElementById("productIds").content;
-    let cartEntity = new Object();
-    cartEntity.sessionId = "test";
-    cartEntity.mappingIds = mappingIds;
-    let url = BASE_PATH + "cart/retrieves?p=" + JSON.stringify(cartEntity);
-    asyncRequestByGet(url, function (data) {
-        var result = checkResponseDataFormat(data);
-        if (result) {
-            var jsonData = JSON.parse(data);
-            console.log(jsonData);
-            fillingProductContainer(productContainer,jsonData.data,function (height) {
-                productContainer.parentNode.style.height = (productContainer.parentNode.clientHeight + height) + "px";
-            });
-        }
-    }, onErrorCallback, onTimeoutCallback);
-}
-
-function requestCreateOrder(orderEntity) {
-    let url = BASE_PATH + "order/create?p="  + JSON.stringify(orderEntity);
-    asyncRequestByGet(url, function (data) {
-        var result = checkResponseDataFormat(data);
-        if (result) {
-            var jsonData = JSON.parse(data);
-            if (orderEntity.sessionId == undefined) {
-                onRequestAnonymousCreateOrderCallback(jsonData.data);
-            } else {
-                onRequestUserCreateOrderCallback(jsonData.data);
-            }
-        }
-    }, onErrorCallback, onTimeoutCallback);
-}
-
 /**
- * 创建匿名订单
+ * 查询登录状态完成时候的billing处理方式
  * @param data
  */
-function onRequestAnonymousCreateOrderCallback(data) {
-    let url = BASE_PATH + "pq?orderId=" + data.orderId;
-    window.open(url, "_self");
-}
-
-/**
- * 创建用户订单
- * @param data
- */
-function onRequestUserCreateOrderCallback(data) {
-    let url = BASE_PATH + "pm?accountId=test&dir=order";
-    window.open(url, "_self");
-}
-
-/**
- * 创建匿名支付信息
- * @param data
- */
-function createBillingByAnonymous(formatEntity) {
-    let mainView = document.getElementById(MAIN);
-    mainView.innerHTML = null;
-
-    let receiverView = createAnonymousReceiverContainer();
-    mainView.appendChild(receiverView);
-
-    let payStyleView = createPayStyleContainer();
-    mainView.appendChild(payStyleView);
-    let formatEntities = new Array();
-    formatEntities.push(formatEntity);
-    let productView = createProductContainer(formatEntities);
-    mainView.appendChild(productView);
-
-    let payBarView = createPayBarContainer(formatEntity);
-    mainView.appendChild(payBarView);
-
-    mainView.style.height = receiverView.clientHeight + payStyleView.clientHeight + productView.clientHeight + payBarView.clientHeight + "px";
-}
-
-/**
- * 创建用户支付信息
- * @param data
- */
-function fillingProductContainer(productContainer, cartEntities,resetHeightCallback) {
-    let length = cartEntities == undefined ? 0:cartEntities.length;
-    let formatEntities = new Array();
-    for (let i=0;i<length;i++){
-        let cartEntity = cartEntities[i];
-        let formatEntity = cartEntity.formatEntity;
-        formatEntity.amount = cartEntity.amount;
-        formatEntities.push(formatEntity);
+function onBillingRequestSessionStatusCommonCallback(data) {
+    var jsonData = JSON.parse(data);
+    if (jsonData.code == RESPONSE_SUCCESS) {
+        let userEntity = jsonData.data;
+        setTitleViewLoginStatus(userEntity);
+        document.getElementById(ID_HEADER_MENU_LOGOUT).onclick = function () {
+            let requestPageEntity = new Object();
+            requestPageEntity.cs = getCookie("cs");
+            requestPageEntity.dir = getCookie("order");
+            window.open(BASE_PATH, "_self");
+        }
+    } else {
+        delCookie(KEY_CS);
     }
-    let productView = createProductContainer(formatEntities);
-    productContainer.appendChild(productView);
-
-    let payBarView = createPayBarContainer(cartEntities);
-    productContainer.appendChild(payBarView);
-    productContainer.style.height =  productView.clientHeight + payBarView.clientHeight + "px";
-    resetHeightCallback(productContainer.clientHeight);
 }
 
-function createAnonymousReceiverContainer() {
-    let receiverContainer = document.createElement("div");
-    receiverContainer.className = "receiverContainer containerStyle";
+
+
+
+//
+// /**
+//  * 创建用户支付信息
+//  * @param data
+//  */
+// function fillingProductContainer(productContainer, cartEntities,resetHeightCallback) {
+//     let length = cartEntities == undefined ? 0:cartEntities.length;
+//     let formatEntities = new Array();
+//     for (let i=0;i<length;i++){
+//         let cartEntity = cartEntities[i];
+//         let formatEntity = cartEntity.formatEntity;
+//         formatEntity.amount = cartEntity.amount;
+//         formatEntities.push(formatEntity);
+//     }
+//     let productView = createProductContainer(formatEntities);
+//     productContainer.appendChild(productView);
+//
+//     let payBarView = createPayBarContainer(cartEntities);
+//     productContainer.appendChild(payBarView);
+//     productContainer.style.height =  productView.clientHeight + payBarView.clientHeight + "px";
+//     resetHeightCallback(productContainer.clientHeight);
+// }
+
+
+/**
+ * @param container
+ * @param onAttachCallback
+ */
+function attachAnonymousReceiverContainer(container, onAttachCallback) {
     let receiverMessage = document.createElement("div");
     receiverMessage.className = "messageLabel";
     receiverMessage.innerHTML = "购买人信息<span style='color: #FF0000;'>（为了能和您取得联系请填写真实信息，如不填写则认为购买和收货是同一人）</span>";
-    receiverContainer.appendChild(receiverMessage);
+    container.appendChild(receiverMessage);
 
     let buyerInfoMessageLine = document.createElement("div");
     buyerInfoMessageLine.className = "messageLabel";
@@ -188,70 +176,12 @@ function createAnonymousReceiverContainer() {
     buyerPhoneEditor.className = "editor";
     buyerPhoneEditor.style.float = "left";
     buyerInfoMessageLine.appendChild(buyerPhoneEditor);
-    receiverContainer.appendChild(buyerInfoMessageLine);
+    container.appendChild(buyerInfoMessageLine);
     let receiverInfoMessageLine = createReceiverAddressEditorContainer(undefined);
-    receiverContainer.appendChild(receiverInfoMessageLine);
-    return receiverContainer;
+    container.appendChild(receiverInfoMessageLine);
+    onAttachCallback();
 }
 
-function createUserReceiverContainer(receiverEntities,onResetHeightCallback) {
-    let receiverContainer = document.createElement("div");
-    receiverContainer.className = "receiverContainer containerStyle";
-    let receiverMessage = document.createElement("div");
-    receiverMessage.className = "messageLabel";
-    receiverMessage.innerHTML = "收货人信息";
-    receiverContainer.appendChild(receiverMessage);
-    let currentReceiverContainer = createReceiverAddressEditorContainer(receiverEntities[0]);
-    receiverContainer.appendChild(currentReceiverContainer);
-
-    let moreReceiverTip = document.createElement("div");
-    moreReceiverTip.className = "messageLabel";
-    moreReceiverTip.style.width = "120px";
-    moreReceiverTip.style.height = "40px";
-    moreReceiverTip.style.lineHeight = "40px";
-    moreReceiverTip.innerHTML = "更多收货地址 ︾ ";
-    moreReceiverTip.style.cursor = "pointer";
-    moreReceiverTip.status = "less";
-    receiverContainer.appendChild(moreReceiverTip);
-    let moreReceiverContainer = createMoreReceiverAddressContainer(receiverEntities);
-    // moreReceiverTip.onclick = function () {
-    //     if (this.status == "less") {
-    //         moreReceiverTip.innerHTML = "更多收货地址 ︾ ";
-    //         this.status = "more";
-    //         onResetHeightCallback(moreReceiverContainer.customerHeight);
-    //         receiverContainer.appendChild(moreReceiverContainer);
-    //     } else if (this.status == "more") {
-    //         moreReceiverTip.innerHTML = "更多收货地址 ︽ ";
-    //         this.status = "less";
-    //         receiverContainer.parentNode.style.height = "120px";
-    //         receiverContainer.removeChild(moreReceiverContainer);
-    //     }
-    // };
-    receiverContainer.style.height = "120px";
-    return receiverContainer;
-}
-
-function createMoreReceiverAddressContainer(receiverEntities) {
-    let moreAddressContainer = document.createElement("div");
-    moreAddressContainer.style.color = "black";
-    let length = receiverEntities == undefined ? 0:receiverEntities.length;
-    for (let i = 0; i < length; i++) {
-        let receiverEntity = receiverEntities[i];
-        moreAddressContainer.appendChild(createReceiverAddressEditorContainer(receiverEntity));
-    }
-    if (receiverEntities == undefined || receiverEntities.length < 10) {
-        let addNewReceiver = document.createElement("div");
-        addNewReceiver.className = "billingReceiverItem";
-        addNewReceiver.style.textAlign = "center";
-        addNewReceiver.style.borderColor = "#000000";
-        addNewReceiver.innerHTML = "+";
-        moreAddressContainer.appendChild(addNewReceiver);
-    }
-    moreAddressContainer.style.height = (length * 30 + (receiverEntities.length < 10 ? 1 : 0 * 30)) + "px";
-    moreAddressContainer.customerHeight = length * 30 + ((receiverEntities.length < 10 ? 1 : 0)* 30) ;
-    return moreAddressContainer;
-
-}
 
 function createReceiverAddressEditorContainer(data) {
     let receiverInfoMessageLine = document.createElement("div");
@@ -260,12 +190,12 @@ function createReceiverAddressEditorContainer(data) {
     receiverInfoMessageLine.style.lineHeight = "40px";
     receiverInfoMessageLine.bindData = data;
     if (data == undefined) {
-        receiverInfoMessageLine.innerHTML = "双击编辑收货人信息";
+        receiverInfoMessageLine.innerHTML = "点击编辑收货人信息";
     } else {
         addCurrentReceiverViewToContainer(receiverInfoMessageLine, data)
     }
 
-    receiverInfoMessageLine.ondblclick = function () {
+    receiverInfoMessageLine.onclick = function () {
         showReceiverEditorView(receiverInfoMessageLine.bindData, function (data) {
             receiverInfoMessageLine.bindData = data;
             addCurrentReceiverViewToContainer(receiverInfoMessageLine, data)
@@ -336,14 +266,11 @@ function addCurrentReceiverViewToContainer(container, data) {
  * 创建支付类型
  * @returns {Element}
  */
-function createPayStyleContainer() {
-    let payStyleContainer = document.createElement("div");
-    payStyleContainer.className = "payStyleContainer containerStyle";
-
+function attachPayStyleContainer(container, onAttachCallback) {
     let payStyleMessage = document.createElement("div");
     payStyleMessage.className = "messageLabel";
     payStyleMessage.innerHTML = "请选择支付方式";
-    payStyleContainer.appendChild(payStyleMessage);
+    container.appendChild(payStyleMessage);
 
     let payStyleView = document.createElement("div");
     payStyleView.className = "messageLabel";
@@ -359,7 +286,7 @@ function createPayStyleContainer() {
     payZhi.src = "http://localhost:8080/foodslab/webapp/asserts/images/payzhi.png";
     payStyleView.appendChild(payWei);
     payStyleView.appendChild(payZhi);
-    payStyleContainer.appendChild(payStyleView);
+    container.appendChild(payStyleView);
 
     payWei.onclick = function () {
         payWei.className = "payStyleSelect";
@@ -369,17 +296,21 @@ function createPayStyleContainer() {
         payZhi.className = "payStyleSelect";
         payWei.className = "payStyleNormal";
     };
-
-    return payStyleContainer;
+    onAttachCallback();
 }
 
-function createProductContainer(formatEntities) {
-    let productContainer = document.createElement("div");
-    productContainer.className = "productContainer containerStyle";
+
+/**
+ * 匿名用户和登录用户公用的产品处理函数
+ * @param container
+ * @param formatEntities
+ * @param onAttachCallback
+ */
+function attachProductContainer(container, formatEntities, onAttachCallback) {
     let listMessage = document.createElement("div");
     listMessage.className = "messageLabel";
     listMessage.innerHTML = "发货清单";
-    productContainer.appendChild(listMessage);
+    container.appendChild(listMessage);
     let length = formatEntities == undefined ? 0 : formatEntities.length;
     for (let i = 0; i < length; i++) {
         let formatEntity = formatEntities[i];
@@ -410,18 +341,18 @@ function createProductContainer(formatEntities) {
         productAmount.innerHTML = formatEntity.amount;
         productItemContainer.appendChild(productAmount);
 
-        productContainer.appendChild(productItemContainer);
+        container.appendChild(productItemContainer);
     }
-
-    productContainer.style.height = 120 * length + 40 + "px";
-    return productContainer;
+    onAttachCallback(length * 119 + 40);
 }
 
-function createPayBarContainer(data) {
-    let payBarContainer = document.createElement("div");
-    payBarContainer.className = "payBarContainer";
-    payBarContainer.style.borderWidth = "0px";
-
+/**
+ * 匿名用户和登录用户公用的支付工具条
+ * @param container
+ * @param formatEntities
+ * @returns {Element}
+ */
+function attachPayBarContainer(container, formatEntities) {
     let payAction = document.createElement("div");
     payAction.className = "payBarItem";
     payAction.style.backgroundColor = "red";
@@ -432,7 +363,11 @@ function createPayBarContainer(data) {
     payAction.onclick = function () {
         onPayActionClick();
     };
-    payBarContainer.appendChild(payAction);
+    container.appendChild(payAction);
+
+    let length = formatEntities == undefined ? 0 : formatEntities.length;
+    for (let i = 0; i < length; i++) {
+    }
 
     let buyInfoView = document.createElement("div");
     buyInfoView.className = "payBarContainer";
@@ -452,9 +387,7 @@ function createPayBarContainer(data) {
     amount.innerHTML = "共选购" + "N" + "件商品";
     buyInfoView.appendChild(amount);
 
-    payBarContainer.appendChild(buyInfoView);
-
-    return payBarContainer;
+    container.appendChild(buyInfoView);
 }
 
 function onPayActionClick() {
@@ -468,40 +401,11 @@ function onPayActionClick() {
     let phone0 = document.getElementById("RPhone") == undefined ? undefined : document.getElementById("RPhone").innerHTML;
     let phone1 = document.getElementById("RPhoneBak") == undefined ? undefined : document.getElementById("RPhoneBak").innerHTML;
 
-    if (isNullValue(name)) {
-        new Toast().show("请输入收货人姓名");
+    if (isNullValue(name) || isNullValue(phone0) || isNullValue(province) || isNullValue(city) || isNullValue(county) || isNullValue(town) || isNullValue(village)) {
+        new Toast().show("请完善收货人信息");
         return;
     }
 
-    if (isNullValue(phone0)) {
-        new Toast().show("请输入收货人电话");
-        return;
-    }
-
-    if (isNullValue(province)) {
-        new Toast().show("请完善收货人地址");
-        return;
-    }
-
-    if (isNullValue(city)) {
-        new Toast().show("请完善收货人地址");
-        return;
-    }
-
-    if (isNullValue(county)) {
-        new Toast().show("请完善收货人地址");
-        return;
-    }
-
-    if (isNullValue(town)) {
-        new Toast().show("请完善收货人地址");
-        return;
-    }
-
-    if (isNullValue(village)) {
-        new Toast().show("请完善收货人地址");
-        return;
-    }
     let accountId = document.getElementById("accountId") == undefined ? null : document.getElementById("accountId").content;
     let productIds = document.getElementById("productIds") == undefined ? null : document.getElementById("productIds").content;
     if (accountId == undefined) {
@@ -523,17 +427,115 @@ function onPayActionClick() {
             receiver.village = village;
             receiver.append = append;
             orderEntity.receiver = receiver;
-            requestCreateOrder(orderEntity);
+            requestCreateAnonymousOrder(orderEntity);
         });
     } else {
         showPaymentView(function () {
             let orderEntity = new Object();
-            orderEntity.sessionId = accountId;
+            orderEntity.cs = getCookie(KEY_CS);
             orderEntity.productIds = productIds.split(",");
-            orderEntity.receiverId = "50cbf344-c92c-43ce-88f7-7fbe21e8e478";
+            orderEntity.receiverId = "dingpw";
             requestCreateOrder(orderEntity);
         });
     }
+}
 
+function requestCreateAnonymousOrder(orderEntity) {
+    let url = BASE_PATH + "order/createAnonymous?p=" + JSON.stringify(orderEntity);
+    asyncRequestByGet(url, function (data) {
+        var result = checkResponseDataFormat(data);
+        if (result) {
+            var jsonData = JSON.parse(data);
+            onRequestAnonymousCreateOrderCallback(jsonData.data);
+        }
+    }, onErrorCallback, onTimeoutCallback);
+}
+
+function requestCreateOrder(orderEntity) {
+    let url = BASE_PATH + "order/create?p=" + JSON.stringify(orderEntity);
+    asyncRequestByGet(url, function (data) {
+        var result = checkResponseDataFormat(data);
+        if (result) {
+            var jsonData = JSON.parse(data);
+            onRequestUserCreateOrderCallback(jsonData.data);
+        }
+    }, onErrorCallback, onTimeoutCallback);
+}
+
+/**
+ * 创建匿名订单
+ * @param data
+ */
+function onRequestAnonymousCreateOrderCallback(data) {
+    let url = BASE_PATH + "pq?orderId=" + data.orderId;
+    window.open(url, "_self");
+}
+
+/**
+ * 创建用户订单
+ * @param data
+ */
+function onRequestUserCreateOrderCallback(data) {
+    let url = BASE_PATH + "pm?accountId=test&dir=order";
+    window.open(url, "_self");
+}
+
+function attachUserReceiverContainer(container,receiverEntities, onAttachCallback) {
+    let receiverMessage = document.createElement("div");
+    receiverMessage.className = "messageLabel";
+    receiverMessage.innerHTML = "收货人信息";
+    container.appendChild(receiverMessage);
+    let currentReceiverContainer = createReceiverAddressEditorContainer(receiverEntities[0]);
+    container.appendChild(currentReceiverContainer);
+
+    let moreReceiverTip = document.createElement("div");
+    moreReceiverTip.className = "messageLabel";
+    moreReceiverTip.style.width = "120px";
+    moreReceiverTip.style.height = "40px";
+    moreReceiverTip.style.lineHeight = "40px";
+    moreReceiverTip.innerHTML = "更多收货地址 ︾ ";
+    moreReceiverTip.style.cursor = "pointer";
+    moreReceiverTip.status = "less";
+    container.appendChild(moreReceiverTip);
+    let moreReceiverContainer = createMoreReceiverAddressContainer(receiverEntities);
+    // moreReceiverTip.onclick = function () {
+    //     if (this.status == "less") {
+    //         moreReceiverTip.innerHTML = "更多收货地址 ︾ ";
+    //         this.status = "more";
+    //         onResetHeightCallback(moreReceiverContainer.customerHeight);
+    //         receiverContainer.appendChild(moreReceiverContainer);
+    //     } else if (this.status == "more") {
+    //         moreReceiverTip.innerHTML = "更多收货地址 ︽ ";
+    //         this.status = "less";
+    //         receiverContainer.parentNode.style.height = "120px";
+    //         receiverContainer.removeChild(moreReceiverContainer);
+    //     }
+    // };
+    container.style.height = "120px";
+}
+
+function createMoreReceiverAddressContainer(receiverEntities) {
+    let moreAddressContainer = document.createElement("div");
+    moreAddressContainer.style.color = "black";
+    let length = receiverEntities == undefined ? 0 : receiverEntities.length;
+    for (let i = 0; i < length; i++) {
+        let receiverEntity = receiverEntities[i];
+        moreAddressContainer.appendChild(createReceiverAddressEditorContainer(receiverEntity));
+    }
+    if (receiverEntities == undefined || receiverEntities.length < 10) {
+        let addNewReceiver = document.createElement("div");
+        addNewReceiver.className = "billingReceiverItem";
+        addNewReceiver.style.textAlign = "center";
+        addNewReceiver.style.borderColor = "#000000";
+        addNewReceiver.innerHTML = "+";
+        moreAddressContainer.appendChild(addNewReceiver);
+    }
+    moreAddressContainer.style.height = (length * 30 + (receiverEntities.length < 10 ? 1 : 0 * 30)) + "px";
+    moreAddressContainer.customerHeight = length * 30 + ((receiverEntities.length < 10 ? 1 : 0) * 30);
+    return moreAddressContainer;
+}
+
+function requestCart(productContainer) {
 
 }
+

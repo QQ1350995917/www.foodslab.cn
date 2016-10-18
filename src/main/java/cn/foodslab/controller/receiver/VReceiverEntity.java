@@ -8,7 +8,7 @@ import cn.foodslab.service.receiver.ReceiverEntity;
  * Description: @TODO
  */
 public class VReceiverEntity extends ReceiverEntity {
-    private String sessionId;
+    private String cs;
     public VReceiverEntity() {
         super();
     }
@@ -27,12 +27,11 @@ public class VReceiverEntity extends ReceiverEntity {
         this.setStatus(receiverEntity.getStatus());
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getCs() {
+        return cs;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setCs(String cs) {
+        this.cs = cs;
     }
-
 }

@@ -110,16 +110,15 @@ public class FormatController extends Controller implements IFormatController {
     public void mCreate() {
         String params = this.getPara("p");
         VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
-        FormatEntity formatEntity = vFormatEntity.getFormatEntity();
         String formatId = UUID.randomUUID().toString();
-        formatEntity.setFormatId(formatId);
-        formatEntity.setStatus(1);
-        if (iFormatServices.mExist(formatEntity)) {
+        vFormatEntity.setFormatId(formatId);
+        vFormatEntity.setStatus(1);
+        if (iFormatServices.mExist(vFormatEntity)) {
             vFormatEntity.setFormatId(null);
             IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vFormatEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            FormatEntity result = iFormatServices.mCreate(formatEntity);
+            FormatEntity result = iFormatServices.mCreate(vFormatEntity);
             if (result == null) {
                 vFormatEntity.setFormatId(null);
                 IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vFormatEntity, "fail");
@@ -136,12 +135,11 @@ public class FormatController extends Controller implements IFormatController {
     public void mUpdate() {
         String params = this.getPara("p");
         VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
-        FormatEntity formatEntity = vFormatEntity.getFormatEntity();
-        if (iFormatServices.mExist(formatEntity)) {
+        if (iFormatServices.mExist(vFormatEntity)) {
             IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vFormatEntity, "fail");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            FormatEntity result = iFormatServices.mUpdate(formatEntity);
+            FormatEntity result = iFormatServices.mUpdate(vFormatEntity);
             if (result == null) {
                 IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vFormatEntity, "fail");
                 renderJson(JSON.toJSONString(iResultSet));

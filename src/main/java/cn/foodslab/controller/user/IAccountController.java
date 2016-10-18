@@ -36,6 +36,12 @@ public interface IAccountController {
 
     /**
      * 用户接口
+     * 用户退出登录接口
+     */
+    void logout();
+
+    /**
+     * 用户接口
      * 用户读取自身的用户信息读取账号信息
      */
     void retrieve();

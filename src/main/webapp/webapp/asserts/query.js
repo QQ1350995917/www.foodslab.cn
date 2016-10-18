@@ -2,16 +2,87 @@
  * Created by dingpengwei on 8/30/16.
  */
 window.onload = function () {
-    initTitleView();
+    this.initFrameView();
     createMenuDownView();
+    requestSessionStatus(onQueryRequestSessionStatusCommonCallback);
     requestRecommend();
-    requestLinker();
     diversifyMainView();
     let orderId = document.getElementById("orderId") == undefined ? null : document.getElementById("orderId").content;
     if (orderId != null) {
         requestOrderByLean(orderId);
     }
 };
+
+/**
+ * 查询登录状态完成时候的query处理方式
+ * @param data
+ */
+function onQueryRequestSessionStatusCommonCallback(data) {
+    if (data == undefined){
+        document.getElementById(ID_HEADER_MENU_LOGIN).onclick = function () {
+            showLoginView(function () {
+                requestSessionStatus(onRequestSessionStatusCommonCallback);
+            });
+        }
+        document.getElementById(ID_HEADER_MENU_QUERY).onclick = function () {
+            window.open(BASE_PATH + "pq");
+        }
+    }else{
+        var jsonData = JSON.parse(data);
+        if (jsonData.code == RESPONSE_SUCCESS) {
+            let userEntity = jsonData.data;
+            let accountEntity = userEntity.children[0];
+            let headerMenuTop = document.getElementById(ID_HEADER_MENU_TOP);
+            headerMenuTop.innerHTML = null;
+            let logoutAction = document.createElement("div");
+            logoutAction.className = "header_menu_top_item";
+            logoutAction.innerHTML = "退出";
+            logoutAction.onclick = function () {
+                let requestUserEntity = new Object();
+                requestUserEntity.cs = getCookie(KEY_CS);
+                let url = BASE_PATH + "account/logout?p=" + JSON.stringify(requestUserEntity);
+                asyncRequestByGet(url, function (data) {
+                    window.open(BASE_PATH,"_self");
+                }, onErrorCallback, onTimeoutCallback);
+            }
+            headerMenuTop.appendChild(logoutAction);
+            let loginAction = document.createElement("div");
+            loginAction.className = "header_menu_top_item";
+            loginAction.innerHTML = accountEntity.nickName == undefined ? accountEntity.identity : accountEntity.nickName;
+            headerMenuTop.appendChild(loginAction);
+            loginAction.onclick = function () {
+                let requestPageEntity = new Object();
+                requestPageEntity.cs = getCookie("cs");
+                window.open(BASE_PATH + "pm?p=" + JSON.stringify(requestPageEntity),"_self");
+            }
+        } else {
+            let headerMenuTop = document.getElementById(ID_HEADER_MENU_TOP);
+            headerMenuTop.innerHTML = null;
+            let loginAction = document.createElement("div");
+            loginAction.id = ID_HEADER_MENU_LOGIN;
+            loginAction.className = "header_menu_top_item";
+            loginAction.innerHTML = "登录/注册";
+            headerMenuTop.appendChild(loginAction);
+
+            let queryAction = document.createElement("div");
+            queryAction.id = ID_HEADER_MENU_QUERY;
+            queryAction.className = "header_menu_top_item";
+            queryAction.style.widths = "100px";
+            queryAction.innerHTML = "订单查询";
+            headerMenuTop.appendChild(queryAction);
+            document.getElementById(ID_HEADER_MENU_LOGIN).onclick = function () {
+                showLoginView(function () {
+                    requestSessionStatus(onRequestSessionStatusCommonCallback);
+                });
+            }
+            document.getElementById(ID_HEADER_MENU_QUERY).onclick = function () {
+                window.open(BASE_PATH + "pq");
+            }
+            delCookie(KEY_CS);
+        }
+    }
+}
+
 
 function requestOrderByLean(orderId) {
     let url = BASE_PATH + "order/query?orderId=" + orderId;

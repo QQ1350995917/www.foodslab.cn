@@ -33,7 +33,6 @@ public class AccountController extends Controller implements IAccountController 
 
     }
 
-    @Clear(SessionInterceptor.class)
     @Override
     public void exist() {
 
@@ -105,7 +104,7 @@ public class AccountController extends Controller implements IAccountController 
                 }
                 HttpSession session = this.getSession(true);
                 String sessionId = session.getId();
-                VUserEntity vUserEntity = new VUserEntity(sessionId,vAccountEntities);
+                VUserEntity vUserEntity = new VUserEntity(sessionId,result.getUserId(),vAccountEntities);
                 session.setAttribute(SessionContext.KEY_USER, vUserEntity);
                 resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
                 resultSet.setData(vUserEntity);
@@ -118,6 +117,17 @@ public class AccountController extends Controller implements IAccountController 
             resultSet.setMessage("参数错误");
             renderJson(JSON.toJSONString(resultSet));
         }
+    }
+
+    @Override
+    public void logout() {
+        String params = this.getPara("p");
+        VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
+        SessionContext.delSession(vUserEntity.getCs());
+        IResultSet resultSet = new ResultSet();
+        resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+        resultSet.setMessage("成功退出");
+        renderJson(JSON.toJSONString(resultSet));
     }
 
     @Override
@@ -161,8 +171,9 @@ public class AccountController extends Controller implements IAccountController 
             IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vUserEntity, "success");
             renderJson(JSON.toJSONString(iResultSet));
         } else {
+            VUserEntity sessionUserEntity = (VUserEntity)session.getAttribute(SessionContext.KEY_USER);
             LinkedList<VAccountEntity> result = new LinkedList<>();
-            LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(session.getAttribute("userId").toString());
+            LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(sessionUserEntity.getUserId());
             for (AccountEntity accountEntity:accountEntities){
                 accountEntity.setAccountId(null);
                 result.add(new VAccountEntity(accountEntity));

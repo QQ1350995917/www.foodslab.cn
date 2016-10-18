@@ -2,7 +2,12 @@
  * Created by dingpengwei on 8/19/16.
  */
 window.onload = function () {
-    initTitleView();
+    this.initFrameView();
+    this.requestSessionStatus(onRequestSessionStatusCommonCallback);
+    this.initIndexFrameView();
+};
+
+function initIndexFrameView() {
     let mainContainer = document.getElementById(MAIN);
     mainContainer.innerHTML = null;
     let posterContainer = document.createElement("div");
@@ -11,8 +16,9 @@ window.onload = function () {
     recommendContainer.className = "HFillContainer";
     mainContainer.appendChild(posterContainer);
     mainContainer.appendChild(recommendContainer);
-    
+
     requestSeries();
+
     requestPoster(posterContainer, function (reset, height) {
         if (reset) {
 
@@ -27,8 +33,7 @@ window.onload = function () {
             mainContainer.style.height = (posterContainer.clientHeight + recommendContainer.clientHeight) + "px";
         }
     });
-    requestLinker();
-};
+}
 
 function requestSeries() {
     let url = BASE_PATH + "series/retrieves";
@@ -65,7 +70,7 @@ function requestRecommend(recommendContainer, onResizeCallback) {
 }
 
 function createSeriesView(seriesEntities) {
-    let seriesEntitiesView = document.getElementById(HEADER_MENU_DOWN);
+    let seriesEntitiesView = document.getElementById(ID_HEADER_MENU_DOWN);
     for (let i = 0; i < seriesEntities.length; i++) {
         let seriesEntityView = document.createElement("div")
         seriesEntityView.className = "tabItem_normal";
@@ -92,14 +97,14 @@ function createPosterView(posterContainer, posterEntities, onResizeCallback) {
         posterView.src = posterEntities[index].href;
         posterContainer.appendChild(posterView);
         onResizeCallback(false, 320);
-        if (length > 1){
+        if (length > 1) {
             window.setInterval(function () {
-                index ++;
-                if (index == length){
+                index++;
+                if (index == length) {
                     index = 0;
                 }
                 posterView.src = posterEntities[index].href;
-            },3000);
+            }, 3000);
         }
     }
 }

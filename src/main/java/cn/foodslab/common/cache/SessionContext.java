@@ -1,5 +1,8 @@
 package cn.foodslab.common.cache;
 
+import cn.foodslab.controller.manager.VManagerEntity;
+import cn.foodslab.controller.user.VUserEntity;
+
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 
@@ -27,10 +30,40 @@ public class SessionContext {
         }
     }
 
+    public static synchronized void delSession(String sessionId) {
+        if (sessionId != null) {
+            sessionMap.remove(sessionId);
+            System.out.println("----------DEL SESSION------------" + sessionMap.size());
+        }
+    }
+
     public static synchronized HttpSession getSession(String sessionId) {
         if (sessionId == null) {
             return null;
         }
         return sessionMap.get(sessionId);
     }
+
+    public static synchronized VUserEntity getSessionUser(String sessionId) {
+        HttpSession session = SessionContext.getSession(sessionId);
+        if (session != null){
+            Object attribute = session.getAttribute(SessionContext.KEY_USER);
+            if (attribute != null){
+                return (VUserEntity)attribute;
+            }
+        }
+        return null;
+    }
+
+    public static synchronized VManagerEntity getSessionManager(String sessionId) {
+        HttpSession session = SessionContext.getSession(sessionId);
+        if (session != null){
+            Object attribute = session.getAttribute(SessionContext.KEY_USER);
+            if (attribute != null){
+                return (VManagerEntity)attribute;
+            }
+        }
+        return null;
+    }
+
 }

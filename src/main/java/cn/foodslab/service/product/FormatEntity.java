@@ -6,7 +6,6 @@ package cn.foodslab.service.product;
  * Description: @TODO
  */
 public class FormatEntity {
-
     private String formatId;
     private String label;// 规格的量 比如 1，100，500，2，3，4
     private String meta;// 规格的单位 比如 kg, mk，L，盒，包，瓶

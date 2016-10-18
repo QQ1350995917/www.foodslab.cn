@@ -56,38 +56,63 @@ public class OrderController extends Controller implements IOrderController {
         String params = this.getPara("p");
         VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
         vOrderEntity.setStatus(1);
-        if (vOrderEntity.getCs() == null) {
+        String orderId = UUID.randomUUID().toString();
+        float orderTotalPrice = 0.0f;
+        VUserEntity vUserEntity = (VUserEntity)SessionContext.getSession(vOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
+        vOrderEntity.setAccountId(vUserEntity.getChildren().get(0).getAccountId());
+        vOrderEntity.setOrderId(orderId);
+        vOrderEntity.setCost(orderTotalPrice);
+        vOrderEntity.setPostage(0);
+        OrderEntity createOrderEntity = iOrderServices.create(vOrderEntity);
+        if (createOrderEntity != null) {
+            boolean attachToOrder = iCartServices.attachToOrder(createOrderEntity, vOrderEntity.getProductIds());
+            if (attachToOrder) {
+                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), new VOrderEntity(createOrderEntity), "success");
+                renderJson(JSON.toJSONString(iResultSet));
+            } else {
+                vOrderEntity.setOrderId(null);
+                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "success");
+                renderJson(JSON.toJSONString(iResultSet));
+            }
+        } else {
+            vOrderEntity.setOrderId(null);
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "success");
+            renderJson(JSON.toJSONString(iResultSet));
+        }
+    }
+
+    @Override
+    public void createAnonymous() {
+        String params = this.getPara("p");
+        VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
+        vOrderEntity.setStatus(1);
+        /**
+         * 保存匿名订单的收货人信息
+         */
+        VReceiverEntity receiverEntity = vOrderEntity.getReceiver();
+        receiverEntity.setReceiverId(UUID.randomUUID().toString());
+        ReceiverEntity resultReceiver = iReceiverService.create(null,receiverEntity);
+        if (resultReceiver != null) {
+            String orderId = UUID.randomUUID().toString();
+            vOrderEntity.setOrderId(orderId);
+            vOrderEntity.setReceiverId(resultReceiver.getReceiverId());
             /**
-             * 保存匿名订单的收货人信息
+             * 保存匿名订单的订单信息
              */
-            VReceiverEntity receiverEntity = vOrderEntity.getReceiver();
-            receiverEntity.setReceiverId(UUID.randomUUID().toString());
-            ReceiverEntity resultReceiver = iReceiverService.create(receiverEntity);
-            if (resultReceiver != null) {
-                String orderId = UUID.randomUUID().toString();
-                vOrderEntity.setOrderId(orderId);
-                vOrderEntity.setReceiverId(resultReceiver.getReceiverId());
-                /**
-                 * 保存匿名订单的订单信息
-                 */
-                OrderEntity createOrderEntity = iOrderServices.create(vOrderEntity);
-                if (createOrderEntity != null) {
-                    CartEntity cartEntity = new CartEntity();
-                    String mappingId = UUID.randomUUID().toString();
-                    cartEntity.setMappingId(mappingId);
-                    cartEntity.setFormatId(vOrderEntity.getProductIds()[0]);
-                    cartEntity.setAmount(1);
-                    cartEntity.setPricing(0);
-                    cartEntity.setOrderId(createOrderEntity.getOrderId());
-                    cartEntity.setStatus(2);
-                    CartEntity resultCartEntity = iCartServices.create(cartEntity);
-                    if (resultCartEntity != null) {
-                        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), new VOrderEntity(createOrderEntity), "success");
-                        renderJson(JSON.toJSONString(iResultSet));
-                    } else {
-                        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "success");
-                        renderJson(JSON.toJSONString(iResultSet));
-                    }
+            OrderEntity createOrderEntity = iOrderServices.create(vOrderEntity);
+            if (createOrderEntity != null) {
+                CartEntity cartEntity = new CartEntity();
+                String mappingId = UUID.randomUUID().toString();
+                cartEntity.setMappingId(mappingId);
+                cartEntity.setFormatId(vOrderEntity.getProductIds()[0]);
+                cartEntity.setAmount(1);
+                cartEntity.setPricing(0);
+                cartEntity.setOrderId(createOrderEntity.getOrderId());
+                cartEntity.setStatus(2);
+                CartEntity resultCartEntity = iCartServices.create(cartEntity);
+                if (resultCartEntity != null) {
+                    IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), new VOrderEntity(createOrderEntity), "success");
+                    renderJson(JSON.toJSONString(iResultSet));
                 } else {
                     IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "success");
                     renderJson(JSON.toJSONString(iResultSet));
@@ -97,29 +122,8 @@ public class OrderController extends Controller implements IOrderController {
                 renderJson(JSON.toJSONString(iResultSet));
             }
         } else {
-            String orderId = UUID.randomUUID().toString();
-            float orderTotalPrice = 0.0f;
-            VUserEntity vUserEntity = (VUserEntity)SessionContext.getSession(vOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
-            vOrderEntity.setAccountId(vUserEntity.getChildren().get(0).getAccountId());
-            vOrderEntity.setOrderId(orderId);
-            vOrderEntity.setCost(orderTotalPrice);
-            vOrderEntity.setPostage(0);
-            OrderEntity createOrderEntity = iOrderServices.create(vOrderEntity);
-            if (createOrderEntity != null) {
-                boolean attachToOrder = iCartServices.attachToOrder(createOrderEntity, vOrderEntity.getProductIds());
-                if (attachToOrder) {
-                    IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), new VOrderEntity(createOrderEntity), "success");
-                    renderJson(JSON.toJSONString(iResultSet));
-                } else {
-                    vOrderEntity.setOrderId(null);
-                    IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "success");
-                    renderJson(JSON.toJSONString(iResultSet));
-                }
-            } else {
-                vOrderEntity.setOrderId(null);
-                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "success");
-                renderJson(JSON.toJSONString(iResultSet));
-            }
+            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "success");
+            renderJson(JSON.toJSONString(iResultSet));
         }
     }
 

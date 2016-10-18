@@ -1,5 +1,6 @@
 package cn.foodslab.service.order;
 
+import cn.foodslab.service.user.AccountEntity;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
@@ -34,23 +35,23 @@ public class OrderServices implements IOrderServices {
     }
 
     @Override
-    public LinkedList<OrderEntity> retrievesByAccounts(String[] accountIds, int status, int pageIndex, int counter) {
-        String[] params = new String[accountIds.length + 1];
+    public LinkedList<OrderEntity> retrievesByAccounts(LinkedList<? extends AccountEntity> accountEntities, int status, int pageIndex, int counter) {
+        String[] params = new String[accountEntities.size() + 1];
         int index = 0;
         params[index] = status + "";
-        index ++;
+        index++;
         String in = "";
-        for (String accountId : accountIds) {
+        for (AccountEntity accountEntity : accountEntities) {
             in = in + " ? ,";
-            params[index] = accountId;
-            index ++;
+            params[index] = accountEntity.getAccountId();
+            index++;
         }
         if (in.length() > 0) {
             in = in.substring(0, in.length() - 1);
         }
         List<Record> records;
         if (status == 0) {
-            records = Db.find("SELECT * FROM user_order WHERE accountId IN (" + in + ") ORDER BY createTime DESC", accountIds);
+            records = Db.find("SELECT * FROM user_order WHERE status > ? AND accountId IN (" + in + ") ORDER BY createTime DESC", params);
         } else {
             records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (" + in + ") ORDER BY createTime DESC", params);
         }
@@ -66,8 +67,21 @@ public class OrderServices implements IOrderServices {
     }
 
     @Override
-    public OrderEntity expressed(OrderEntity orderEntity) {
-        int update = Db.update("UPDATE user_order SET status = 3 WHERE orderId = ? ", orderEntity.getOrderId());
+    public OrderEntity expressed(LinkedList<? extends AccountEntity> accountEntities, OrderEntity orderEntity) {
+        String[] params = new String[accountEntities.size() + 1];
+        int index = 0;
+        params[index] = orderEntity.getOrderId();
+        index++;
+        String in = "";
+        for (AccountEntity accountEntity : accountEntities) {
+            in = in + " ? ,";
+            params[index] = accountEntity.getAccountId();
+            index++;
+        }
+        if (in.length() > 0) {
+            in = in.substring(0, in.length() - 1);
+        }
+        int update = Db.update("UPDATE user_order SET status = 3 WHERE orderId = ? AND accountId IN (" + in + ")", in);
         if (update == 1) {
             return orderEntity;
         }
@@ -78,9 +92,13 @@ public class OrderServices implements IOrderServices {
     public LinkedList<OrderEntity> query(String key, int pageIndex, int counter) {
         LinkedList<OrderEntity> result = new LinkedList<>();
         List<Record> records = Db.find("SELECT * FROM user_order WHERE orderId = ? ", key);
-        OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), OrderEntity.class);
-        result.add(orderEntity);
-        return result;
+        if (records.size() > 0) {
+            OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), OrderEntity.class);
+            result.add(orderEntity);
+            return result;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -104,23 +122,23 @@ public class OrderServices implements IOrderServices {
     }
 
     @Override
-    public LinkedList<OrderEntity> mRetrievesByUser(String[] accountIds, int status, int pageIndex, int counter) {
-        String[] params = new String[accountIds.length + 1];
+    public LinkedList<OrderEntity> mRetrievesByUser(LinkedList<? extends AccountEntity> accountEntities, int status, int pageIndex, int counter) {
+        String[] params = new String[accountEntities.size() + 1];
         int index = 0;
         params[index] = status + "";
-        index ++;
+        index++;
         String in = "";
-        for (String accountId : accountIds) {
+        for (AccountEntity accountEntity : accountEntities) {
             in = in + " ? ,";
-            params[index] = accountId;
-            index ++;
+            params[index] = accountEntity.getAccountId();
+            index++;
         }
         if (in.length() > 0) {
             in = in.substring(0, in.length() - 1);
         }
         List<Record> records;
         if (status == 0) {
-            records = Db.find("SELECT * FROM user_order WHERE accountId IN (" + in + ") ORDER BY createTime DESC", accountIds);
+            records = Db.find("SELECT * FROM user_order WHERE status > ? AND accountId IN (" + in + ") ORDER BY createTime DESC", params);
         } else {
             records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (" + in + ") ORDER BY createTime DESC", params);
         }
@@ -137,7 +155,7 @@ public class OrderServices implements IOrderServices {
 
     @Override
     public OrderEntity mExpressing(OrderEntity orderEntity) {
-        int update = Db.update("UPDATE user_order SET status = 2 ,expressLabel = ?, expressNumber = ? WHERE orderId = ? ",orderEntity.getExpressLabel(), orderEntity.getExpressNumber(), orderEntity.getOrderId());
+        int update = Db.update("UPDATE user_order SET status = 2 ,expressLabel = ?, expressNumber = ? WHERE orderId = ? ", orderEntity.getExpressLabel(), orderEntity.getExpressNumber(), orderEntity.getOrderId());
         if (update == 1) {
             return orderEntity;
         }

@@ -1,9 +1,9 @@
 /**
  * Created by dingpengwei on 9/6/16.
  */
-function requestCart(accountId) {
+function requestMineCart(cs) {
     let cartEntity = new Object();
-    cartEntity.sessionId = accountId;
+    cartEntity.cs = cs;
     let mainView = document.getElementById(MAIN);
     mainView.innerHTML = null;
     let url = BASE_PATH + "cart/retrieves?p=" + JSON.stringify(cartEntity);
@@ -194,14 +194,12 @@ function createMainContentView(mainView, cartEntities) {
 
         mainView.appendChild(itemView);
 
-        let accountId = document.getElementById("accountId") == undefined ? null : document.getElementById("accountId").content;
-
         totalNumberMinus.onclick = function () {
             if (totalNumber.value > 1) {
                 totalNumber.value = parseInt(totalNumber.value) - 1;
                 totalPrice.innerHTML = (parseInt(totalNumber.value) * cartEntity.formatEntity.pricing) + cartEntity.formatEntity.priceMeta;
                 let requestCartEntity = new Object();
-                requestCartEntity.sessionId = accountId;
+                requestCartEntity.cs = getCookie("cs");
                 requestCartEntity.mappingId = cartEntity.mappingId;
                 requestCartEntity.amount = totalNumber.value;
                 requestUpdateNumber(requestCartEntity);
@@ -212,7 +210,7 @@ function createMainContentView(mainView, cartEntities) {
                 totalNumber.value = parseInt(totalNumber.value) + 1;
                 totalPrice.innerHTML = (parseInt(totalNumber.value) * cartEntity.formatEntity.pricing) + cartEntity.formatEntity.priceMeta;
                 let requestCartEntity = new Object();
-                requestCartEntity.sessionId = accountId;
+                requestCartEntity.cs = getCookie("cs");
                 requestCartEntity.mappingId = cartEntity.mappingId;
                 requestCartEntity.amount = totalNumber.value;
                 requestUpdateNumber(requestCartEntity);
@@ -221,7 +219,7 @@ function createMainContentView(mainView, cartEntities) {
 
         deleteAction.onclick = function () {
             let requestCartEntity = new Object();
-            requestCartEntity.sessionId = accountId;
+            requestCartEntity.cs = getCookie("cs");
             requestCartEntity.mappingId = cartEntity.mappingId;
             requestDelete(requestCartEntity, mainView, itemView);
         };
@@ -332,8 +330,10 @@ function onBillingAction() {
 
     } else {
         mappingIds = mappingIds.replace(/,/, "");
-        console.log(mappingIds);
-        let url = BASE_PATH + "pb?accountId=test&mappingIds=" + mappingIds;
+        let requestObject = new Object();
+        requestObject.cs = getCookie("cs");
+        requestObject.mappingIds = mappingIds;
+        let url = BASE_PATH + "pb?p=" + JSON.stringify(requestObject);
         window.open(url, "_self");
     }
 

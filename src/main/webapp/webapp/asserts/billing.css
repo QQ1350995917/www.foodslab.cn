@@ -1,4 +1,12 @@
+div.BHContainer{
+    height: 130px;
+    border: 0px solid #CCCCCC;
+    border-top-width: 1px;
+}
 
+
+
+/*////////////////////////*/
 div.containerStyle{
     width: 1000px;
     height: 160px;

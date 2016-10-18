@@ -45,22 +45,22 @@ Toast.prototype.show = function (message) {
     toastView.style.position = "fixed";
     toastView.style.zIndex = "10";
 
-    if (!isNull(this.startX)) {
+    if (!isNullValue(this.startX)) {
         startX = this.startX;
     }
-    if (!isNull(this.startY)) {
+    if (!isNullValue(this.startY)) {
         startY = this.startY;
     }
-    if (!isNull(this.width)) {
+    if (!isNullValue(this.width)) {
         width = this.width;
-        if (isNull(this.startX)){
+        if (isNullValue(this.startX)){
             startX = this.view.clientWidth / 2 - width / 2;
         }
     }
-    if (!isNull(this.height)) {
+    if (!isNullValue(this.height)) {
         height = this.height;
     }
-    if (!isNull(this.className)) {
+    if (!isNullValue(this.className)) {
         toastView.className = this.className;
     } else {
         toastView.style.left = startX + "px";
@@ -78,7 +78,7 @@ Toast.prototype.show = function (message) {
         toastView.style.borderBottomRightRadius = "5px"
         toastView.style.borderBottomLeftRadius = "5px"
     }
-    if (!isNull(message)) {
+    if (!isNullValue(message)) {
         toastView.innerHTML = message;
     } else {
         toastView.innerHTML = "you can set message here";
@@ -109,10 +109,3 @@ function dismiss() {
     document.body.removeChild(document.getElementById("toastView"));
 }
 
-function isNull(value) {
-    if (value !== null && value !== undefined && value !== '') {
-        return false;
-    } else {
-        return true;
-    }
-}
