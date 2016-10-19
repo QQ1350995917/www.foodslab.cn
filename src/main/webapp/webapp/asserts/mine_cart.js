@@ -332,7 +332,8 @@ function onBillingAction() {
         mappingIds = mappingIds.replace(/,/, "");
         let requestObject = new Object();
         requestObject.cs = getCookie("cs");
-        requestObject.mappingIds = mappingIds;
+        // requestObject.productIds = mappingIds.split(",");;
+        requestObject.productIds = mappingIds;
         let url = BASE_PATH + "pb?p=" + JSON.stringify(requestObject);
         window.open(url, "_self");
     }

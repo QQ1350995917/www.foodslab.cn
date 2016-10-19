@@ -41,7 +41,7 @@ public class ReceiverController extends Controller implements IReceiverControlle
     public void retrieves() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
-        VUserEntity sessionUserEntity = (VUserEntity)SessionContext.getSession(vUserEntity.getCs()).getAttribute(SessionContext.KEY_USER);
+        VUserEntity sessionUserEntity = SessionContext.getSessionUser(vUserEntity.getCs());
         LinkedList<VReceiverEntity> result = new LinkedList<>();
         LinkedList<ReceiverEntity> receiverEntities = iReceiverService.retrieves(sessionUserEntity.getChildren());
         for (ReceiverEntity receiverEntity : receiverEntities) {

@@ -55,13 +55,13 @@ window.onload = function () {
             if (result) {
                 var jsonData = JSON.parse(data);
                 if (jsonData.code == RESPONSE_SUCCESS) {
-                    let userEntity = new Object();
-                    userEntity.sc = getCookie(KEY_CS);
-                    asyncRequestByGet(BASE_PATH + "receiver/retrieves?p=" + JSON.stringify(userEntity), function (data) {
+                    let requestUserEntity = new Object();
+                    requestUserEntity.cs = getCookie(KEY_CS);
+                    asyncRequestByGet(BASE_PATH + "receiver/retrieves?p=" + JSON.stringify(requestUserEntity), function (data) {
                         var result = checkResponseDataFormat(data);
                         if (result) {
                             var jsonData = JSON.parse(data);
-                            attachUserReceiverContainer(receiverContainer,jsonData.data, function (height) {
+                            attachUserReceiverContainer(receiverContainer, jsonData.data, function (height) {
                                 receiverContainer.parentNode.style.height = (receiverContainer.parentNode.clientHeight + height) + "px";
                             })
                         }
@@ -78,10 +78,11 @@ window.onload = function () {
                         var result = checkResponseDataFormat(data);
                         if (result) {
                             var jsonData = JSON.parse(data);
-                            console.log(jsonData);
-                            attachProductContainer(productContainer,jsonData.data,function (height) {
+                            attachProductContainer(productContainer, jsonData.data, function (height) {
+                                productContainer.style.height = height + "px";
                                 productContainer.parentNode.style.height = (productContainer.parentNode.clientHeight + height) + "px";
                             });
+                            attachPayBarContainer(payBarContainer, jsonData.data);
                         }
                     }, onErrorCallback, onTimeoutCallback);
                 } else {
@@ -109,36 +110,12 @@ function onBillingRequestSessionStatusCommonCallback(data) {
             window.open(BASE_PATH, "_self");
         }
     } else {
+        showLoginView(function () {
+            location.reload();
+        })
         delCookie(KEY_CS);
     }
 }
-
-
-
-
-//
-// /**
-//  * 创建用户支付信息
-//  * @param data
-//  */
-// function fillingProductContainer(productContainer, cartEntities,resetHeightCallback) {
-//     let length = cartEntities == undefined ? 0:cartEntities.length;
-//     let formatEntities = new Array();
-//     for (let i=0;i<length;i++){
-//         let cartEntity = cartEntities[i];
-//         let formatEntity = cartEntity.formatEntity;
-//         formatEntity.amount = cartEntity.amount;
-//         formatEntities.push(formatEntity);
-//     }
-//     let productView = createProductContainer(formatEntities);
-//     productContainer.appendChild(productView);
-//
-//     let payBarView = createPayBarContainer(cartEntities);
-//     productContainer.appendChild(payBarView);
-//     productContainer.style.height =  productView.clientHeight + payBarView.clientHeight + "px";
-//     resetHeightCallback(productContainer.clientHeight);
-// }
-
 
 /**
  * @param container
@@ -183,22 +160,23 @@ function attachAnonymousReceiverContainer(container, onAttachCallback) {
 }
 
 
-function createReceiverAddressEditorContainer(data) {
+function createReceiverAddressEditorContainer(receiverEntity) {
     let receiverInfoMessageLine = document.createElement("div");
+    receiverInfoMessageLine.id = "currentReceiverId";
     receiverInfoMessageLine.className = "billingReceiverItem";
     receiverInfoMessageLine.style.height = "40px";
     receiverInfoMessageLine.style.lineHeight = "40px";
-    receiverInfoMessageLine.bindData = data;
-    if (data == undefined) {
+    if (receiverEntity == undefined) {
         receiverInfoMessageLine.innerHTML = "点击编辑收货人信息";
     } else {
-        addCurrentReceiverViewToContainer(receiverInfoMessageLine, data)
+        receiverInfoMessageLine.bindReceiverId = receiverEntity.receiverId;
+        addCurrentReceiverViewToContainer(receiverInfoMessageLine, receiverEntity)
     }
 
     receiverInfoMessageLine.onclick = function () {
-        showReceiverEditorView(receiverInfoMessageLine.bindData, function (data) {
-            receiverInfoMessageLine.bindData = data;
-            addCurrentReceiverViewToContainer(receiverInfoMessageLine, data)
+        showReceiverEditorView(receiverEntity, function (newReceiverEntity) {
+            receiverInfoMessageLine.bindReceiverId = newReceiverEntity.receiverId;
+            addCurrentReceiverViewToContainer(receiverInfoMessageLine, newReceiverEntity);
         });
     };
 
@@ -208,48 +186,48 @@ function createReceiverAddressEditorContainer(data) {
 /**
  * 当前收货人信息
  * @param container
- * @param data
+ * @param receiverEntity
  */
-function addCurrentReceiverViewToContainer(container, data) {
+function addCurrentReceiverViewToContainer(container, receiverEntity) {
     container.innerHTML = null;
     container.style.fontSize = "1rem";
     let nameLabel = document.createElement("div");
     nameLabel.id = "RName";
     nameLabel.className = "messageLabelInItem";
     nameLabel.style.borderWidth = "1px";
-    nameLabel.innerHTML = data.name;
+    nameLabel.innerHTML = receiverEntity.name;
     let phoneLabel = document.createElement("div");
     phoneLabel.id = "RPhone";
     phoneLabel.className = "messageLabelInItem";
-    phoneLabel.innerHTML = data.phone0;
+    phoneLabel.innerHTML = receiverEntity.phone0;
     let phoneBakLabel = document.createElement("div");
     phoneBakLabel.id = "RPhoneBak";
     phoneBakLabel.className = "messageLabelInItem";
-    phoneBakLabel.innerHTML = data.phone1;
+    phoneBakLabel.innerHTML = receiverEntity.phone1;
     let provinceLabel = document.createElement("div");
     provinceLabel.id = "RProvince";
     provinceLabel.className = "messageLabelInItem";
-    provinceLabel.innerHTML = data.province;
+    provinceLabel.innerHTML = receiverEntity.province;
     let cityLabel = document.createElement("div");
     cityLabel.id = "RCity";
     cityLabel.className = "messageLabelInItem";
-    cityLabel.innerHTML = data.city;
+    cityLabel.innerHTML = receiverEntity.city;
     let countyLabel = document.createElement("div");
     countyLabel.id = "RCounty";
     countyLabel.className = "messageLabelInItem";
-    countyLabel.innerHTML = data.county;
+    countyLabel.innerHTML = receiverEntity.county;
     let townLabel = document.createElement("div");
     townLabel.id = "RTown";
     townLabel.className = "messageLabelInItem";
-    townLabel.innerHTML = data.town;
+    townLabel.innerHTML = receiverEntity.town;
     let villageLabel = document.createElement("div");
     villageLabel.id = "RVillage";
     villageLabel.className = "messageLabelInItem";
-    villageLabel.innerHTML = data.village;
+    villageLabel.innerHTML = receiverEntity.village;
     let appendLabel = document.createElement("div");
     appendLabel.id = "RAppend";
     appendLabel.className = "messageLabelInItem";
-    appendLabel.innerHTML = data.append;
+    appendLabel.innerHTML = receiverEntity.append;
 
     container.appendChild(nameLabel);
     container.appendChild(phoneLabel);
@@ -314,6 +292,7 @@ function attachProductContainer(container, formatEntities, onAttachCallback) {
     let length = formatEntities == undefined ? 0 : formatEntities.length;
     for (let i = 0; i < length; i++) {
         let formatEntity = formatEntities[i];
+
         let productItemContainer = document.createElement("div");
         productItemContainer.className = "productItemView";
 
@@ -324,14 +303,13 @@ function attachProductContainer(container, formatEntities, onAttachCallback) {
         let productName = document.createElement("div");
         productName.className = "messageLabelInItem";
         productName.style.width = "470px";
-        productName.innerHTML = formatEntity.parent.parent.label + " " + formatEntity.parent.label + " " + formatEntity.label + formatEntity.meta;
         productItemContainer.appendChild(productName);
 
         let productPricing = document.createElement("div");
         productPricing.className = "messageLabelInItem";
         productPricing.style.width = "190px";
         productPricing.style.textAlign = "center";
-        productPricing.innerHTML = formatEntity.pricing + formatEntity.priceMeta;
+
         productItemContainer.appendChild(productPricing);
 
         let productAmount = document.createElement("div");
@@ -340,6 +318,14 @@ function attachProductContainer(container, formatEntities, onAttachCallback) {
         productAmount.style.textAlign = "center";
         productAmount.innerHTML = formatEntity.amount;
         productItemContainer.appendChild(productAmount);
+
+        if (isNullValue(formatEntity.formatEntity)) {
+            productName.innerHTML = formatEntity.parent.parent.label + " " + formatEntity.parent.label + " " + formatEntity.label + formatEntity.meta;
+            productPricing.innerHTML = formatEntity.pricing + formatEntity.priceMeta;
+        } else {
+            productName.innerHTML = formatEntity.formatEntity.parent.parent.label + " " + formatEntity.formatEntity.parent.label + " " + formatEntity.formatEntity.label + formatEntity.formatEntity.meta;
+            productPricing.innerHTML = formatEntity.formatEntity.pricing + formatEntity.formatEntity.priceMeta;
+        }
 
         container.appendChild(productItemContainer);
     }
@@ -406,9 +392,8 @@ function onPayActionClick() {
         return;
     }
 
-    let accountId = document.getElementById("accountId") == undefined ? null : document.getElementById("accountId").content;
     let productIds = document.getElementById("productIds") == undefined ? null : document.getElementById("productIds").content;
-    if (accountId == undefined) {
+    if (isNullValue(getCookie(KEY_CS))) {
         let senderName = document.getElementById("senderName").value;
         let senderPhone = document.getElementById("senderPhone").value;
         showPaymentView(function () {
@@ -434,7 +419,10 @@ function onPayActionClick() {
             let orderEntity = new Object();
             orderEntity.cs = getCookie(KEY_CS);
             orderEntity.productIds = productIds.split(",");
-            orderEntity.receiverId = "dingpw";
+            let currentReceiverId = document.getElementById("currentReceiverId").bindReceiverId;
+            if (!isNullValue(currentReceiverId)) {
+                orderEntity.receiverId = currentReceiverId;
+            }
             requestCreateOrder(orderEntity);
         });
     }
@@ -480,7 +468,7 @@ function onRequestUserCreateOrderCallback(data) {
     window.open(url, "_self");
 }
 
-function attachUserReceiverContainer(container,receiverEntities, onAttachCallback) {
+function attachUserReceiverContainer(container, receiverEntities, onAttachCallback) {
     let receiverMessage = document.createElement("div");
     receiverMessage.className = "messageLabel";
     receiverMessage.innerHTML = "收货人信息";
@@ -512,6 +500,7 @@ function attachUserReceiverContainer(container,receiverEntities, onAttachCallbac
     //     }
     // };
     container.style.height = "120px";
+    onAttachCallback();
 }
 
 function createMoreReceiverAddressContainer(receiverEntities) {
@@ -534,8 +523,3 @@ function createMoreReceiverAddressContainer(receiverEntities) {
     moreAddressContainer.customerHeight = length * 30 + ((receiverEntities.length < 10 ? 1 : 0) * 30);
     return moreAddressContainer;
 }
-
-function requestCart(productContainer) {
-
-}
-

@@ -179,7 +179,7 @@ function createMenuDownView() {
     };
     searchContainer.appendChild(searchInput);
     searchContainer.appendChild(searchButton);
-    document.getElementById(HEADER_MENU_DOWN).appendChild(searchContainer);
+    document.getElementById(ID_HEADER_MENU_DOWN).appendChild(searchContainer);
     searchInput.focus();
 }
 
