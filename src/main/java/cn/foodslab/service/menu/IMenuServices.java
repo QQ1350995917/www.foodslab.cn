@@ -1,6 +1,8 @@
 package cn.foodslab.service.menu;
 
-import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.service.manager.ManagerEntity;
+
+import java.util.LinkedList;
 
 /**
  * Created by Pengwei Ding on 2016-07-30 14:33.
@@ -8,17 +10,25 @@ import cn.foodslab.common.response.IResultSet;
  * Description: @TODO
  */
 public interface IMenuServices {
-    /**
-     * @param level
-     * @return
-     */
-    IResultSet retrieveMenusByLevel(int level);
 
     /**
-     * 通过状态查询菜单
-     * @param status
-     * @return
+     * 管理员接口
+     * 通过管理员权限查询菜单
+     * @param managerEntity 管理员对象
+     * @return 管理员所拥有权限的菜单集合
      */
-    IResultSet retrieveMenusByStatus(int status);
-    IResultSet retrieveMenusByIds(String... ids);
+    LinkedList<MenuEntity> retrievesByManager(ManagerEntity managerEntity);
+
+    /**
+     *
+     * @return 菜单集合
+     */
+    /**
+     * 超级管理员接口
+     * 查询所有菜单
+     * @param category 类别
+     * @return 菜单集合
+     */
+    LinkedList<MenuEntity> mRetrievesByAdmin(int category);
+
 }

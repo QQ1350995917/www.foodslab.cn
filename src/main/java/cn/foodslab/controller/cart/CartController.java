@@ -127,13 +127,13 @@ public class CartController extends Controller implements ICartController {
         }
     }
 
+    @Clear(SessionInterceptor.class)
     @Override
     public void mRetrieve() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
-        VUserEntity sessionUserEntity = (VUserEntity)SessionContext.getSession(vUserEntity.getCs()).getAttribute(SessionContext.KEY_USER);
-
-        LinkedList<CartEntity> cartEntities = iCartServices.retrievesByAccounts(sessionUserEntity.getChildren());
+        LinkedList<AccountEntity> accountEntities = iAccountServices.mRetrieveByUserId(vUserEntity.getUserId());
+        LinkedList<CartEntity> cartEntities = iCartServices.retrievesByAccounts(accountEntities);
         LinkedList<VCartEntity> result = new LinkedList<>();
         for (CartEntity cartEntity : cartEntities) {
             FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());

@@ -26,12 +26,20 @@ public class MenuServices implements IMenuServices {
     }
 
     @Override
-    public LinkedList<MenuEntity> mRetrievesByAdmin() {
-        LinkedList<MenuEntity> menuEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM menu ORDER BY category, queue");
-        for (Record record : records) {
-            menuEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), MenuEntity.class));
+    public LinkedList<MenuEntity> mRetrievesByAdmin(int category) {
+        List<Record> records = null;
+        if (category == 0) {
+            records = Db.find("SELECT * FROM menu WHERE category > 0 ORDER BY category, queue");
+        } else if (category > 0) {
+            records = Db.find("SELECT * FROM menu WHERE category = ? ORDER BY category, queue", category);
         }
-        return menuEntities;
+        if (records != null) {
+            LinkedList<MenuEntity> menuEntities = new LinkedList<>();
+            for (Record record : records) {
+                menuEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), MenuEntity.class));
+            }
+            return menuEntities;
+        }
+        return null;
     }
 }

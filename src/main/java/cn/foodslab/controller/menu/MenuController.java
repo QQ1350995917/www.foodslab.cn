@@ -42,11 +42,12 @@ public class MenuController extends Controller implements IMenuController {
 
     @Override
     public void mRetrieves() {
-        LinkedList<MenuEntity> menuEntities = iMenuServices.mRetrievesByAdmin();
+        String params = this.getPara("p");
+        VMenuEntity vMenuEntity = JSON.parseObject(params, VMenuEntity.class);
+        LinkedList<MenuEntity> menuEntities = iMenuServices.mRetrievesByAdmin(vMenuEntity.getCategory());
         LinkedList<VMenuEntity> result = new LinkedList<>();
         for (MenuEntity menuEntity:menuEntities){
-            VMenuEntity vMenuEntity = new VMenuEntity(menuEntity);
-            result.add(vMenuEntity);
+            result.add(new VMenuEntity(menuEntity));
         }
         IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), result, "success");
         renderJson(JSON.toJSONString(iResultSet));
