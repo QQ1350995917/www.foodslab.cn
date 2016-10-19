@@ -155,7 +155,6 @@ public class PageController extends Controller implements IPageController {
     @Before(SessionInterceptor.class)
     @Override
     public void pm() {
-
         String params = this.getPara("p");
         VPageEntity vPageEntity = JSON.parseObject(params, VPageEntity.class);
         if (vPageEntity.getDir() == null) {

@@ -167,7 +167,9 @@ function fillRecommendContainer(recommendContainer, formatEntities, onResizeCall
         formatEntityBuyView.className = "productItem_buy";
         formatEntityBuyView.innerHTML = "立即购买";
         formatEntityBuyView.onclick = function () {
-            let url = BASE_PATH + "pb?formatId=" + formatEntities[i].formatId;
+            let object = new Object();
+            object.productIds = formatEntities[i].formatId;
+            let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
             window.open(url);
         };
         formatEntityView.appendChild(formatEntityBuyView);

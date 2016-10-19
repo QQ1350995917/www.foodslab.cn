@@ -7,12 +7,19 @@ package cn.foodslab.controller.menu;
  */
 public interface IMenuController {
     /**
-     * 查询Menu列表
+     * 404
      */
     void index();
 
     /**
-     * 查询Menu列表
+     * 普通管理员接口
+     * 查询符合权限的菜单
      */
-    void status();
+    void retrieves();
+
+    /**
+     * 超级管理员接口
+     * 查询符合权限的菜单
+     */
+    void mRetrieves();
 }

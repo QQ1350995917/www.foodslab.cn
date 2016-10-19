@@ -24,8 +24,9 @@ public class MetaServices implements IMetaServices {
             Map<String, Object> columns = record.getColumns();
             jsonMap.add(columns);
         }
-        IResultSet resultSet = new ResultSet(jsonMap);
-        return resultSet;
+//        IResultSet resultSet = new ResultSet(jsonMap);
+//        return resultSet;
+        return null;
     }
 
 

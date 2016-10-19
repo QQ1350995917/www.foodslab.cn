@@ -8,40 +8,14 @@ package cn.foodslab.service.menu;
 public class MenuEntity {
     private String menuId; //ID
     private String label; //显示的名称
-    private int level; //级别
+    private String flag; //级别
     private int queue; // 顺序
-    private String method; // 调用的方法的名称
-    private String positionId; // 位置ID，标记在界面上所处的位置
-    private String pId; // 父ID
-    private int status; // -1 0 1 (-1删除状态，0，不显示状态，1正常状态，2该菜单除了超级管理员不可授予其他人)
+    private int category; //种类
+    private int status; //-1删除状态，1，禁用状态，2正常状态，3该菜单除了超级管理员不可授予其他人
     private String createTime;
     private String updateTime;
 
     public MenuEntity() {}
-
-    public MenuEntity(String menuId, String label, int level, int queue, String method, String positionId, String pId, int status) {
-        this.menuId = menuId;
-        this.label = label;
-        this.level = level;
-        this.queue = queue;
-        this.method = method;
-        this.positionId = positionId;
-        this.pId = pId;
-        this.status = status;
-    }
-
-    public MenuEntity(String menuId, String label, int level, int queue, String method, String positionId, String pId, int status, String createTime, String updateTime) {
-        this.menuId = menuId;
-        this.label = label;
-        this.level = level;
-        this.queue = queue;
-        this.method = method;
-        this.positionId = positionId;
-        this.pId = pId;
-        this.status = status;
-        this.createTime = createTime;
-        this.updateTime = updateTime;
-    }
 
     public String getMenuId() {
         return menuId;
@@ -59,12 +33,12 @@ public class MenuEntity {
         this.label = label;
     }
 
-    public int getLevel() {
-        return level;
+    public String getFlag() {
+        return flag;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
+    public void setFlag(String flag) {
+        this.flag = flag;
     }
 
     public int getQueue() {
@@ -75,28 +49,12 @@ public class MenuEntity {
         this.queue = queue;
     }
 
-    public String getMethod() {
-        return method;
+    public int getCategory() {
+        return category;
     }
 
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    public String getPositionId() {
-        return positionId;
-    }
-
-    public void setPositionId(String positionId) {
-        this.positionId = positionId;
-    }
-
-    public String getpId() {
-        return pId;
-    }
-
-    public void setpId(String pId) {
-        this.pId = pId;
+    public void setCategory(int category) {
+        this.category = category;
     }
 
     public int getStatus() {
@@ -121,25 +79,5 @@ public class MenuEntity {
 
     public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        MenuEntity menuEntity = (MenuEntity) obj;
-        if (menuEntity.getMenuId().equals(this.getMenuId())){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
-    public String toInsertSQLString(){
-        return "INSERT INTO MENU (menuId,label,level,queue,method,positionId,pId,status) " +
-                "VALUES('"+ this.getMenuId() +"','"+ this.getLabel()+"','"+this.getLevel()+"','"+this.getQueue()+"','"+this.getMethod()+"','"+this.getPositionId()+"','"+this.getpId()+"','"+this.getStatus()+"');";
     }
 }

@@ -1,11 +1,17 @@
 package cn.foodslab.controller.menu;
 
+import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.controller.manager.VManagerEntity;
 import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.service.menu.IMenuServices;
+import cn.foodslab.service.menu.MenuEntity;
 import cn.foodslab.service.menu.MenuServices;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
+
+import java.util.LinkedList;
 
 /**
  * Created by Pengwei Ding on 2016-07-30 14:34.
@@ -17,11 +23,32 @@ public class MenuController extends Controller implements IMenuController {
     private IMenuServices iMenuServices = new MenuServices();
     @Override
     public void index() {
-        renderJson(JSON.toJSONString(iMenuServices.retrieveMenusByLevel(0)));
+
     }
 
     @Override
-    public void status() {
-        renderJson(JSON.toJSONString(iMenuServices.retrieveMenusByStatus(1)));
+    public void retrieves() {
+        String params = this.getPara("p");
+        VManagerEntity vManagerEntity = JSON.parseObject(params, VManagerEntity.class);
+        LinkedList<MenuEntity> menuEntities = iMenuServices.retrievesByManager(vManagerEntity);
+        LinkedList<VMenuEntity> result = new LinkedList<>();
+        for (MenuEntity menuEntity:menuEntities){
+            VMenuEntity vMenuEntity = new VMenuEntity(menuEntity);
+            result.add(vMenuEntity);
+        }
+        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), result, "success");
+        renderJson(JSON.toJSONString(iResultSet));
+    }
+
+    @Override
+    public void mRetrieves() {
+        LinkedList<MenuEntity> menuEntities = iMenuServices.mRetrievesByAdmin();
+        LinkedList<VMenuEntity> result = new LinkedList<>();
+        for (MenuEntity menuEntity:menuEntities){
+            VMenuEntity vMenuEntity = new VMenuEntity(menuEntity);
+            result.add(vMenuEntity);
+        }
+        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), result, "success");
+        renderJson(JSON.toJSONString(iResultSet));
     }
 }

@@ -103,7 +103,9 @@ function createProductView(formatEntities) {
         formatEntityBuyView.className = "productItem_buy";
         formatEntityBuyView.innerHTML = "立即购买";
         formatEntityBuyView.onclick = function () {
-            let url = BASE_PATH + "pb?formatId=" + formatEntity.formatId;
+            let object = new Object();
+            object.productIds = formatEntity.formatId;
+            let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
             window.open(url);
         };
         formatEntityView.appendChild(formatEntityBuyView);

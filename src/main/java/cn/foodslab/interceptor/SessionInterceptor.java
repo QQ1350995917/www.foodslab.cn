@@ -24,7 +24,7 @@ public class SessionInterceptor implements Interceptor {
         Object cs = paramsMap.get("cs");
         if (cs == null || SessionContext.getSession(cs.toString()) == null) {
             VUserEntity vUserEntity = new VUserEntity();
-            IResultSet resultSet = new ResultSet(IResultSet.ResultCode.EXE_SESSION_TIME_OUT);
+            IResultSet resultSet = new ResultSet(IResultSet.ResultCode.EXE_SESSION_TIME_OUT.getCode());
             vUserEntity.setCs(cs == null ? null : cs.toString());
             resultSet.setData(vUserEntity);
             resultSet.setMessage("登录超时");

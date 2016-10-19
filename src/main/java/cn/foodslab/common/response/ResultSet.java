@@ -15,14 +15,14 @@ public class ResultSet implements IResultSet {
     public ResultSet() {
     }
 
+    public ResultSet(int code) {
+        this.code = code;
+    }
+
     public ResultSet(int code, Object data, String message) {
         this.code = code;
         this.data = data;
         this.message = message;
-    }
-
-    public ResultSet(Object data) {
-        this.data = data;
     }
 
     @JSONField(name = "data")

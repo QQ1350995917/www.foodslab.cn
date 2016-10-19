@@ -11,6 +11,6 @@ import com.jfinal.aop.Invocation;
 public class VisitorInterceptor implements Interceptor {
     @Override
     public void intercept(Invocation inv) {
-
+        inv.invoke();
     }
 }

@@ -84,7 +84,7 @@ public class ApplicationConfigure extends JFinalConfig {
     public void configRoute(Routes me) {
         me.add("/", PageController.class);
         me.add("/meta", MetaController.class);
-        me.add("/menus", MenuController.class);
+        me.add("/menu", MenuController.class);
         me.add("/manager", ManagerController.class);
         me.add("/series", SeriesController.class);
         me.add("/type", TypeController.class);

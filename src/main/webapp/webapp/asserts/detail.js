@@ -259,7 +259,9 @@ function createFormatDiscountItemView(formatEntity) {
     buyNow.className = "formatLabel button";
     buyNow.innerHTML = "立即购买";
     buyNow.onclick = function () {
-        let url = BASE_PATH + "pb?formatId=" + formatEntity.formatId;
+        let object = new Object();
+        object.productIds = formatEntity.formatId;
+        let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
         window.open(url);
     };
     formatDiscountView.appendChild(buyNow);
@@ -352,7 +354,9 @@ function createPutInCartResultView(data) {
     goToCart.onclick = function () {
         dismissMaskView();
         document.body.removeChild(keepGoon.parentNode);
-        let url = BASE_PATH + "pm?accountId=test&dir=cart";
+        let requestUserEntity = new Object();
+        requestUserEntity.cs = getCookie(KEY_CS);
+        let url = BASE_PATH + "pm?p=" + JSON.stringify(requestUserEntity);
         window.open(url, "_self");
     };
     resultView.appendChild(keepGoon);

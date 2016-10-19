@@ -124,7 +124,7 @@ public class AccountServices implements IAccountServices {
 
     @Override
     public UserEntity mBlock(UserEntity userEntity) {
-        int count = Db.update("UPDATE user SET status = 0 WHERE userId = ? ", userEntity.getUserId());
+        int count = Db.update("UPDATE user SET status = 1 WHERE userId = ? ", userEntity.getUserId());
         if (count == 1) {
             return userEntity;
         } else {
@@ -134,7 +134,7 @@ public class AccountServices implements IAccountServices {
 
     @Override
     public UserEntity mUnBlock(UserEntity userEntity) {
-        int count = Db.update("UPDATE user SET status = 1 WHERE userId = ? ", userEntity.getUserId());
+        int count = Db.update("UPDATE user SET status = 2 WHERE userId = ? ", userEntity.getUserId());
         if (count == 1) {
             return userEntity;
         } else {

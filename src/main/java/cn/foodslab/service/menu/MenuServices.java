@@ -1,13 +1,12 @@
 package cn.foodslab.service.menu;
 
-import cn.foodslab.common.response.IResultSet;
-import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.service.manager.ManagerEntity;
+import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Pengwei Ding on 2016-07-30 14:41.
@@ -17,29 +16,22 @@ import java.util.Map;
 public class MenuServices implements IMenuServices {
 
     @Override
-    public IResultSet retrieveMenusByLevel(int level) {
-        List<Record> records = Db.find("SELECT * FROM menu ORDER BY queue");
-        LinkedList<Map> resultMapList = new LinkedList<>();
+    public LinkedList<MenuEntity> retrievesByManager(ManagerEntity managerEntity) {
+        LinkedList<MenuEntity> menuEntities = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM menu WHERE menuId IN (SELECT menuId FROM manager_menu WHERE managerId = ? AND status != -1) AND status = 2 ORDER BY category, queue", managerEntity.getManagerId());
         for (Record record : records) {
-            resultMapList.add(record.getColumns());
+            menuEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), MenuEntity.class));
         }
-        IResultSet resultSet = new ResultSet(resultMapList);
-        return resultSet;
+        return menuEntities;
     }
 
     @Override
-    public IResultSet retrieveMenusByStatus(int status) {
-        List<Record> records = Db.find("SELECT * FROM menu WHERE status = " + status + " ORDER BY queue");
-        LinkedList<Map> resultMapList = new LinkedList<>();
+    public LinkedList<MenuEntity> mRetrievesByAdmin() {
+        LinkedList<MenuEntity> menuEntities = new LinkedList<>();
+        List<Record> records = Db.find("SELECT * FROM menu ORDER BY category, queue");
         for (Record record : records) {
-            resultMapList.add(record.getColumns());
+            menuEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), MenuEntity.class));
         }
-        IResultSet resultSet = new ResultSet(resultMapList);
-        return resultSet;
-    }
-
-    @Override
-    public IResultSet retrieveMenusByIds(String... ids) {
-        return null;
+        return menuEntities;
     }
 }

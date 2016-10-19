@@ -22,12 +22,13 @@ public class ManagerServices implements IManagerServices {
 
     @Override
     public IResultSet isExistManagerUserName(String username) {
-        List<Record> records = Db.find("SELECT * FROM manager WHERE username = '" + username + "'");
-        if (records.size() == 1) {
-            return new ResultSet("true");
-        } else {
-            return new ResultSet("false");
-        }
+//        List<Record> records = Db.find("SELECT * FROM manager WHERE username = '" + username + "'");
+//        if (records.size() == 1) {
+//            return new ResultSet("true");
+//        } else {
+//            return new ResultSet("false");
+//        }
+        return null;
     }
 
     @Override
@@ -109,8 +110,9 @@ public class ManagerServices implements IManagerServices {
             columns.put("managerMenuEntitiesMapping", menus);
             jsonMap.add(columns);
         }
-        IResultSet resultSet = new ResultSet(jsonMap);
-        return resultSet;
+//        IResultSet resultSet = new ResultSet(jsonMap);
+//        return resultSet;
+        return null;
     }
 
     /**

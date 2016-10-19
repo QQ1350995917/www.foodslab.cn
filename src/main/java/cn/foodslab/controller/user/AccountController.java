@@ -184,12 +184,14 @@ public class AccountController extends Controller implements IAccountController 
         }
     }
 
+    @Clear(SessionInterceptor.class)
     @Before(ManagerInterceptor.class)
     @Override
     public void mLogin() {
 
     }
 
+    @Clear(SessionInterceptor.class)
     @Before(ManagerInterceptor.class)
     @Override
     public void mRetrieves() {
@@ -210,12 +212,14 @@ public class AccountController extends Controller implements IAccountController 
         renderJson(JSON.toJSONString(iResultSet));
     }
 
+    @Clear(SessionInterceptor.class)
     @Before(ManagerInterceptor.class)
     @Override
     public void mQueryUsers() {
 
     }
 
+    @Clear(SessionInterceptor.class)
     @Before(ManagerInterceptor.class)
     @Override
     public void mMark() {
@@ -239,6 +243,7 @@ public class AccountController extends Controller implements IAccountController 
         }
     }
 
+    @Clear(SessionInterceptor.class)
     @Before(ManagerInterceptor.class)
     @Override
     public void mRetrieveAccounts() {
