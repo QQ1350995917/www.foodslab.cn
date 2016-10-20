@@ -10,73 +10,18 @@ import java.util.LinkedList;
  */
 public class ManagerEntity  {
     private String managerId; // 数据ID
-    private String username; // 用户名，即登录名
+    private String loginName; // 登录名
+    private String username; // 用户名
     private String password; // 用户密码，即登录密码，非明文 TODO: 采用哪种加密方式
     private int level;
     private int queue;
-    private int status; // 数据状态，可以查询数据库元数据表，这里取值有3个，-1标示删除，0标示禁用，1标示正常
-    private String pId;
-    private String createTime;
-    private String updateTime;
+    private int status; // 数据状态，可以查询数据库元数据表，这里取值有3个，-1标示删除，1标示禁用，2标示正常
+    private long createTime;
+    private long updateTime;
     private LinkedList<ManagerMenuEntity> managerMenuEntitiesMapping;
 
     public ManagerEntity() {
-    }
-
-    public ManagerEntity(String managerId) {
-        this.managerId = managerId;
-    }
-
-    /**
-     * 更新用户名
-     * @param managerId
-     * @param username
-     */
-    public ManagerEntity(String managerId, String username) {
-        this.managerId = managerId;
-        this.username = username;
-    }
-
-    /**
-     * 更新状态
-     * @param managerId
-     * @param status
-     */
-    public ManagerEntity(String managerId,int status) {
-        this.managerId = managerId;
-        this.status = status;
-    }
-
-
-    /**
-     * 更新密码
-     * @param managerId
-     * @param username
-     */
-    public ManagerEntity(String managerId, String username,String password) {
-        this.managerId = managerId;
-        this.username = username;
-        this.password = password;
-    }
-
-    /**
-     * 创建用户
-     * @param managerId
-     * @param username
-     * @param password
-     * @param level
-     * @param queue
-     * @param status
-     * @param pId
-     */
-    public ManagerEntity(String managerId, String username, String password, int level, int queue, int status, String pId) {
-        this.managerId = managerId;
-        this.username = username;
-        this.password = password;
-        this.level = level;
-        this.queue = queue;
-        this.status = status;
-        this.pId = pId;
+        super();
     }
 
     public String getManagerId() {
@@ -85,6 +30,14 @@ public class ManagerEntity  {
 
     public void setManagerId(String managerId) {
         this.managerId = managerId;
+    }
+
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
     }
 
     public String getUsername() {
@@ -127,27 +80,19 @@ public class ManagerEntity  {
         this.status = status;
     }
 
-    public String getpId() {
-        return pId;
-    }
-
-    public void setpId(String pId) {
-        this.pId = pId;
-    }
-
-    public String getCreateTime() {
+    public long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(String createTime) {
+    public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 
-    public String getUpdateTime() {
+    public long getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(String updateTime) {
+    public void setUpdateTime(long updateTime) {
         this.updateTime = updateTime;
     }
 
@@ -157,20 +102,5 @@ public class ManagerEntity  {
 
     public void setManagerMenuEntitiesMapping(LinkedList<ManagerMenuEntity> managerMenuEntitiesMapping) {
         this.managerMenuEntitiesMapping = managerMenuEntitiesMapping;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
-    public String toInsterSQLString(){
-        return "INSERT INTO manager (managerId,username,password,level,queue,status,pid) " +
-                "VALUES('"+ this.getManagerId() +"','"+ this.getUsername()+"','"+this.getPassword()+"','"+this.getLevel()+"','"+this.getQueue()+"','"+this.getStatus()+"','"+this.getpId()+"');";
     }
 }

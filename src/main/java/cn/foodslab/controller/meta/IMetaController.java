@@ -9,10 +9,8 @@ public interface IMetaController {
 
     void index();
 
-    void unit();
+    void units();
 
     void address();
-
-    void link();
 
 }

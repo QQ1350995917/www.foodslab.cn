@@ -1,6 +1,6 @@
 package cn.foodslab.service.meta;
 
-import cn.foodslab.common.response.IResultSet;
+import java.util.LinkedList;
 
 /**
  * Created by Pengwei Ding on 2016-08-19 11:40.
@@ -9,11 +9,6 @@ import cn.foodslab.common.response.IResultSet;
  */
 public interface IMetaServices {
 
-    IResultSet retrieveUnit();
-
-    IResultSet retrieveAddress(String pid);
-
-    IResultSet retrieveLink();
-
+    LinkedList<UnitEntity> retrieves();
 
 }

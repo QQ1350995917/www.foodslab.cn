@@ -1,6 +1,6 @@
 package cn.foodslab.service.manager;
 
-import cn.foodslab.common.response.IResultSet;
+import java.util.LinkedList;
 
 /**
  * Created by Pengwei Ding on 2016-07-30 10:11.
@@ -10,35 +10,73 @@ import cn.foodslab.common.response.IResultSet;
  */
 public interface IManagerServices {
 
-
+    /**
+     * 管理员接口
+     * 管理员登录
+     * @param managerEntity 管理员对象
+     * @return success 管理员对象 fail null
+     */
+    ManagerEntity retrieve(ManagerEntity managerEntity);
 
     /**
-     * 仅仅更新管理员的状态
-     * @param username 判断要创建的用户名是否存在
-     * @return
+     * 管理员接口
+     * 管理员更新密码
+     * @param managerEntity 管理员对象
+     * @return success 管理员对象 fail null
      */
-    IResultSet isExistManagerUserName(String username);
+    ManagerEntity update(ManagerEntity managerEntity);
 
     /**
-     * 创建一个管理员
-     * @param managerEntity 新的管理员信息，这个时候的对象并不包含ID信息，或许包含菜单映射
-     * @return
+     * 系统管理员接口
+     * @return success 管理员对象集合 fail null
      */
-    IResultSet createManager(ManagerEntity managerEntity);
+    LinkedList<ManagerEntity> mRetrieves();
 
     /**
-     * 更新管理员信息
-     * @param managerEntity 要更新的管理员信息
-     *                      注意1：更新Menu映射表的规则是先根据ID删除，后插入新的映射
-     *                      注意2：要采用事务操作
-     * @return
+     * 系统管理员接口
+     * 系统管理员添加管理员检测用户名是否已经存在
+     * @param managerEntity 管理员对象
+     * @return success 管理员对象 fail null
      */
-    IResultSet updateManager(ManagerEntity managerEntity);
+    boolean exist(ManagerEntity managerEntity);
 
     /**
-     * 读取所有管理员信息
-     * @return
+     * 系统管理员接口
+     * 创建一个新的管理员
+     * @param managerEntity 管理员对象
+     * @return success 管理员对象 fail null
      */
-    IResultSet retrieveManager();
+    ManagerEntity mCreate(ManagerEntity managerEntity);
 
+    /**
+     * 系统管理员接口
+     * 更新管理员接口
+     * @param managerEntity 管理员对象
+     * @return success 管理员对象 fail null
+     */
+    ManagerEntity mUpdate(ManagerEntity managerEntity);
+
+    /**
+     * 系统管理员接口
+     * 禁用管理员
+     * @param managerEntity 管理员对象
+     * @return success 管理员对象 fail null
+     */
+    ManagerEntity mBlock(ManagerEntity managerEntity);
+
+    /**
+     * 系统管理员接口
+     * 启用管理员
+     * @param managerEntity 管理员对象
+     * @return success 管理员对象 fail null
+     */
+    ManagerEntity mUnBlock(ManagerEntity managerEntity);
+
+    /**
+     * 系统管理员接口
+     * 删除管理员
+     * @param managerEntity 管理员对象
+     * @return success 管理员对象 fail null
+     */
+    ManagerEntity mDelete(ManagerEntity managerEntity);
 }

@@ -12,7 +12,7 @@ import java.util.LinkedList;
  * Description: @TODO
  */
 public class VManagerEntity extends ManagerEntity implements ISessionEntity {
-    private String cs;
+    private String mcs;
     private LinkedList<VMenuEntity> menus;
     private VUserEntity user;
 
@@ -20,16 +20,24 @@ public class VManagerEntity extends ManagerEntity implements ISessionEntity {
         super();
     }
 
-    public VManagerEntity(String cs) {
-        this.cs = cs;
+    public VManagerEntity(ManagerEntity managerEntity) {
+        this.setManagerId(managerEntity.getManagerId());
+        this.setLoginName(managerEntity.getLoginName());
+        this.setUsername(managerEntity.getUsername());
+        this.setPassword(managerEntity.getPassword());
+        this.setLevel(managerEntity.getLevel());
+        this.setQueue(managerEntity.getQueue());
+        this.setStatus(managerEntity.getStatus());
+        this.setCreateTime(managerEntity.getCreateTime());
+        this.setUpdateTime(managerEntity.getUpdateTime());
     }
 
-    public String getCs() {
-        return cs;
+    public String getMcs() {
+        return mcs;
     }
 
-    public void setCs(String cs) {
-        this.cs = cs;
+    public void setMcs(String mcs) {
+        this.mcs = mcs;
     }
 
     public LinkedList<VMenuEntity> getMenus() {

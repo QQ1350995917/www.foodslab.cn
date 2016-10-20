@@ -1,10 +1,14 @@
 package cn.foodslab.controller.meta;
 
+import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.common.response.ResultSet;
 import cn.foodslab.service.meta.IMetaServices;
 import cn.foodslab.service.meta.MetaServices;
-import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.service.meta.UnitEntity;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Controller;
+
+import java.util.LinkedList;
 
 /**
  * Created by Pengwei Ding on 2016-08-11 14:44.
@@ -16,26 +20,22 @@ public class MetaController extends Controller implements IMetaController {
     private IMetaServices metaServices = new MetaServices();
 
     public void index(){
-        IResultSet resultSet = metaServices.retrieveUnit();
-        renderJson(JSON.toJSONString(resultSet));
     }
 
     @Override
-    public void unit() {
-        IResultSet resultSet = metaServices.retrieveUnit();
-        renderJson(JSON.toJSONString(resultSet));
+    public void units() {
+        LinkedList<VUnitEntity> vUnitEntities = new LinkedList<>();
+        LinkedList<UnitEntity> unitEntities = metaServices.retrieves();
+        for (UnitEntity unitEntity : unitEntities){
+            vUnitEntities.add(new VUnitEntity(unitEntity));
+        }
+        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+        iResultSet.setData(vUnitEntities);
+        renderJson(JSON.toJSONString(iResultSet));
     }
 
     @Override
     public void address() {
-        String pid = this.getPara("pcode");
-        IResultSet resultSet = metaServices.retrieveAddress(pid);
-        renderJson(JSON.toJSONString(resultSet));
-    }
 
-    @Override
-    public void link() {
-        IResultSet resultSet = metaServices.retrieveLink();
-        renderJson(JSON.toJSONString(resultSet));
     }
 }

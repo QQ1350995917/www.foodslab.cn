@@ -9,23 +9,44 @@ package cn.foodslab.controller.manager;
 public interface IManagerController {
 
     /**
-     * 读取管理员列表
+     * 404
      */
     void index();
 
     /**
-     * 管理员用户名是否可用
+     * 管理员接口
+     * 管理员登录
      */
-    void check();
+    void retrieve();
 
     /**
+     * 管理员接口
+     * 更新密码
+     */
+    void password();
+
+    /**
+     * 系统管理员接口
+     * 读取管理员列表
+     */
+    void mRetrieves();
+
+    /**
+     * 系统管理员接口
      * 创建管理员
      */
-    void create();
+    void mCreate();
 
     /**
-     * 更新管理员
+     * 系统管理员
+     * 重置管理员密码
      */
-    void update();
+    void mUpdate();
+
+    /**
+     * 系统管理员
+     * 标记管理员转台
+     */
+    void mMark();
 
 }
