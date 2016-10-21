@@ -1,5 +1,9 @@
 package cn.foodslab.controller.product;
 
+import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.SessionInterceptor;
+import com.jfinal.aop.Before;
+
 /**
  * Created by Pengwei Ding on 2016-09-22 16:15.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
@@ -35,23 +39,27 @@ public interface ISeriesController {
      * 管理员接口
      * 创建新系列
      */
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     void mCreate();
 
     /**
      * 管理员接口接口
      * 更新系列名称
      */
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     void mUpdate();
 
     /**
      * 管理员接口接口
      * 更新系列状态
      */
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     void mMark();
 
     /**
      * 管理员接口
      * 读取系列集合
      */
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     void mRetrieves();
 }

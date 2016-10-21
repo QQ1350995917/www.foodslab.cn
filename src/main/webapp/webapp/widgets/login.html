@@ -2,10 +2,10 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta nickName="viewport" content="width=device-width, initial-scale=1 maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1, user-scalable=no">
     <title>登录</title>
     <style type="text/css">
-        html {
+        html body {
             width: 100%;
             height: 100%;
             padding: 0px;
@@ -32,21 +32,22 @@
         }
 
         input {
-            width: 98%;
+            width: 90%;
             height: 20px;
             margin: 5px auto;
             background-color: transparent;
-            border: 1px solid #000000;
+            border: 1px solid #CCCCCC;
             max-lines: 1;
         }
 
         div.loginButton {
-            width: 99%;
+            width: 90.5%;
             height: 30px;
             text-align: center;
             line-height: 30px;
-            border: 1px solid #000000;
+            border: 1px solid #CCCCCC;
             cursor: pointer;
+            color: #CCCCCC;
         }
 
         input:hover {
@@ -68,7 +69,7 @@
 </div>
 <div class="loginPanelContainer">
     <input id="loginName" type="text" maxlength="20" placeholder="请输入用户名">
-    <input id="loginPassword" type="password" maxlength="12" placeholder="请输入密码">
+    <input id="password" type="password" maxlength="12" placeholder="请输入密码">
     <div id="loginButton" class="loginButton" onclick="loginAction()">登录</div>
 </div>
 </body>
@@ -84,38 +85,59 @@
         background.style.width = window.innerHeight * 1.5 + "px";
     };
 
-    let frame = "http://localhost:8080/foodslab/frame";
+    let doubleClick = false;
     function loginAction() {
-        let accountEntity = new Object();
-        accountEntity.identity = "test";
-        let url = "http://localhost:8080/foodslab/account/login?p=" + JSON.stringify(accountEntity);
-        asyncRequestByGet(url, function (data) {
-            console.log(data);
-            console.log(document.cookie);
-            var arrStr = document.cookie.split("; ");
-            for (var i = 0; i < arrStr.length; i++) {
-                var temp = arrStr[i].split("=");
-                if (temp[0] == "cs"){
-                    console.log(unescape(temp[1]));
-                } // url编码了，所以应该解码
+        let loginNameInput = document.getElementById("loginName");
+        let passwordInput = document.getElementById("password");
+        let loginName = loginNameInput.value;
+        let password = passwordInput.value;
+
+        let flag = false;
+        if (loginName == undefined || loginName == null || loginName.trim() == "") {
+            loginNameInput.style.borderColor = "red";
+        } else {
+            flag = true;
+        }
+
+        if (password == undefined || password == null || password.trim() == "") {
+            passwordInput.style.borderColor = "red";
+        } else {
+            flag = true;
+        }
+
+        if (flag) {
+            let manager = new Object();
+            manager.loginName = loginName;
+            manager.password = password;
+            let url = "http://localhost:8080/foodslab/manager/mLogin?p=" + JSON.stringify(manager);
+            if (!doubleClick){
+                doubleClick = true;
+                asyncRequestByGet(url, function (data) {
+                    var jsonData = JSON.parse(data);
+                    if (jsonData.code == 3050) {
+                        setCookie("mcs",jsonData.data.msc);
+                        let object = new Object();
+                        object.cs = jsonData.data.msc;
+                        window.open("http://localhost:8080/foodslab/frame?p=" + JSON.stringify(object),"_self");
+                    } else {
+                        delCookie("mcs");
+                        doubleClick = false;
+                    }
+                }, function () {
+                    delCookie("mcs");
+                }, function () {
+                    delCookie("mcs");
+                });
             }
-        }, function () {
-
-        }, function () {
-
-        });
+        }
     }
-
-
-    function setCookie(NameOfCookie, value) {
-        var ExpireDate = new Date();
-        ExpireDate.setTime(ExpireDate.getTime() + (10 * 1000));
-        document.cookie = NameOfCookie + "=" +escape(value) + ((expiredays == null) ? "" : ";expires =" +ExpireDate.toGMTString());
-    }
-
 
     function asyncRequestByGet(url, onDataCallback, onErrorCallback, onTimeoutCallback) {
         var xmlHttp = new XMLHttpRequest();
+        xmlHttp.timeout = 5000;
+        xmlHttp.ontimeout = onTimeoutCallback;
+        xmlHttp.open("GET", url, true);
+        xmlHttp.send(null);
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
                 onDataCallback(xmlHttp.responseText);
@@ -123,11 +145,36 @@
                 onErrorCallback;
             }
         }
-        xmlHttp.timeout = 5000;
-        xmlHttp.ontimeout = onTimeoutCallback;
-        xmlHttp.open("GET", url, true);
-        xmlHttp.withCredentials = true;
-        xmlHttp.send(null);
     }
+
+    function setCookie(key, value) {
+        var expireDate = new Date();
+        expireDate.setTime(expireDate.getTime() + (15 * 1000));
+        document.cookie = key + "=" + encodeURI(value) + ";expires =" + expireDate.toGMTString();
+    }
+
+    function getCookie(key) {
+        if (document.cookie.length > 0) {
+            let indexStart = document.cookie.indexOf(key + "=")
+            if (indexStart != -1) {
+                indexStart = indexStart + key.length + 1
+                let indexEnd = document.cookie.indexOf(";", indexStart)
+                if (indexEnd == -1) indexEnd = document.cookie.length
+                return decodeURI(document.cookie.substring(indexStart, indexEnd))
+            }
+        }
+        return ""
+    }
+
+    function delCookie(key) {
+        var exp = new Date();
+        exp.setTime(exp.getTime() - 1);
+        var del = getCookie(key);
+        if (del != null) {
+            document.cookie = key + "=" + del + ";expires=" + exp.toGMTString();
+        }
+    }
+    //    encodeURIComponent
+    //    decodeURIComponent
 </script>
 </html>

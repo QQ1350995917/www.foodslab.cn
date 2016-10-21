@@ -49,6 +49,11 @@ public interface IPageController {
     void pp();
 
     /**
+     * 管理员登录界面
+     */
+    void ml();
+
+    /**
      * 管理员界面
      */
     void frame();

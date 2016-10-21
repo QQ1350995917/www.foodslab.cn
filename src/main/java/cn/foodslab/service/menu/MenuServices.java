@@ -18,7 +18,7 @@ public class MenuServices implements IMenuServices {
     @Override
     public LinkedList<MenuEntity> retrievesByManager(ManagerEntity managerEntity) {
         LinkedList<MenuEntity> menuEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM menu WHERE menuId IN (SELECT menuId FROM manager_menu WHERE managerId = ? AND status != -1) AND status = 2 ORDER BY category, queue", managerEntity.getManagerId());
+        List<Record> records = Db.find("SELECT * FROM menu WHERE menuId IN (SELECT menuId FROM manager_menu WHERE managerId = ? ) AND status = 2 ORDER BY category, queue", managerEntity.getManagerId());
         for (Record record : records) {
             menuEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), MenuEntity.class));
         }

@@ -19,21 +19,21 @@ public class SessionContext {
     public static synchronized void addSession(HttpSession session) {
         if (session != null) {
             sessionMap.put(session.getId(), session);
-            System.out.println("==========ADD SESSION============" + sessionMap.size());
+            System.out.println("==================================================ADD SESSION====================================================" + sessionMap.size());
         }
     }
 
     public static synchronized void delSession(HttpSession session) {
         if (session != null) {
             sessionMap.remove(session.getId());
-            System.out.println("----------DEL SESSION------------" + sessionMap.size());
+            System.out.println("--------------------------------------------------DEL SESSION----------------------------------------------------" + sessionMap.size());
         }
     }
 
     public static synchronized void delSession(String sessionId) {
         if (sessionId != null) {
             sessionMap.remove(sessionId);
-            System.out.println("----------DEL SESSION------------" + sessionMap.size());
+            System.out.println("--------------------------------------------------DEL SESSION----------------------------------------------------" + sessionMap.size());
         }
     }
 

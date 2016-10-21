@@ -1,5 +1,9 @@
 package cn.foodslab.controller.product;
 
+import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.SessionInterceptor;
+import com.jfinal.aop.Before;
+
 /**
  * Created by Pengwei Ding on 2016-09-22 16:16.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
@@ -45,48 +49,56 @@ public interface IFormatController {
      * 管理员接口
      * 创建新的规格
      */
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     void mCreate();
 
     /**
      * 管理员接口
      * 更新规格信息
      */
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     void mUpdate();
 
     /**
      * 管理员接口
      * 状态更新规格状态
      */
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     void mMark();
 
     /**
      * 管理员接口
      * 标记权重
      */
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     void mKingWeight();
 
     /**
      * 管理员接口
      * 交换权重
      */
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     void mSwapWeight();
 
     /**
      * 管理员接口
      * 读取权重列表
      */
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     void mWeights();
 
     /**
      * 管理员接口
      * 根据类型的ID读取类型下的规格
      */
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     void mRetrieves();
 
     /**
      * 管理员接口
      * 根据规格的ID读取规格的详情
      */
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     void mRetrieve();
 
 }

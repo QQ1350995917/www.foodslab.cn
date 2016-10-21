@@ -12,6 +12,7 @@ public class MenuEntity {
     private int queue; // 顺序
     private int category; //种类
     private int status; //-1删除状态，1，禁用状态，2正常状态，3该菜单除了超级管理员不可授予其他人
+    private String actionKey;
     private String createTime;
     private String updateTime;
 
@@ -63,6 +64,14 @@ public class MenuEntity {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getActionKey() {
+        return actionKey;
+    }
+
+    public void setActionKey(String actionKey) {
+        this.actionKey = actionKey;
     }
 
     public String getCreateTime() {

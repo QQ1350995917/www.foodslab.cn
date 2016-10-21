@@ -203,8 +203,13 @@ public class PageController extends Controller implements IPageController {
         this.render("/webapp/widgets/index.html");
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    public void ml() {
+        this.render("/webapp/widgets/login.html");
+    }
+
+    @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void frame() {
         this.render("/webapp/widgets/frame.html");
     }

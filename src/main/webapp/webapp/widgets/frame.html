@@ -14,26 +14,24 @@
 </head>
 <body id="body">
 <div id="header" class="headerContainer">
-    <div id="header_icon" class="header_icon">foodslab.cn</div>
-    <div id="header_menu" class="header_menu"></div>
-    <div id="header_user" class="header_user">
-        <label style="float:left;"> 用户名用户名 </label>
-        <label href="#" style="cursor: pointer;" onclick="new Toast('body',null,null,200,30).show('退出')">退出</label>
+    <div id="headerIcon" class="headerIcon">foodslab.cn</div>
+    <div id="headerMenu" class="headerMenu"></div>
+    <div id="headerUser" class="headerUser">
+        <label id="manager" style="float:left;cursor: pointer;"> 用户名用户名 </label>
+        <label id="exit" href="#" style="cursor: pointer;">退出</label>
     </div>
 </div>
-<div id="leftMenu" class="leftMenuContainer"></div>
-
 <div id="main" class="mainContainer">
-    <div id="main_title" class="main_title"></div>
-    <div id="main_content" class="main_content">
-        <div id="main_content_container" class="main_content_container"></div>
+    <div id="leftMenu" class="leftMenuContainer"></div>
+    <div id="rightMain" class="rightMainContainer">
+        <div id="mainTitle" class="mainTitle"></div>
+        <div id="mainContainer" class="mainContainer" style="width: 99%;padding: 0.5%">xxx于2016-10-10 10:10:23登录系统</div>
     </div>
-
 </div>
 </body>
 <script type="text/javascript" src="${basePath}/webapp/asserts/frame-all-release.js"></script>
 <script type="text/javascript" src="${basePath}/webapp/asserts/dependency/pikaday.min.js"></script>
 <script type="text/javascript">
-   window.onload = applicationOnload();
+    window.onload = onFrameLoad();
 </script>
 </html>

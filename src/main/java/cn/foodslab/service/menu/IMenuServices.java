@@ -20,10 +20,6 @@ public interface IMenuServices {
     LinkedList<MenuEntity> retrievesByManager(ManagerEntity managerEntity);
 
     /**
-     *
-     * @return 菜单集合
-     */
-    /**
      * 超级管理员接口
      * 查询所有菜单
      * @param category 类别

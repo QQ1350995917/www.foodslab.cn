@@ -11,6 +11,7 @@ import com.jfinal.aop.Invocation;
 public class ManagerInterceptor implements Interceptor {
     @Override
     public void intercept(Invocation inv) {
+        String methodName = inv.getMethodName();
         inv.invoke();
     }
 }

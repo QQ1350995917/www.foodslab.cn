@@ -9,23 +9,20 @@ public class ManagerMenuEntity {
 
     private String managerId;
     private String menuId;
-    private String menuLabel;
     private String createTime;
     private String updateTime;
 
     public ManagerMenuEntity() {
     }
 
-    public ManagerMenuEntity(String managerId, String menuId, String menuLabel) {
+    public ManagerMenuEntity(String managerId, String menuId) {
         this.managerId = managerId;
         this.menuId = menuId;
-        this.menuLabel = menuLabel;
     }
 
-    public ManagerMenuEntity(String managerId, String menuId, String menuLabel, String createTime, String updateTime) {
+    public ManagerMenuEntity(String managerId, String menuId, String createTime, String updateTime) {
         this.managerId = managerId;
         this.menuId = menuId;
-        this.menuLabel = menuLabel;
         this.createTime = createTime;
         this.updateTime = updateTime;
     }
@@ -44,14 +41,6 @@ public class ManagerMenuEntity {
 
     public void setMenuId(String menuId) {
         this.menuId = menuId;
-    }
-
-    public String getMenuLabel() {
-        return menuLabel;
-    }
-
-    public void setMenuLabel(String menuLabel) {
-        this.menuLabel = menuLabel;
     }
 
     public String getCreateTime() {

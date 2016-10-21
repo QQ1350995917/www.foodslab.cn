@@ -187,13 +187,6 @@ public class AccountController extends Controller implements IAccountController 
     @Clear(SessionInterceptor.class)
     @Before(ManagerInterceptor.class)
     @Override
-    public void mLogin() {
-
-    }
-
-    @Clear(SessionInterceptor.class)
-    @Before(ManagerInterceptor.class)
-    @Override
     public void mRetrieves() {
         LinkedList<UserEntity> userEntities = iAccountServices.mRetrieveUsers(1, 1);
         LinkedList<VUserEntity> vUserEntities = new LinkedList<>();

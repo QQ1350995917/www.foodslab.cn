@@ -1,5 +1,7 @@
 package cn.foodslab.service.manager;
 
+import cn.foodslab.service.menu.MenuEntity;
+
 import java.util.LinkedList;
 
 /**
@@ -12,22 +14,25 @@ public interface IManagerServices {
 
     /**
      * 管理员接口
-     * 管理员登录
+     * 管理员查询信息
+     *
      * @param managerEntity 管理员对象
      * @return success 管理员对象 fail null
      */
-    ManagerEntity retrieve(ManagerEntity managerEntity);
+    ManagerEntity mRetrieve(ManagerEntity managerEntity);
 
     /**
      * 管理员接口
      * 管理员更新密码
+     *
      * @param managerEntity 管理员对象
      * @return success 管理员对象 fail null
      */
-    ManagerEntity update(ManagerEntity managerEntity);
+    ManagerEntity mUpdate(ManagerEntity managerEntity);
 
     /**
      * 系统管理员接口
+     *
      * @return success 管理员对象集合 fail null
      */
     LinkedList<ManagerEntity> mRetrieves();
@@ -35,6 +40,7 @@ public interface IManagerServices {
     /**
      * 系统管理员接口
      * 系统管理员添加管理员检测用户名是否已经存在
+     *
      * @param managerEntity 管理员对象
      * @return success 管理员对象 fail null
      */
@@ -43,22 +49,27 @@ public interface IManagerServices {
     /**
      * 系统管理员接口
      * 创建一个新的管理员
+     *
      * @param managerEntity 管理员对象
+     * @param menuEntities  管理的菜单对象
      * @return success 管理员对象 fail null
      */
-    ManagerEntity mCreate(ManagerEntity managerEntity);
+    ManagerEntity mCreate(ManagerEntity managerEntity, LinkedList<? extends MenuEntity> menuEntities);
 
     /**
      * 系统管理员接口
      * 更新管理员接口
+     *
      * @param managerEntity 管理员对象
+     * @param menuEntities  管理的菜单对象
      * @return success 管理员对象 fail null
      */
-    ManagerEntity mUpdate(ManagerEntity managerEntity);
+    ManagerEntity mUpdate(ManagerEntity managerEntity, LinkedList<? extends MenuEntity> menuEntities);
 
     /**
      * 系统管理员接口
      * 禁用管理员
+     *
      * @param managerEntity 管理员对象
      * @return success 管理员对象 fail null
      */
@@ -67,6 +78,7 @@ public interface IManagerServices {
     /**
      * 系统管理员接口
      * 启用管理员
+     *
      * @param managerEntity 管理员对象
      * @return success 管理员对象 fail null
      */
@@ -75,6 +87,7 @@ public interface IManagerServices {
     /**
      * 系统管理员接口
      * 删除管理员
+     *
      * @param managerEntity 管理员对象
      * @return success 管理员对象 fail null
      */

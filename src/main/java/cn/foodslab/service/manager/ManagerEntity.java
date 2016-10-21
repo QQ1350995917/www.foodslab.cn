@@ -1,14 +1,12 @@
 package cn.foodslab.service.manager;
 
-import java.util.LinkedList;
-
 /**
  * Created by Pengwei Ding on 2016-07-28 16:40.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: 管理员对象。为了便利性考虑暂时融合可控制层数据对象和持久层的数据对象
  * TODO: 可以考虑拆分
  */
-public class ManagerEntity  {
+public class ManagerEntity {
     private String managerId; // 数据ID
     private String loginName; // 登录名
     private String username; // 用户名
@@ -18,7 +16,6 @@ public class ManagerEntity  {
     private int status; // 数据状态，可以查询数据库元数据表，这里取值有3个，-1标示删除，1标示禁用，2标示正常
     private long createTime;
     private long updateTime;
-    private LinkedList<ManagerMenuEntity> managerMenuEntitiesMapping;
 
     public ManagerEntity() {
         super();
@@ -96,11 +93,5 @@ public class ManagerEntity  {
         this.updateTime = updateTime;
     }
 
-    public LinkedList<ManagerMenuEntity> getManagerMenuEntitiesMapping() {
-        return managerMenuEntitiesMapping;
-    }
 
-    public void setManagerMenuEntitiesMapping(LinkedList<ManagerMenuEntity> managerMenuEntitiesMapping) {
-        this.managerMenuEntitiesMapping = managerMenuEntitiesMapping;
-    }
 }

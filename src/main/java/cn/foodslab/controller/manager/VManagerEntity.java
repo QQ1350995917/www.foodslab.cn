@@ -1,6 +1,7 @@
 package cn.foodslab.controller.manager;
 
 import cn.foodslab.common.cache.ISessionEntity;
+import cn.foodslab.controller.menu.VMenuEntity;
 import cn.foodslab.controller.user.VUserEntity;
 import cn.foodslab.service.manager.ManagerEntity;
 
@@ -12,12 +13,21 @@ import java.util.LinkedList;
  * Description: @TODO
  */
 public class VManagerEntity extends ManagerEntity implements ISessionEntity {
-    private String mcs;
+    private String cs;
     private LinkedList<VMenuEntity> menus;
     private VUserEntity user;
 
     public VManagerEntity() {
         super();
+    }
+
+    public VManagerEntity(String mcs) {
+        this.cs = mcs;
+    }
+
+    public VManagerEntity(String mcs,LinkedList<VMenuEntity> menus) {
+        this.cs = mcs;
+        this.menus = menus;
     }
 
     public VManagerEntity(ManagerEntity managerEntity) {
@@ -30,14 +40,18 @@ public class VManagerEntity extends ManagerEntity implements ISessionEntity {
         this.setStatus(managerEntity.getStatus());
         this.setCreateTime(managerEntity.getCreateTime());
         this.setUpdateTime(managerEntity.getUpdateTime());
+        if (managerEntity instanceof VManagerEntity){
+            LinkedList<VMenuEntity> menus = ((VManagerEntity) managerEntity).getMenus();
+            this.setMenus(menus);
+        }
     }
 
-    public String getMcs() {
-        return mcs;
+    public String getCs() {
+        return cs;
     }
 
-    public void setMcs(String mcs) {
-        this.mcs = mcs;
+    public void setCs(String cs) {
+        this.cs = cs;
     }
 
     public LinkedList<VMenuEntity> getMenus() {

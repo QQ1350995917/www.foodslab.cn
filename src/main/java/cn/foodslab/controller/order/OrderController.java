@@ -284,4 +284,9 @@ public class OrderController extends Controller implements IOrderController {
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
+
+    @Override
+    public void mQuery() {
+
+    }
 }

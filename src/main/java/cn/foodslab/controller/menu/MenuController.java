@@ -27,7 +27,7 @@ public class MenuController extends Controller implements IMenuController {
     }
 
     @Override
-    public void retrieves() {
+    public void mRetrieves() {
         String params = this.getPara("p");
         VManagerEntity vManagerEntity = JSON.parseObject(params, VManagerEntity.class);
         LinkedList<MenuEntity> menuEntities = iMenuServices.retrievesByManager(vManagerEntity);
@@ -41,7 +41,7 @@ public class MenuController extends Controller implements IMenuController {
     }
 
     @Override
-    public void mRetrieves() {
+    public void MRetrieves() {
         String params = this.getPara("p");
         VMenuEntity vMenuEntity = JSON.parseObject(params, VMenuEntity.class);
         LinkedList<MenuEntity> menuEntities = iMenuServices.mRetrievesByAdmin(vMenuEntity.getCategory());
