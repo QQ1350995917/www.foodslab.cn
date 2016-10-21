@@ -115,9 +115,9 @@
                 asyncRequestByGet(url, function (data) {
                     var jsonData = JSON.parse(data);
                     if (jsonData.code == 3050) {
-                        setCookie("mcs",jsonData.data.msc);
+                        setCookie("mcs",jsonData.data.cs);
                         let object = new Object();
-                        object.cs = jsonData.data.msc;
+                        object.cs = jsonData.data.cs;
                         window.open("http://localhost:8080/foodslab/frame?p=" + JSON.stringify(object),"_self");
                     } else {
                         delCookie("mcs");

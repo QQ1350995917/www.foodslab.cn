@@ -23,6 +23,9 @@ public interface IManagerController {
      */
     void mLogin();
 
+    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    void mExit();
+
     /**
      * 管理员接口
      * 管理员信息读取

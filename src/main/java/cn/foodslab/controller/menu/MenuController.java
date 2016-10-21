@@ -4,6 +4,7 @@ import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
 import cn.foodslab.controller.manager.VManagerEntity;
 import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.menu.IMenuServices;
 import cn.foodslab.service.menu.MenuEntity;
 import cn.foodslab.service.menu.MenuServices;
@@ -18,7 +19,7 @@ import java.util.LinkedList;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-@Before(ManagerInterceptor.class)
+
 public class MenuController extends Controller implements IMenuController {
     private IMenuServices iMenuServices = new MenuServices();
     @Override
@@ -27,6 +28,7 @@ public class MenuController extends Controller implements IMenuController {
     }
 
     @Override
+    @Before({SessionInterceptor.class, ManagerInterceptor.class})
     public void mRetrieves() {
         String params = this.getPara("p");
         VManagerEntity vManagerEntity = JSON.parseObject(params, VManagerEntity.class);
@@ -41,6 +43,7 @@ public class MenuController extends Controller implements IMenuController {
     }
 
     @Override
+    @Before({SessionInterceptor.class, ManagerInterceptor.class})
     public void MRetrieves() {
         String params = this.getPara("p");
         VMenuEntity vMenuEntity = JSON.parseObject(params, VMenuEntity.class);

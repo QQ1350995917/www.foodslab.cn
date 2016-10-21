@@ -29,6 +29,7 @@ public class SessionInterceptor implements Interceptor {
             resultSet.setData(vUserEntity);
             resultSet.setMessage("登录超时");
             inv.getController().renderJson(resultSet);
+            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXSessionInterceptor + " + cs.toString());
         } else {
             inv.invoke();
         }

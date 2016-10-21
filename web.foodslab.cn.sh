@@ -96,4 +96,6 @@ curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/sr
 
 #cd ../widgets/
 #rm frame.html
-#curl -O https://github.com/QQ1350995917/web.foodslab.cn/tree/master/src/webapp/widgets/frame.html
+#curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/backend/webapp/widgets/frame.html
+#rm login.html
+#curl -O https://raw.githubusercontent.com/QQ1350995917/web.foodslab.cn/master/src/backend/webapp/widgets/login.html

@@ -54,6 +54,10 @@ public class ManagerController extends Controller implements IManagerController 
             }
             HttpSession session = this.getSession(true);
             String sessionId = session.getId();
+            vManagerEntity.setManagerId(managerEntity.getManagerId());
+            vManagerEntity.setLoginName(managerEntity.getLoginName());
+            vManagerEntity.setUsername(managerEntity.getUsername());
+            vManagerEntity.setPassword(managerEntity.getPassword());
             vManagerEntity.setMenus(vMenuEntities);
             vManagerEntity.setCs(sessionId);
             session.setAttribute(SessionContext.KEY_USER, vManagerEntity);
@@ -66,17 +70,28 @@ public class ManagerController extends Controller implements IManagerController 
     }
 
     @Override
+    public void mExit() {
+        String params = this.getPara("p");
+        VManagerEntity vManagerEntity = JSON.parseObject(params, VManagerEntity.class);
+        SessionContext.delSession(vManagerEntity.getCs());
+        IResultSet resultSet = new ResultSet();
+        resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+        resultSet.setMessage("成功退出");
+        renderJson(JSON.toJSONString(resultSet));
+    }
+
+    @Override
     public void mRetrieve() {
         String params = this.getPara("p");
         VManagerEntity vManagerEntity = JSON.parseObject(params, VManagerEntity.class);
-        ManagerEntity managerEntity = iManagerServices.mRetrieve(vManagerEntity);
+        VManagerEntity sessionManager = SessionContext.getSessionManager(vManagerEntity.getCs());
         IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-        if (managerEntity == null) {
+        if (sessionManager == null) {
             iResultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
             iResultSet.setData(vManagerEntity);
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-            iResultSet.setData(managerEntity);
+            iResultSet.setData(sessionManager);
             renderJson(JSON.toJSONString(iResultSet));
         }
     }
