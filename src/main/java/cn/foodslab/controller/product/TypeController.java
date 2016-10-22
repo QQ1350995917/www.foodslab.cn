@@ -3,10 +3,10 @@ package cn.foodslab.controller.product;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
 import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.aop.Before;
-import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
 
 import java.util.LinkedList;
@@ -17,19 +17,16 @@ import java.util.UUID;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-@Before(ManagerInterceptor.class)
 public class TypeController extends Controller implements ITypeController {
     private ISeriesServices iSeriesServices = new SeriesServices();
     private ITypeServices iTypeServices = new TypeServices();
     private IFormatServices iFormatServices = new FormatServices();
 
-    @Clear(ManagerInterceptor.class)
     @Override
     public void index() {
 
     }
 
-    @Clear(ManagerInterceptor.class)
     @Override
     public void retrieve() {
         String params = this.getPara("p");
@@ -51,8 +48,8 @@ public class TypeController extends Controller implements ITypeController {
         }
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mCreate() {
         String params = this.getPara("p");
         VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
@@ -84,8 +81,8 @@ public class TypeController extends Controller implements ITypeController {
      * 更新产品类型名称
      * 在同一个系列下不能出现相同的类型名称
      */
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mUpdate() {
         String params = this.getPara("p");
         VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
@@ -112,8 +109,8 @@ public class TypeController extends Controller implements ITypeController {
         }
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mMark() {
         String params = this.getPara("p");
         VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
@@ -138,20 +135,20 @@ public class TypeController extends Controller implements ITypeController {
         }
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mImage() {
 
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mImageDelete() {
 
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mSummary() {
         String params = this.getPara("p");
         VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
@@ -168,8 +165,8 @@ public class TypeController extends Controller implements ITypeController {
         }
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mDirections() {
         String params = this.getPara("p");
         VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
@@ -186,8 +183,8 @@ public class TypeController extends Controller implements ITypeController {
         }
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mRetrieves() {
         String params = this.getPara("p");
         VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
@@ -201,8 +198,8 @@ public class TypeController extends Controller implements ITypeController {
         renderJson(JSON.toJSONString(iResultSet));
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mRetrieve() {
 
     }

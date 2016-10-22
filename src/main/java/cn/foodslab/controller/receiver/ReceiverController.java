@@ -14,7 +14,6 @@ import cn.foodslab.service.user.AccountServices;
 import cn.foodslab.service.user.IAccountServices;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.aop.Before;
-import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
 
 import java.util.LinkedList;
@@ -25,19 +24,18 @@ import java.util.UUID;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-@Before(SessionInterceptor.class)
 public class ReceiverController extends Controller implements IReceiverController {
 
     private IAccountServices iAccountServices = new AccountServices();
     private IReceiverService iReceiverService = new ReceiverServices();
 
-    @Clear(SessionInterceptor.class)
     @Override
     public void index() {
 
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void retrieves() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
@@ -54,6 +52,7 @@ public class ReceiverController extends Controller implements IReceiverControlle
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void create() {
         String params = this.getPara("p");
         VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
@@ -78,6 +77,7 @@ public class ReceiverController extends Controller implements IReceiverControlle
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void update() {
         String params = this.getPara("p");
         VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
@@ -98,6 +98,7 @@ public class ReceiverController extends Controller implements IReceiverControlle
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void delete() {
         String params = this.getPara("p");
         VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
@@ -115,6 +116,7 @@ public class ReceiverController extends Controller implements IReceiverControlle
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void king() {
         String params = this.getPara("p");
         VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
@@ -134,8 +136,8 @@ public class ReceiverController extends Controller implements IReceiverControlle
         }
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mRetrieveByUser() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);

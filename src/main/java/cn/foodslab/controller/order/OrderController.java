@@ -50,8 +50,8 @@ public class OrderController extends Controller implements IOrderController {
 
     }
 
-    @Before(SessionInterceptor.class)
     @Override
+    @Before(SessionInterceptor.class)
     public void create() {
         String params = this.getPara("p");
         VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
@@ -205,8 +205,8 @@ public class OrderController extends Controller implements IOrderController {
         }
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class, ManagerInterceptor.class})
     public void mRetrievesByUser() {
         String params = this.getPara("p");
         VManagerEntity vManagerEntity = JSON.parseObject(params, VManagerEntity.class);
@@ -238,8 +238,8 @@ public class OrderController extends Controller implements IOrderController {
         renderJson(JSON.toJSONString(iResultSet));
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class, ManagerInterceptor.class})
     public void mRetrieves() {
         String params = this.getPara("p");
         VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
@@ -268,8 +268,8 @@ public class OrderController extends Controller implements IOrderController {
         renderJson(JSON.toJSONString(iResultSet));
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class, ManagerInterceptor.class})
     public void mExpressing() {
         String params = this.getPara("p");
         VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
@@ -286,6 +286,7 @@ public class OrderController extends Controller implements IOrderController {
     }
 
     @Override
+    @Before({SessionInterceptor.class, ManagerInterceptor.class})
     public void mQuery() {
 
     }

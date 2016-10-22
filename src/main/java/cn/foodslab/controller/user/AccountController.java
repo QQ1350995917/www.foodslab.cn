@@ -11,7 +11,6 @@ import cn.foodslab.service.user.IAccountServices;
 import cn.foodslab.service.user.UserEntity;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.aop.Before;
-import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
 
 import javax.servlet.http.HttpSession;
@@ -23,11 +22,9 @@ import java.util.UUID;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-@Before(SessionInterceptor.class)
 public class AccountController extends Controller implements IAccountController {
     IAccountServices iAccountServices = new AccountServices();
 
-    @Clear(SessionInterceptor.class)
     @Override
     public void index() {
 
@@ -38,13 +35,11 @@ public class AccountController extends Controller implements IAccountController 
 
     }
 
-    @Clear(SessionInterceptor.class)
     @Override
     public void smsCode() {
 
     }
 
-    @Clear(SessionInterceptor.class)
     @Override
     public void create() {
         String params = this.getPara("p");
@@ -83,7 +78,6 @@ public class AccountController extends Controller implements IAccountController 
         }
     }
 
-    @Clear(SessionInterceptor.class)
     @Override
     public void login() {
         String params = this.getPara("p");
@@ -120,6 +114,7 @@ public class AccountController extends Controller implements IAccountController 
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void logout() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
@@ -131,38 +126,43 @@ public class AccountController extends Controller implements IAccountController 
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void update() {
 
     }
 
 
     @Override
+    @Before(SessionInterceptor.class)
     public void bind() {
 
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void phone() {
 
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void unBind() {
 
     }
 
-    @Clear(SessionInterceptor.class)
     @Override
     public void password() {
 
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void portrait() {
 
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void retrieve() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
@@ -184,9 +184,8 @@ public class AccountController extends Controller implements IAccountController 
         }
     }
 
-    @Clear(SessionInterceptor.class)
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mRetrieves() {
         LinkedList<UserEntity> userEntities = iAccountServices.mRetrieveUsers(1, 1);
         LinkedList<VUserEntity> vUserEntities = new LinkedList<>();
@@ -205,16 +204,14 @@ public class AccountController extends Controller implements IAccountController 
         renderJson(JSON.toJSONString(iResultSet));
     }
 
-    @Clear(SessionInterceptor.class)
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mQueryUsers() {
 
     }
 
-    @Clear(SessionInterceptor.class)
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mMark() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
@@ -236,9 +233,8 @@ public class AccountController extends Controller implements IAccountController 
         }
     }
 
-    @Clear(SessionInterceptor.class)
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mRetrieveAccounts() {
 
     }

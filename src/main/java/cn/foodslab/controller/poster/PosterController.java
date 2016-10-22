@@ -3,6 +3,7 @@ package cn.foodslab.controller.poster;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
 import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.poster.IPosterServices;
 import cn.foodslab.service.poster.PosterEntity;
 import cn.foodslab.service.poster.PosterServices;
@@ -41,8 +42,8 @@ public class PosterController extends Controller implements IPosterController {
         renderJson(JSON.toJSONString(resultSet));
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mCreate() {
         String params = this.getPara("p");
         VPosterEntity vPosterEntity = JSON.parseObject(params, VPosterEntity.class);
@@ -62,8 +63,8 @@ public class PosterController extends Controller implements IPosterController {
         renderJson(JSON.toJSONString(resultSet));
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mUpdate() {
         String params = this.getPara("p");
         VPosterEntity vPosterEntity = JSON.parseObject(params, VPosterEntity.class);
@@ -80,8 +81,8 @@ public class PosterController extends Controller implements IPosterController {
         renderJson(JSON.toJSONString(resultSet));
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mMark() {
         String params = this.getPara("p");
         VPosterEntity vPosterEntity = JSON.parseObject(params, VPosterEntity.class);
@@ -104,8 +105,8 @@ public class PosterController extends Controller implements IPosterController {
         renderJson(JSON.toJSONString(resultSet));
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mSwap() {
         String params = this.getPara("p");
         VPosterEntity vPosterEntity = JSON.parseObject(params, VPosterEntity.class);
@@ -123,8 +124,8 @@ public class PosterController extends Controller implements IPosterController {
         renderJson(JSON.toJSONString(resultSet));
     }
 
-    @Before(ManagerInterceptor.class)
     @Override
+    @Before({SessionInterceptor.class,ManagerInterceptor.class})
     public void mRetrieves() {
         LinkedList<VPosterEntity> result = new LinkedList<>();
         LinkedList<PosterEntity> posterEntities = iPosterServices.mRetrieves();

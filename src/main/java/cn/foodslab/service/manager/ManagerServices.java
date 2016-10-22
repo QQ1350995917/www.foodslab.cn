@@ -42,7 +42,7 @@ public class ManagerServices implements IManagerServices {
     }
 
     @Override
-    public LinkedList<ManagerEntity> mRetrieves() {
+    public LinkedList<ManagerEntity> MRetrieves() {
         LinkedList<ManagerEntity> managerEntities = new LinkedList<>();
         List<Record> records = Db.find("SELECT * FROM manager WHERE status > 0 AND level > 0 ORDER BY queue");
         for (Record record : records) {
@@ -52,12 +52,12 @@ public class ManagerServices implements IManagerServices {
     }
 
     @Override
-    public boolean exist(ManagerEntity managerEntity) {
+    public boolean MExist(ManagerEntity managerEntity) {
         return false;
     }
 
     @Override
-    public ManagerEntity mCreate(ManagerEntity managerEntity, LinkedList<? extends MenuEntity> menuEntities) {
+    public ManagerEntity MCreate(ManagerEntity managerEntity, LinkedList<? extends MenuEntity> menuEntities) {
         boolean succeed = Db.tx(new IAtom() {
             public boolean run() throws SQLException {
                 Db.update("UPDATE manager SET queue = queue + 1");
@@ -97,7 +97,7 @@ public class ManagerServices implements IManagerServices {
     }
 
     @Override
-    public ManagerEntity mUpdate(ManagerEntity managerEntity, LinkedList<? extends MenuEntity> menuEntities) {
+    public ManagerEntity MUpdate(ManagerEntity managerEntity, LinkedList<? extends MenuEntity> menuEntities) {
         boolean succeed = Db.tx(new IAtom() {
             public boolean run() throws SQLException {
                 Record updateManagerRecord = new Record()
@@ -137,7 +137,7 @@ public class ManagerServices implements IManagerServices {
     }
 
     @Override
-    public ManagerEntity mBlock(ManagerEntity managerEntity) {
+    public ManagerEntity MBlock(ManagerEntity managerEntity) {
         int update = Db.update("UPDATE manager SET status = 1 WHERE managerId = ? ", managerEntity.getManagerId());
         if (update == 1) {
             return managerEntity;
@@ -147,7 +147,7 @@ public class ManagerServices implements IManagerServices {
     }
 
     @Override
-    public ManagerEntity mUnBlock(ManagerEntity managerEntity) {
+    public ManagerEntity MUnBlock(ManagerEntity managerEntity) {
         int update = Db.update("UPDATE manager SET status = 2 WHERE managerId = ? ", managerEntity.getManagerId());
         if (update == 1) {
             return managerEntity;
@@ -157,7 +157,7 @@ public class ManagerServices implements IManagerServices {
     }
 
     @Override
-    public ManagerEntity mDelete(ManagerEntity managerEntity) {
+    public ManagerEntity MDelete(ManagerEntity managerEntity) {
         int update = Db.update("UPDATE manager SET status = -1 WHERE managerId = ? ", managerEntity.getManagerId());
         if (update == 1) {
             return managerEntity;

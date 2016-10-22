@@ -23,7 +23,7 @@ public interface IManagerServices {
 
     /**
      * 管理员接口
-     * 管理员更新密码
+     * 管理员更新用户名和密码
      *
      * @param managerEntity 管理员对象
      * @return success 管理员对象 fail null
@@ -35,7 +35,7 @@ public interface IManagerServices {
      *
      * @return success 管理员对象集合 fail null
      */
-    LinkedList<ManagerEntity> mRetrieves();
+    LinkedList<ManagerEntity> MRetrieves();
 
     /**
      * 系统管理员接口
@@ -44,7 +44,7 @@ public interface IManagerServices {
      * @param managerEntity 管理员对象
      * @return success 管理员对象 fail null
      */
-    boolean exist(ManagerEntity managerEntity);
+    boolean MExist(ManagerEntity managerEntity);
 
     /**
      * 系统管理员接口
@@ -54,7 +54,7 @@ public interface IManagerServices {
      * @param menuEntities  管理的菜单对象
      * @return success 管理员对象 fail null
      */
-    ManagerEntity mCreate(ManagerEntity managerEntity, LinkedList<? extends MenuEntity> menuEntities);
+    ManagerEntity MCreate(ManagerEntity managerEntity, LinkedList<? extends MenuEntity> menuEntities);
 
     /**
      * 系统管理员接口
@@ -64,7 +64,7 @@ public interface IManagerServices {
      * @param menuEntities  管理的菜单对象
      * @return success 管理员对象 fail null
      */
-    ManagerEntity mUpdate(ManagerEntity managerEntity, LinkedList<? extends MenuEntity> menuEntities);
+    ManagerEntity MUpdate(ManagerEntity managerEntity, LinkedList<? extends MenuEntity> menuEntities);
 
     /**
      * 系统管理员接口
@@ -73,7 +73,7 @@ public interface IManagerServices {
      * @param managerEntity 管理员对象
      * @return success 管理员对象 fail null
      */
-    ManagerEntity mBlock(ManagerEntity managerEntity);
+    ManagerEntity MBlock(ManagerEntity managerEntity);
 
     /**
      * 系统管理员接口
@@ -82,7 +82,7 @@ public interface IManagerServices {
      * @param managerEntity 管理员对象
      * @return success 管理员对象 fail null
      */
-    ManagerEntity mUnBlock(ManagerEntity managerEntity);
+    ManagerEntity MUnBlock(ManagerEntity managerEntity);
 
     /**
      * 系统管理员接口
@@ -91,5 +91,5 @@ public interface IManagerServices {
      * @param managerEntity 管理员对象
      * @return success 管理员对象 fail null
      */
-    ManagerEntity mDelete(ManagerEntity managerEntity);
+    ManagerEntity MDelete(ManagerEntity managerEntity);
 }

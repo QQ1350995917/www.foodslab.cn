@@ -28,6 +28,7 @@ public interface IAccountController {
 
     /**
      * 用户接口
+     * 注册接口
      * 用户创建账户接口
      */
     void create();
@@ -56,7 +57,6 @@ public interface IAccountController {
      * 用户接口
      * 忘记密码接口
      */
-    @Before(SessionInterceptor.class)
     void password();
 
     /**

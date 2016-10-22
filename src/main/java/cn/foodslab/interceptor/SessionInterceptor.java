@@ -3,7 +3,6 @@ package cn.foodslab.interceptor;
 import cn.foodslab.common.cache.SessionContext;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.controller.user.VUserEntity;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
@@ -21,17 +20,21 @@ public class SessionInterceptor implements Interceptor {
     public void intercept(Invocation inv) {
         String params = inv.getController().getPara("p");
         Map<String, Object> paramsMap = JSON.parseObject(params, Map.class);
-        Object cs = paramsMap.get("cs");
-        if (cs == null || SessionContext.getSession(cs.toString()) == null) {
-            VUserEntity vUserEntity = new VUserEntity();
-            IResultSet resultSet = new ResultSet(IResultSet.ResultCode.EXE_SESSION_TIME_OUT.getCode());
-            vUserEntity.setCs(cs == null ? null : cs.toString());
-            resultSet.setData(vUserEntity);
-            resultSet.setMessage("登录超时");
+        if (paramsMap == null || !paramsMap.containsKey("cs")) {
+            IResultSet resultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode());
+            resultSet.setData(paramsMap);
+            resultSet.setMessage("参数错误");
             inv.getController().renderJson(resultSet);
-            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXSessionInterceptor + " + cs.toString());
         } else {
-            inv.invoke();
+            Object cs = paramsMap.get("cs");
+            if (cs == null || SessionContext.getSession(cs.toString()) == null) {
+                IResultSet resultSet = new ResultSet(IResultSet.ResultCode.EXE_SESSION_TIME_OUT.getCode());
+                resultSet.setData(paramsMap);
+                resultSet.setMessage("登录超时");
+                inv.getController().renderJson(resultSet);
+            } else {
+                inv.invoke();
+            }
         }
     }
 }

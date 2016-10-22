@@ -7,6 +7,7 @@ import cn.foodslab.controller.product.VFormatEntity;
 import cn.foodslab.controller.product.VSeriesEntity;
 import cn.foodslab.controller.product.VTypeEntity;
 import cn.foodslab.controller.user.VUserEntity;
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.cart.CartEntity;
 import cn.foodslab.service.cart.CartServices;
@@ -17,7 +18,6 @@ import cn.foodslab.service.user.AccountServices;
 import cn.foodslab.service.user.IAccountServices;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.aop.Before;
-import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
 
 import javax.servlet.http.HttpSession;
@@ -29,7 +29,6 @@ import java.util.UUID;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-@Before(SessionInterceptor.class)
 public class CartController extends Controller implements ICartController {
 
     private ICartServices iCartServices = new CartServices();
@@ -38,13 +37,13 @@ public class CartController extends Controller implements ICartController {
     private IFormatServices iFormatServices = new FormatServices();
     private IAccountServices iAccountServices = new AccountServices();
 
-    @Clear(SessionInterceptor.class)
     @Override
     public void index() {
 
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void create() {
         String params = this.getPara("p");
         VCartEntity vCartEntity = JSON.parseObject(params, VCartEntity.class);
@@ -68,6 +67,7 @@ public class CartController extends Controller implements ICartController {
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void update() {
         String params = this.getPara("p");
         VCartEntity vCartEntity = JSON.parseObject(params, VCartEntity.class);
@@ -79,6 +79,7 @@ public class CartController extends Controller implements ICartController {
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void retrieves() {
         String params = this.getPara("p");
         VCartEntity vCartEntity = JSON.parseObject(params, VCartEntity.class);
@@ -113,6 +114,7 @@ public class CartController extends Controller implements ICartController {
     }
 
     @Override
+    @Before(SessionInterceptor.class)
     public void delete() {
         String params = this.getPara("p");
         VCartEntity vCartEntity = JSON.parseObject(params, VCartEntity.class);
@@ -127,7 +129,7 @@ public class CartController extends Controller implements ICartController {
         }
     }
 
-    @Clear(SessionInterceptor.class)
+    @Before({SessionInterceptor.class, ManagerInterceptor.class})
     @Override
     public void mRetrieve() {
         String params = this.getPara("p");
