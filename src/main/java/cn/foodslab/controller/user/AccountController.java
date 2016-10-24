@@ -3,7 +3,7 @@ package cn.foodslab.controller.user;
 import cn.foodslab.common.cache.SessionContext;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.user.AccountEntity;
 import cn.foodslab.service.user.AccountServices;
@@ -185,7 +185,7 @@ public class AccountController extends Controller implements IAccountController 
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mRetrieves() {
         LinkedList<UserEntity> userEntities = iAccountServices.mRetrieveUsers(1, 1);
         LinkedList<VUserEntity> vUserEntities = new LinkedList<>();
@@ -205,13 +205,13 @@ public class AccountController extends Controller implements IAccountController 
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mQueryUsers() {
 
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mMark() {
         String params = this.getPara("p");
         VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
@@ -234,7 +234,7 @@ public class AccountController extends Controller implements IAccountController 
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mRetrieveAccounts() {
 
     }

@@ -1,6 +1,6 @@
 package cn.foodslab.controller.user;
 
-import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import com.jfinal.aop.Before;
 
@@ -98,27 +98,27 @@ public interface IAccountController {
      * 管理员接口
      * 管理员分页读取所有的用户信息
      */
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     void mRetrieves();
 
     /**
      * 管理员接口
      * 管理员分页搜索用户信息
      */
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     void mQueryUsers();
 
     /**
      * 管理员修改用户状态
      */
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     void mMark();
 
     /**
      * 管理员接口
      * 管理员根据用户信息读取其下的账户信息
      */
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     void mRetrieveAccounts();
 
 

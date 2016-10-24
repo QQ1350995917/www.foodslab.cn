@@ -18,8 +18,18 @@ import java.util.List;
 public class ManagerServices implements IManagerServices {
 
     @Override
-    public ManagerEntity mRetrieve(ManagerEntity managerEntity) {
+    public ManagerEntity mLogin(ManagerEntity managerEntity) {
         List<Record> records = Db.find("SELECT * FROM manager WHERE loginName = ? AND password = ? AND status = 2", managerEntity.getLoginName(), managerEntity.getPassword());
+        if (records.size() > 0) {
+            return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), ManagerEntity.class);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public ManagerEntity mRetrieveById(ManagerEntity managerEntity) {
+        List<Record> records = Db.find("SELECT * FROM manager WHERE managerId = ? AND status = 2", managerEntity.getManagerId());
         if (records.size() > 0) {
             return JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), ManagerEntity.class);
         } else {

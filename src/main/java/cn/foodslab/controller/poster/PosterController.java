@@ -2,7 +2,7 @@ package cn.foodslab.controller.poster;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.poster.IPosterServices;
 import cn.foodslab.service.poster.PosterEntity;
@@ -43,7 +43,7 @@ public class PosterController extends Controller implements IPosterController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mCreate() {
         String params = this.getPara("p");
         VPosterEntity vPosterEntity = JSON.parseObject(params, VPosterEntity.class);
@@ -64,7 +64,7 @@ public class PosterController extends Controller implements IPosterController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mUpdate() {
         String params = this.getPara("p");
         VPosterEntity vPosterEntity = JSON.parseObject(params, VPosterEntity.class);
@@ -82,7 +82,7 @@ public class PosterController extends Controller implements IPosterController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mMark() {
         String params = this.getPara("p");
         VPosterEntity vPosterEntity = JSON.parseObject(params, VPosterEntity.class);
@@ -106,7 +106,7 @@ public class PosterController extends Controller implements IPosterController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mSwap() {
         String params = this.getPara("p");
         VPosterEntity vPosterEntity = JSON.parseObject(params, VPosterEntity.class);
@@ -125,7 +125,7 @@ public class PosterController extends Controller implements IPosterController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mRetrieves() {
         LinkedList<VPosterEntity> result = new LinkedList<>();
         LinkedList<PosterEntity> posterEntities = iPosterServices.mRetrieves();

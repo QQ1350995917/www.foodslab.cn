@@ -7,7 +7,7 @@ package cn.foodslab.service.manager;
  * TODO: 可以考虑拆分
  */
 public class ManagerEntity {
-    private String managerId; // 数据ID
+    private String managerId; // 数据ID //驻留session的内容
     private String loginName; // 登录名
     private String username; // 用户名
     private String password; // 用户密码，即登录密码，非明文 TODO: 采用哪种加密方式

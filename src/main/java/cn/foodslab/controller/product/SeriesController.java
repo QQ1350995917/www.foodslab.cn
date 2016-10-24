@@ -2,7 +2,7 @@ package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
@@ -74,7 +74,7 @@ public class SeriesController extends Controller implements ISeriesController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mCreate() {
         String params = this.getPara("p");
         VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
@@ -103,7 +103,7 @@ public class SeriesController extends Controller implements ISeriesController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mUpdate() {
         String params = this.getPara("p");
         VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
@@ -127,7 +127,7 @@ public class SeriesController extends Controller implements ISeriesController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mMark() {
         String params = this.getPara("p");
         VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
@@ -150,7 +150,7 @@ public class SeriesController extends Controller implements ISeriesController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mRetrieves() {
         String params = this.getPara("p");
         VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);

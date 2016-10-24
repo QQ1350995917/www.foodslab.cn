@@ -9,7 +9,7 @@ import cn.foodslab.controller.product.VSeriesEntity;
 import cn.foodslab.controller.product.VTypeEntity;
 import cn.foodslab.controller.receiver.VReceiverEntity;
 import cn.foodslab.controller.user.VUserEntity;
-import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.cart.CartEntity;
 import cn.foodslab.service.cart.CartServices;
@@ -206,7 +206,7 @@ public class OrderController extends Controller implements IOrderController {
     }
 
     @Override
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, MenuInterceptor.class})
     public void mRetrievesByUser() {
         String params = this.getPara("p");
         VManagerEntity vManagerEntity = JSON.parseObject(params, VManagerEntity.class);
@@ -239,7 +239,7 @@ public class OrderController extends Controller implements IOrderController {
     }
 
     @Override
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, MenuInterceptor.class})
     public void mRetrieves() {
         String params = this.getPara("p");
         VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
@@ -269,7 +269,7 @@ public class OrderController extends Controller implements IOrderController {
     }
 
     @Override
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, MenuInterceptor.class})
     public void mExpressing() {
         String params = this.getPara("p");
         VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
@@ -286,7 +286,7 @@ public class OrderController extends Controller implements IOrderController {
     }
 
     @Override
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, MenuInterceptor.class})
     public void mQuery() {
 
     }

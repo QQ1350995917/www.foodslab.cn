@@ -1,11 +1,13 @@
 package cn.foodslab.controller.page;
 
+import cn.foodslab.common.cache.SessionContext;
 import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 
+import javax.servlet.http.HttpSession;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -95,7 +97,7 @@ public class PageController extends Controller implements IPageController {
     @Override
     public void pb() {
         String params = this.getPara("p");
-        Map<String,Object> objectMap = JSON.parseObject(params, Map.class);
+        Map<String, Object> objectMap = JSON.parseObject(params, Map.class);
 
         LinkedList<Map<String, String>> metas = new LinkedList<>();
         LinkedHashMap<String, String> mappingIdsMap = new LinkedHashMap<>();
@@ -209,12 +211,16 @@ public class PageController extends Controller implements IPageController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class})
     public void frame() {
+        String params = getPara("p");
+        Map<String, Object> paramsMap = JSON.parseObject(params, Map.class);
+        HttpSession session = SessionContext.getSession(paramsMap.get("cs").toString());
+        // TODO 把JS文件进行拆分 根据管理员的权限进行动态分配JS文件
         this.render("/webapp/widgets/frame.html");
     }
 
-    public void api(){
+    public void api() {
         this.render("/webapp/widgets/api.html");
     }
 }

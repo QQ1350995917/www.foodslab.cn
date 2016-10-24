@@ -12,6 +12,16 @@ import java.util.LinkedList;
  */
 public interface IManagerServices {
 
+
+    /**
+     * 管理员接口
+     * 管理员登录
+     *
+     * @param managerEntity 管理员对象
+     * @return success 管理员对象 fail null
+     */
+    ManagerEntity mLogin(ManagerEntity managerEntity);
+
     /**
      * 管理员接口
      * 管理员查询信息
@@ -19,7 +29,7 @@ public interface IManagerServices {
      * @param managerEntity 管理员对象
      * @return success 管理员对象 fail null
      */
-    ManagerEntity mRetrieve(ManagerEntity managerEntity);
+    ManagerEntity mRetrieveById(ManagerEntity managerEntity);
 
     /**
      * 管理员接口

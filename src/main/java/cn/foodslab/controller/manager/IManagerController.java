@@ -1,6 +1,7 @@
 package cn.foodslab.controller.manager;
 
 import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import com.jfinal.aop.Before;
 
@@ -23,6 +24,13 @@ public interface IManagerController {
      */
     void mLogin();
 
+    /**
+     * 管理员接口
+     * 判断管理员是否已经登录
+     */
+    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    void mSession();
+
     @Before({SessionInterceptor.class, ManagerInterceptor.class})
     void mExit();
 
@@ -30,42 +38,42 @@ public interface IManagerController {
      * 管理员接口
      * 管理员信息读取
      */
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     void mRetrieve();
 
     /**
      * 管理员接口
      * 更新用户名和密码
      */
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     void mUpdate();
 
     /**
      * 系统管理员接口
      * 读取管理员列表
      */
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     void MRetrieves();
 
     /**
      * 系统管理员接口
      * 创建管理员
      */
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     void MCreate();
 
     /**
      * 系统管理员
      * 重置管理员密码
      */
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     void MUpdate();
 
     /**
      * 系统管理员
      * 标记管理员转台
      */
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     void MMark();
 
 }

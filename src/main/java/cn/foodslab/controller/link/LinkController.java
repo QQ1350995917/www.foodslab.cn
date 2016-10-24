@@ -2,14 +2,13 @@ package cn.foodslab.controller.link;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.link.ILinkServices;
 import cn.foodslab.service.link.LinkEntity;
 import cn.foodslab.service.link.LinkServices;
 import com.alibaba.fastjson.JSON;
 import com.jfinal.aop.Before;
-import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
 
 import java.util.LinkedList;
@@ -50,7 +49,7 @@ public class LinkController extends Controller implements ILinkController {
     }
 
     @Override
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, MenuInterceptor.class})
     public void mCreate() {
         String params = this.getPara("p");
         VLinkEntity vLinkEntity = JSON.parseObject(params, VLinkEntity.class);
@@ -81,7 +80,7 @@ public class LinkController extends Controller implements ILinkController {
     }
 
     @Override
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, MenuInterceptor.class})
     public void mUpdate() {
         String params = this.getPara("p");
         VLinkEntity vLinkEntity = JSON.parseObject(params, VLinkEntity.class);
@@ -104,7 +103,7 @@ public class LinkController extends Controller implements ILinkController {
     }
 
     @Override
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, MenuInterceptor.class})
     public void mMark() {
         String params = this.getPara("p");
         VLinkEntity vLinkEntity = JSON.parseObject(params, VLinkEntity.class);
@@ -129,7 +128,7 @@ public class LinkController extends Controller implements ILinkController {
     }
 
     @Override
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, MenuInterceptor.class})
     public void mSwap() {
         String params = this.getPara("p");
         VLinkEntity vLinkEntity = JSON.parseObject(params, VLinkEntity.class);
@@ -150,7 +149,7 @@ public class LinkController extends Controller implements ILinkController {
     }
 
     @Override
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, MenuInterceptor.class})
     public void mRetrieves() {
         String params = this.getPara("p");
         VLinkEntity requestVlinkEntity = JSON.parseObject(params, VLinkEntity.class);

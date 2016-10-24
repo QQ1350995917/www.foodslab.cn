@@ -19,22 +19,33 @@ public class SessionInterceptor implements Interceptor {
     @Override
     public void intercept(Invocation inv) {
         String params = inv.getController().getPara("p");
-        Map<String, Object> paramsMap = JSON.parseObject(params, Map.class);
-        if (paramsMap == null || !paramsMap.containsKey("cs")) {
-            IResultSet resultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode());
-            resultSet.setData(paramsMap);
-            resultSet.setMessage("参数错误");
-            inv.getController().renderJson(resultSet);
-        } else {
-            Object cs = paramsMap.get("cs");
-            if (cs == null || SessionContext.getSession(cs.toString()) == null) {
-                IResultSet resultSet = new ResultSet(IResultSet.ResultCode.EXE_SESSION_TIME_OUT.getCode());
-                resultSet.setData(paramsMap);
-                resultSet.setMessage("登录超时");
-                inv.getController().renderJson(resultSet);
-            } else {
-                inv.invoke();
-            }
+        IResultSet iResultSet = new ResultSet();
+        if (params == null || params.trim().equals("")){
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(params);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            inv.getController().renderJson(JSON.toJSONString(iResultSet));
+            return;
         }
+
+        Map<String, Object> paramsMap = JSON.parseObject(params, Map.class);
+        if (paramsMap == null || !paramsMap.containsKey("cs") || paramsMap.get("cs") == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(params);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            inv.getController().renderJson(iResultSet);
+            return;
+        }
+
+        String cs = paramsMap.get("cs").toString();
+        if (SessionContext.getSession(cs) == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_ACCESS_TIMEOUT.getCode());
+            iResultSet.setData(paramsMap);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_ACCESS_TIMEOUT);
+            inv.getController().renderJson(JSON.toJSONString(iResultSet));
+            return;
+        }
+
+        inv.invoke();
     }
 }

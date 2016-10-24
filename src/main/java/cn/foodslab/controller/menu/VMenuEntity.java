@@ -19,5 +19,6 @@ public class VMenuEntity extends MenuEntity {
         this.setQueue(menuEntity.getQueue());
         this.setCategory(menuEntity.getCategory());
         this.setStatus(menuEntity.getStatus());
+        this.setActionKey(menuEntity.getActionKey());
     }
 }

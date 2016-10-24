@@ -1,6 +1,5 @@
 package cn.foodslab.controller.menu;
 
-import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import com.jfinal.aop.Before;
 
@@ -19,13 +18,7 @@ public interface IMenuController {
      * 普通管理员接口
      * 查询符合权限的菜单
      */
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class})
     void mRetrieves();
 
-    /**
-     * 超级管理员接口
-     * 查询符合权限的菜单
-     */
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
-    void MRetrieves();
 }

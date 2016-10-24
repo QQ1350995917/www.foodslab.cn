@@ -7,7 +7,7 @@ import cn.foodslab.controller.product.VFormatEntity;
 import cn.foodslab.controller.product.VSeriesEntity;
 import cn.foodslab.controller.product.VTypeEntity;
 import cn.foodslab.controller.user.VUserEntity;
-import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.cart.CartEntity;
 import cn.foodslab.service.cart.CartServices;
@@ -129,7 +129,7 @@ public class CartController extends Controller implements ICartController {
         }
     }
 
-    @Before({SessionInterceptor.class, ManagerInterceptor.class})
+    @Before({SessionInterceptor.class, MenuInterceptor.class})
     @Override
     public void mRetrieve() {
         String params = this.getPara("p");

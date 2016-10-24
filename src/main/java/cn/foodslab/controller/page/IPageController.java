@@ -55,6 +55,7 @@ public interface IPageController {
 
     /**
      * 管理员界面
+     * 访问该页面时候要进行Session类型的检测，管理员类型的Session才允许访问该页面
      */
     void frame();
 

@@ -2,7 +2,7 @@ package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
-import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
@@ -101,7 +101,7 @@ public class FormatController extends Controller implements IFormatController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mCreate() {
         String params = this.getPara("p");
         VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
@@ -126,7 +126,7 @@ public class FormatController extends Controller implements IFormatController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mUpdate() {
         String params = this.getPara("p");
         VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
@@ -146,7 +146,7 @@ public class FormatController extends Controller implements IFormatController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mMark() {
         String params = this.getPara("p");
         VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
@@ -172,7 +172,7 @@ public class FormatController extends Controller implements IFormatController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mKingWeight() {
         String params = this.getPara("p");
         VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
@@ -190,7 +190,7 @@ public class FormatController extends Controller implements IFormatController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mSwapWeight() {
         String params = this.getPara("p");
         Map paramsMap = JSON.parseObject(params, Map.class);
@@ -219,7 +219,7 @@ public class FormatController extends Controller implements IFormatController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mWeights() {
         LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
         LinkedList<FormatEntity> formatEntities = iFormatServices.mRetrieveByWeight(0, 0);
@@ -242,7 +242,7 @@ public class FormatController extends Controller implements IFormatController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mRetrieves() {
         String params = this.getPara("p");
         VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
@@ -257,7 +257,7 @@ public class FormatController extends Controller implements IFormatController {
     }
 
     @Override
-    @Before({SessionInterceptor.class,ManagerInterceptor.class})
+    @Before({SessionInterceptor.class,MenuInterceptor.class})
     public void mRetrieve() {
 
     }
