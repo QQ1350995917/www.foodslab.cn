@@ -33,6 +33,6 @@
         <listener-class>cn.foodslab.common.cache.SessionListener</listener-class>
     </listener>
     <session-config>
-        <session-timeout>15</session-timeout>
+        <session-timeout>150</session-timeout>
     </session-config>
 </web-app>

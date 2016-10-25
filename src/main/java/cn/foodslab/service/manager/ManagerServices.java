@@ -63,7 +63,12 @@ public class ManagerServices implements IManagerServices {
 
     @Override
     public boolean MExist(ManagerEntity managerEntity) {
-        return false;
+        List<Record> records = Db.find("SELECT * FROM manager WHERE loginName = ? AND status != -1", managerEntity.getLoginName());
+        if (records.size() > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -112,12 +117,8 @@ public class ManagerServices implements IManagerServices {
             public boolean run() throws SQLException {
                 Record updateManagerRecord = new Record()
                         .set("managerId", managerEntity.getManagerId())
-                        .set("loginName", managerEntity.getLoginName())
                         .set("username", managerEntity.getUsername())
-                        .set("password", managerEntity.getPassword())
-                        .set("level", 1)
-                        .set("queue", managerEntity.getQueue())
-                        .set("status", managerEntity.getStatus());
+                        .set("password", managerEntity.getPassword());
                 boolean updateManager = Db.update("manager", "managerId", updateManagerRecord);
                 if (!updateManager) {
                     return false;
@@ -168,8 +169,15 @@ public class ManagerServices implements IManagerServices {
 
     @Override
     public ManagerEntity MDelete(ManagerEntity managerEntity) {
-        int update = Db.update("UPDATE manager SET status = -1 WHERE managerId = ? ", managerEntity.getManagerId());
-        if (update == 1) {
+        boolean succeed = Db.tx(new IAtom() {
+            public boolean run() throws SQLException {
+                Db.update("UPDATE manager SET status = -1 WHERE managerId = ? ", managerEntity.getManagerId());
+                Db.update("DELETE FROM manager_menu WHERE managerId = ? ", managerEntity.getManagerId());
+                return true;
+            }
+        });
+
+        if (succeed) {
             return managerEntity;
         } else {
             return null;

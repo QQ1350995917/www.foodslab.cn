@@ -125,7 +125,7 @@ public class ManagerController extends Controller implements IManagerController 
         renderJson(JSON.toJSONString(iResultSet,
                 new SerializeFilter[]{
                         new SimplePropertyPreFilter(VManagerEntity.class, "cs", "loginName", "username", "password", "menus"),
-                        new SimplePropertyPreFilter(VMenuEntity.class, "label")
+                        new SimplePropertyPreFilter(VMenuEntity.class, "menuId", "label")
                 }
         ));
     }
@@ -184,7 +184,7 @@ public class ManagerController extends Controller implements IManagerController 
         }
         iResultSet.setData(responseVManagerEntities);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
-                new SimplePropertyPreFilter(VManagerEntity.class, "cs", "managerId", "loginName", "username", "password", "status", "menus"),
+                new SimplePropertyPreFilter(VManagerEntity.class, "managerId", "loginName", "username", "password", "status", "menus"),
                 new SimplePropertyPreFilter(VMenuEntity.class, "menuId", "label", "category")
         }));
     }
@@ -194,24 +194,52 @@ public class ManagerController extends Controller implements IManagerController 
     public void MCreate() {
         String params = this.getPara("p");
         VManagerEntity requestVManagerEntity = JSON.parseObject(params, VManagerEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVManagerEntity.checkMCreateParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVManagerEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                    new SimplePropertyPreFilter(VManagerEntity.class, "loginName", "username", "password", "menus"),
+                    new SimplePropertyPreFilter(VMenuEntity.class, "menuId", "label")
+            }));
+            return;
+        }
+
+        if (iManagerServices.MExist(requestVManagerEntity)) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_REPEAT.getCode());
+            iResultSet.setData(requestVManagerEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_CANNOT_REPEAT);
+            renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                    new SimplePropertyPreFilter(VManagerEntity.class, "loginName", "username", "password", "menus"),
+                    new SimplePropertyPreFilter(VMenuEntity.class, "menuId", "label")
+            }));
+            return;
+        }
+
         requestVManagerEntity.setManagerId(UUID.randomUUID().toString());
         requestVManagerEntity.setLevel(1);
         requestVManagerEntity.setStatus(1);
         ManagerEntity managerEntity = iManagerServices.MCreate(requestVManagerEntity, requestVManagerEntity.getMenus());
-        IResultSet iResultSet = new ResultSet();
         if (managerEntity == null) {
             requestVManagerEntity.setManagerId(null);
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
             iResultSet.setData(requestVManagerEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
-            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VManagerEntity.class, "cs", "loginName", "username", "password", "menus")));
+            renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                    new SimplePropertyPreFilter(VManagerEntity.class, "loginName", "username", "password", "menus"),
+                    new SimplePropertyPreFilter(VMenuEntity.class, "menuId", "label")
+            }));
             return;
         }
         VManagerEntity responseVManagerEntity = new VManagerEntity(managerEntity);
         iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
         iResultSet.setData(responseVManagerEntity);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
-        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VManagerEntity.class, "cs", "loginName", "username", "password", "menus")));
+        renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                new SimplePropertyPreFilter(VManagerEntity.class, "managerId", "loginName", "username", "password", "menus","status"),
+                new SimplePropertyPreFilter(VMenuEntity.class, "menuId", "label")
+        }));
     }
 
     @Override
@@ -219,13 +247,27 @@ public class ManagerController extends Controller implements IManagerController 
     public void MUpdate() {
         String params = this.getPara("p");
         VManagerEntity requestVManagerEntity = JSON.parseObject(params, VManagerEntity.class);
-        ManagerEntity managerEntity = iManagerServices.MUpdate(requestVManagerEntity, requestVManagerEntity.getMenus());
         IResultSet iResultSet = new ResultSet();
+        if (!requestVManagerEntity.checkMUpdateParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVManagerEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                    new SimplePropertyPreFilter(VManagerEntity.class, "managerId", "loginName", "username", "password", "menus"),
+                    new SimplePropertyPreFilter(VMenuEntity.class, "menuId", "label")
+            }));
+            return;
+        }
+
+        ManagerEntity managerEntity = iManagerServices.MUpdate(requestVManagerEntity, requestVManagerEntity.getMenus());
         if (managerEntity == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
             iResultSet.setData(requestVManagerEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
-            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VManagerEntity.class, "cs", "loginName", "username", "password", "menus")));
+            renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                    new SimplePropertyPreFilter(VManagerEntity.class, "managerId", "loginName", "username", "password", "menus"),
+                    new SimplePropertyPreFilter(VMenuEntity.class, "menuId", "label")
+            }));
             return;
         }
 
@@ -233,7 +275,10 @@ public class ManagerController extends Controller implements IManagerController 
         iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
         iResultSet.setData(responseVManagerEntity);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
-        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VManagerEntity.class, "cs", "loginName", "username", "password", "menus")));
+        renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                new SimplePropertyPreFilter(VManagerEntity.class, "managerId", "loginName", "username", "password", "menus"),
+                new SimplePropertyPreFilter(VMenuEntity.class, "menuId", "label")
+        }));
     }
 
     @Override
@@ -241,6 +286,14 @@ public class ManagerController extends Controller implements IManagerController 
     public void MMark() {
         String params = this.getPara("p");
         VManagerEntity requestVManagerEntity = JSON.parseObject(params, VManagerEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVManagerEntity.checkMMarkParams()){
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVManagerEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{new SimplePropertyPreFilter(VManagerEntity.class, "managerId", "status")}));
+            return;
+        }
         ManagerEntity managerEntity = null;
         if (requestVManagerEntity.getStatus() == 1) {
             managerEntity = iManagerServices.MBlock(requestVManagerEntity);
@@ -249,11 +302,12 @@ public class ManagerController extends Controller implements IManagerController 
         } else if (requestVManagerEntity.getStatus() == -1) {
             managerEntity = iManagerServices.MDelete(requestVManagerEntity);
         }
-        IResultSet iResultSet = new ResultSet();
+
         if (managerEntity == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
             iResultSet.setData(requestVManagerEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{new SimplePropertyPreFilter(VManagerEntity.class, "managerId", "status")}));
             return;
         }
 
@@ -261,6 +315,6 @@ public class ManagerController extends Controller implements IManagerController 
         iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
         iResultSet.setData(responseVManagerEntity);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
-        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VManagerEntity.class, "cs", "managerId")));
+        renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{new SimplePropertyPreFilter(VManagerEntity.class, "managerId", "status")}));
     }
 }

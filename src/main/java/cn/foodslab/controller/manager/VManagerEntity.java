@@ -76,6 +76,7 @@ public class VManagerEntity extends ManagerEntity implements ISessionEntity {
 
     /**
      * 检测登录参数是否正确
+     *
      * @return success true or fail false
      */
     public boolean checkLoginParams() {
@@ -91,6 +92,7 @@ public class VManagerEntity extends ManagerEntity implements ISessionEntity {
 
     /**
      * 检测session参数是否正确
+     *
      * @return success true or fail false
      */
     public boolean checkCSParams() {
@@ -104,6 +106,7 @@ public class VManagerEntity extends ManagerEntity implements ISessionEntity {
 
     /**
      * 检测修改用户信息参数是否正确
+     *
      * @return success true or fail false
      */
     public boolean checkUpdateParams() {
@@ -114,6 +117,49 @@ public class VManagerEntity extends ManagerEntity implements ISessionEntity {
             return false;
         } else {
             return true;
+        }
+    }
+
+    public boolean checkMCreateParams() {
+        if (this.getLoginName() == null
+                || this.getUsername() == null
+                || this.getPassword() == null
+                || this.getLoginName().trim().equals("")
+                || this.getUsername().trim().equals("")
+                || this.getPassword().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * 检测修改用户信息参数是否正确
+     *
+     * @return success true or fail false
+     */
+    public boolean checkMUpdateParams() {
+        if (this.getManagerId() == null
+                || this.getUsername() == null
+                || this.getPassword() == null
+                || this.getManagerId().trim().equals("")
+                || this.getUsername().trim().equals("")
+                || this.getPassword().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkMMarkParams() {
+        if (this.getManagerId() != null
+                &&
+                (this.getStatus() == -1
+                        || this.getStatus() == 1
+                        || this.getStatus() == 2)) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

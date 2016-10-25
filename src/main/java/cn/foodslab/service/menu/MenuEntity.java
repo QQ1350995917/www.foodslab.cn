@@ -8,7 +8,7 @@ package cn.foodslab.service.menu;
 public class MenuEntity {
     private String menuId; //ID
     private String label; //显示的名称
-    private String flag; //级别
+    private String flag; //调用标记
     private int queue; // 顺序
     private int category; //种类
     private int status; //-1删除状态，1，禁用状态，2正常状态，3该菜单除了超级管理员不可授予其他人

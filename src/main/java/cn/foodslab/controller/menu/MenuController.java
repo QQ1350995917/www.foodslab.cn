@@ -6,8 +6,10 @@ import cn.foodslab.common.response.ResultSet;
 import cn.foodslab.controller.manager.VManagerEntity;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.menu.IMenuServices;
+import cn.foodslab.service.menu.MenuEntity;
 import cn.foodslab.service.menu.MenuServices;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 
@@ -30,9 +32,17 @@ public class MenuController extends Controller implements IMenuController {
     @Before({SessionInterceptor.class})
     public void mRetrieves() {
         String params = this.getPara("p");
-        VManagerEntity vManagerEntity = JSON.parseObject(params, VManagerEntity.class);
-        LinkedList<VMenuEntity> vMenuEntities = SessionContext.getSessionManager(vManagerEntity.getCs()).getMenus();
-        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), vMenuEntities, "success");
-        renderJson(JSON.toJSONString(iResultSet));
+        VManagerEntity requestVManagerEntity = JSON.parseObject(params, VManagerEntity.class);
+        VManagerEntity sessionManager = SessionContext.getSessionManager(requestVManagerEntity.getCs());
+        LinkedList<VMenuEntity> responseVMenuEntities = new LinkedList<>();
+        LinkedList<MenuEntity> menuEntities = iMenuServices.retrievesByManager(sessionManager);
+        for (MenuEntity menuEntity:menuEntities){
+            responseVMenuEntities.add(new VMenuEntity(menuEntity));
+        }
+        IResultSet iResultSet = new ResultSet();
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(responseVMenuEntities);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet,new SimplePropertyPreFilter(VMenuEntity.class,"menuId","label","flag","category")));
     }
 }
