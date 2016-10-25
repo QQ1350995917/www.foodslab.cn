@@ -10,7 +10,7 @@ import java.util.LinkedList;
  * Description: @TODO
  */
 public class VLinkEntity extends LinkEntity {
-
+    private String cs;
     private String linkId1;
     private int weight1;
     private String linkId2;
@@ -31,6 +31,14 @@ public class VLinkEntity extends LinkEntity {
         this.setStatus(linkEntity.getStatus());
         this.setCreateTime(linkEntity.getCreateTime());
         this.setUpdateTime(linkEntity.getUpdateTime());
+    }
+
+    public String getCs() {
+        return cs;
+    }
+
+    public void setCs(String cs) {
+        this.cs = cs;
     }
 
     public String getLinkId1() {
@@ -71,5 +79,75 @@ public class VLinkEntity extends LinkEntity {
 
     public void setChildren(LinkedList<VLinkEntity> children) {
         this.children = children;
+    }
+
+
+    public boolean checkCreateParams() {
+        if (this.getPid() == null) {
+            if (this.getLabel() == null || this.getLabel().trim().equals("")) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            if (this.getLabel() == null
+                    || this.getHref() == null
+                    || this.getLabel().trim().equals("")
+                    || this.getHref().trim().equals("")) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
+    public boolean checkUpdateParams() {
+        if (this.getPid() == null || this.getLinkId() == null) {
+            return false;
+        }
+        if (this.getPid().equals(this.getLinkId())) {
+            if (this.getLabel() == null || this.getLabel().trim().equals("")) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            if (this.getLinkId() == null
+                    || this.getPid() == null
+                    || this.getLabel() == null
+                    || this.getHref() == null
+                    || this.getLinkId().trim().equals("")
+                    || this.getPid().trim().equals("")
+                    || this.getLabel().trim().equals("")
+                    || this.getHref().trim().equals("")) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
+    public boolean checkMarkParams() {
+        if (this.getLinkId() != null
+                && !this.getLinkId().trim().equals("")
+                && (this.getStatus() == -1 || this.getStatus() == 1 || this.getStatus() == 2)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean checkSwapParams() {
+        if (this.getLinkId1() == null
+                || this.getLinkId2() == null
+                || this.getLinkId1().trim().equals("")
+                || this.getLinkId2().trim().equals("")
+                || this.getWeight1() < 0
+                || this.getWeight2() < 0
+                || this.getWeight1() == this.getWeight2()) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

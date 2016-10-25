@@ -51,7 +51,7 @@ public class LinkServices implements ILinkServices {
                 return false;
             }
         } else {
-            List<Record> records = Db.find("SELECT * FROM link WHERE pid = ? AND label = ? AND href = ? AND status != -1", linkEntity.getPid(),linkEntity.getLabel(), linkEntity.getHref());
+            List<Record> records = Db.find("SELECT * FROM link WHERE pid = ? AND label = ? AND href = ? AND status != -1", linkEntity.getPid(), linkEntity.getLabel(), linkEntity.getHref());
             if (records.size() == 1) {
                 return true;
             } else {
@@ -62,16 +62,21 @@ public class LinkServices implements ILinkServices {
 
     @Override
     public LinkEntity mCreate(LinkEntity linkEntity) {
-        Db.update("UPDATE link SET weight = weight + 1");
-        Record record = new Record()
-                .set("linkId", linkEntity.getLinkId())
-                .set("label", linkEntity.getLabel())
-                .set("href", linkEntity.getHref())
-                .set("pid", linkEntity.getPid())
-                .set("weight", linkEntity.getWeight())
-                .set("status", linkEntity.getStatus());
-        boolean save = Db.save("link", record);
-        if (save) {
+        boolean succeed = Db.tx(new IAtom() {
+            public boolean run() throws SQLException {
+                Db.update("UPDATE link SET weight = weight + 1");
+                Record record = new Record()
+                        .set("linkId", linkEntity.getLinkId())
+                        .set("label", linkEntity.getLabel())
+                        .set("href", linkEntity.getHref())
+                        .set("pid", linkEntity.getPid())
+                        .set("weight", linkEntity.getWeight())
+                        .set("status", linkEntity.getStatus());
+                return Db.save("link", "linkId", record);
+            }
+        });
+
+        if (succeed) {
             return linkEntity;
         } else {
             return null;
