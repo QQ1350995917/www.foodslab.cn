@@ -242,6 +242,9 @@ public class ManagerController extends Controller implements IManagerController 
         }));
     }
 
+    /**
+     * TODO 尚未按照流程设计图修改内存状态，修改了内存状态才能使修改立即生效
+     */
     @Override
     @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class,})
     public void MUpdate() {
@@ -281,6 +284,9 @@ public class ManagerController extends Controller implements IManagerController 
         }));
     }
 
+    /**
+     * TODO 尚未按照流程设计图修改内存状态，修改了内存状态才能使修改立即生效
+     */
     @Override
     @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class,})
     public void MMark() {
