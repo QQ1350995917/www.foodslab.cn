@@ -8,6 +8,8 @@ import cn.foodslab.service.poster.PosterEntity;
  * Description: @TODO
  */
 public class VPosterEntity extends PosterEntity {
+    private String cs;
+    private String imageUrl;
     private String posterId1;
     private int weight1;
     private String posterId2;
@@ -29,6 +31,22 @@ public class VPosterEntity extends PosterEntity {
         this.setEnd(posterEntity.getEnd());
         this.setCreateTime(posterEntity.getCreateTime());
         this.setUpdateTime(posterEntity.getUpdateTime());
+    }
+
+    public String getCs() {
+        return cs;
+    }
+
+    public void setCs(String cs) {
+        this.cs = cs;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getPosterId1() {
@@ -62,4 +80,43 @@ public class VPosterEntity extends PosterEntity {
     public void setWeight2(int weight2) {
         this.weight2 = weight2;
     }
+
+    public boolean checkCreateParams() {
+        if (this.getName() == null || this.getName().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkUpdateParams() {
+        if (this.getPosterId() == null || this.getPosterId().equals("")
+                || this.getName() == null || this.getName().trim().equals("")
+                || this.getClickable() == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkMarkParams() {
+        if (this.getPosterId() == null || this.getPosterId().equals("")
+                || (this.getStatus() != -1 && this.getStatus() != 1 && this.getStatus() != 2)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkSwapParams(){
+        if (this.getPosterId1() == null || this.getPosterId1().equals("")
+                || this.getPosterId2() == null || this.getPosterId2().equals("")
+                || this.getWeight1() == this.getWeight2()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
 }

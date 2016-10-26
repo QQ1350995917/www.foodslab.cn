@@ -2,12 +2,14 @@ package cn.foodslab.controller.poster;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.poster.IPosterServices;
 import cn.foodslab.service.poster.PosterEntity;
 import cn.foodslab.service.poster.PosterServices;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 
@@ -30,112 +32,168 @@ public class PosterController extends Controller implements IPosterController {
 
     @Override
     public void retrieves() {
-        LinkedList<VPosterEntity> result = new LinkedList<>();
+        LinkedList<VPosterEntity> responseVPosterEntities = new LinkedList<>();
         LinkedList<PosterEntity> posterEntities = iPosterServices.retrieves();
         for (PosterEntity posterEntity : posterEntities) {
             VPosterEntity vPosterEntity = new VPosterEntity(posterEntity);
-            result.add(vPosterEntity);
+            responseVPosterEntities.add(vPosterEntity);
         }
-        IResultSet resultSet = new ResultSet();
-        resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-        resultSet.setData(result);
-        renderJson(JSON.toJSONString(resultSet));
+        IResultSet iResultSet = new ResultSet();
+        if (responseVPosterEntities.size() < 1) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        iResultSet.setData(responseVPosterEntities);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "name","imageUrl", "clickable", "href")));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mCreate() {
         String params = this.getPara("p");
-        VPosterEntity vPosterEntity = JSON.parseObject(params, VPosterEntity.class);
-        String posterId = UUID.randomUUID().toString();
-        vPosterEntity.setPosterId(posterId);
-        vPosterEntity.setStatus(1);
-        PosterEntity result = iPosterServices.mCreate(vPosterEntity);
-        IResultSet resultSet = new ResultSet();
-        if (result == null) {
-            resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
-            vPosterEntity.setPosterId(null);
-            resultSet.setData(vPosterEntity);
-        } else {
-            resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-            resultSet.setData(result);
+        VPosterEntity requestVPosterEntity = JSON.parseObject(params, VPosterEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVPosterEntity.checkCreateParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVPosterEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId", "name", "fileId", "imageUrl", "clickable", "href")));
+            return;
         }
-        renderJson(JSON.toJSONString(resultSet));
+
+        String posterId = UUID.randomUUID().toString();
+        requestVPosterEntity.setPosterId(posterId);
+        requestVPosterEntity.setStatus(1);
+        PosterEntity result = iPosterServices.mCreate(requestVPosterEntity);
+        if (result == null) {
+            requestVPosterEntity.setPosterId(null);
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVPosterEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId", "name", "fileId", "imageUrl", "clickable", "href")));
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(new VPosterEntity(result));
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId", "name", "fileId", "imageUrl", "clickable", "href")));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mUpdate() {
         String params = this.getPara("p");
-        VPosterEntity vPosterEntity = JSON.parseObject(params, VPosterEntity.class);
-        PosterEntity result = iPosterServices.mUpdate(vPosterEntity);
-        IResultSet resultSet = new ResultSet();
-        if (result == null) {
-            resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
-            vPosterEntity.setPosterId(null);
-            resultSet.setData(vPosterEntity);
-        } else {
-            resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-            resultSet.setData(result);
+        VPosterEntity requestVPosterEntity = JSON.parseObject(params, VPosterEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVPosterEntity.checkUpdateParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVPosterEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId", "name", "fileId", "imageUrl", "clickable", "href")));
+            return;
         }
-        renderJson(JSON.toJSONString(resultSet));
+
+        PosterEntity result = iPosterServices.mUpdate(requestVPosterEntity);
+        if (result == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVPosterEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId", "name", "fileId", "imageUrl", "clickable", "href")));
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(new VPosterEntity(result));
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId", "name", "fileId", "imageUrl", "clickable", "href")));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mMark() {
         String params = this.getPara("p");
-        VPosterEntity vPosterEntity = JSON.parseObject(params, VPosterEntity.class);
+        VPosterEntity requestVPosterEntity = JSON.parseObject(params, VPosterEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVPosterEntity.checkMarkParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVPosterEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId", "status")));
+            return;
+        }
+
         PosterEntity result = null;
-        if (vPosterEntity.getStatus() == -1) {
-            result = iPosterServices.mDelete(vPosterEntity);
-        } else if (vPosterEntity.getStatus() == 1) {
-            result = iPosterServices.mBlock(vPosterEntity);
-        } else if (vPosterEntity.getStatus() == 2) {
-            result = iPosterServices.mUnBlock(vPosterEntity);
+        if (requestVPosterEntity.getStatus() == -1) {
+            result = iPosterServices.mDelete(requestVPosterEntity);
+        } else if (requestVPosterEntity.getStatus() == 1) {
+            result = iPosterServices.mBlock(requestVPosterEntity);
+        } else if (requestVPosterEntity.getStatus() == 2) {
+            result = iPosterServices.mUnBlock(requestVPosterEntity);
         }
-        IResultSet resultSet = new ResultSet();
         if (result == null) {
-            resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
-            resultSet.setData(vPosterEntity);
-        } else {
-            resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-            resultSet.setData(result);
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVPosterEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId", "status")));
+            return;
         }
-        renderJson(JSON.toJSONString(resultSet));
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(new VPosterEntity(result));
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId", "status")));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mSwap() {
         String params = this.getPara("p");
-        VPosterEntity vPosterEntity = JSON.parseObject(params, VPosterEntity.class);
-        PosterEntity posterEntity1 = new PosterEntity(vPosterEntity.getPosterId1(), vPosterEntity.getWeight1());
-        PosterEntity posterEntity2 = new PosterEntity(vPosterEntity.getPosterId2(), vPosterEntity.getWeight2());
-        PosterEntity[] result = iPosterServices.mSwap(posterEntity1, posterEntity2);
-        IResultSet resultSet = new ResultSet();
-        if (result == null) {
-            resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
-            resultSet.setData(vPosterEntity);
-        } else {
-            resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-            resultSet.setData(result);
+        VPosterEntity requestVPosterEntity = JSON.parseObject(params, VPosterEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVPosterEntity.checkSwapParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVPosterEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId1", "posterId2", "weight1", "weight2")));
+            return;
         }
-        renderJson(JSON.toJSONString(resultSet));
+
+        PosterEntity posterEntity1 = new PosterEntity(requestVPosterEntity.getPosterId1(), requestVPosterEntity.getWeight1());
+        PosterEntity posterEntity2 = new PosterEntity(requestVPosterEntity.getPosterId2(), requestVPosterEntity.getWeight2());
+        PosterEntity[] result = iPosterServices.mSwap(posterEntity1, posterEntity2);//TODO 此处的交换存在漏洞，应该根据ID先查询，根据查询结果进行交换
+        if (result == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVPosterEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId1", "posterId2", "weight1", "weight2")));
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(requestVPosterEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId1", "posterId2", "weight1", "weight2")));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mRetrieves() {
-        LinkedList<VPosterEntity> result = new LinkedList<>();
+        IResultSet iResultSet = new ResultSet();
+        LinkedList<VPosterEntity> responseVPosterEntities = new LinkedList<>();
         LinkedList<PosterEntity> posterEntities = iPosterServices.mRetrieves();
         for (PosterEntity posterEntity : posterEntities) {
-            VPosterEntity vPosterEntity = new VPosterEntity(posterEntity);
-            result.add(vPosterEntity);
+            responseVPosterEntities.add(new VPosterEntity(posterEntity));
         }
-        IResultSet resultSet = new ResultSet();
-        resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-        resultSet.setData(result);
-        renderJson(JSON.toJSONString(resultSet));
+        if (responseVPosterEntities.size() < 1) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        iResultSet.setData(responseVPosterEntities);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId", "name", "status", "fileId", "imageUrl", "clickable", "href", "weight")));
     }
 }

@@ -1,5 +1,6 @@
 package cn.foodslab.controller.poster;
 
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import com.jfinal.aop.Before;
@@ -26,34 +27,34 @@ public interface IPosterController {
      * 管理员接口
      * 创建海报
      */
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     void mCreate();
 
     /**
      * 管理员接口
      * 更新海报
      */
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     void mUpdate();
 
     /**
      * 管理员接口
      * 更新海报状态
      */
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     void mMark();
 
     /**
      * 管理员接口
      * 交换海报权重
      */
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     void mSwap();
 
     /**
      * 管理员接口
      * 读取海报集合
      */
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     void mRetrieves();
 }
