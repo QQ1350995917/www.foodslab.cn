@@ -52,8 +52,11 @@ public class SeriesServices implements ISeriesServices {
     @Override
     public SeriesEntity mCreate(SeriesEntity seriesEntity) {
         Db.update("UPDATE product_series SET queue = queue + 1");
-        Record record = new Record().set("seriesId", seriesEntity.getSeriesId()).set("label", seriesEntity.getLabel());
-        boolean save = Db.save("product_series", record);
+        Record record = new Record().set("seriesId", seriesEntity.getSeriesId())
+                .set("label", seriesEntity.getLabel())
+                .set("status",seriesEntity.getStatus())
+                .set("queue",seriesEntity.getQueue());
+        boolean save = Db.save("product_series","seriesId", record);
         if (save) {
             return seriesEntity;
         } else {

@@ -29,7 +29,6 @@ public class ManagerInterceptor implements Interceptor {
             inv.getController().renderJson(JSON.toJSONString(iResultSet));
             return;
         }
-
         inv.invoke();
     }
 }

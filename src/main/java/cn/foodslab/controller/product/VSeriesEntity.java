@@ -9,11 +9,8 @@ import java.util.LinkedList;
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
  * Description: @TODO
  */
-public class VSeriesEntity {
-    private String sessionId;
-    private String seriesId;
-    private String label;
-    private int status = -2;
+public class VSeriesEntity extends SeriesEntity {
+    private String cs;
     private LinkedList<VTypeEntity> children;
 
     public VSeriesEntity() {
@@ -21,53 +18,18 @@ public class VSeriesEntity {
     }
 
     public VSeriesEntity(SeriesEntity seriesEntity) {
-        this.seriesId = seriesEntity.getSeriesId();
-        this.label = seriesEntity.getLabel();
+        this.setSeriesId(seriesEntity.getSeriesId());
+        this.setLabel(seriesEntity.getLabel());
+        this.setQueue(seriesEntity.getQueue());
+        this.setStatus(seriesEntity.getStatus());
     }
 
-    public VSeriesEntity(String sessionId, String seriesId, String label) {
-        this.sessionId = sessionId;
-        this.seriesId = seriesId;
-        this.label = label;
+    public String getCs() {
+        return cs;
     }
 
-    public VSeriesEntity(String sessionId, String seriesId, String label, int status) {
-        this.sessionId = sessionId;
-        this.seriesId = seriesId;
-        this.label = label;
-        this.status = status;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public String getSeriesId() {
-        return seriesId;
-    }
-
-    public void setSeriesId(String seriesId) {
-        this.seriesId = seriesId;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
+    public void setCs(String cs) {
+        this.cs = cs;
     }
 
     public LinkedList<VTypeEntity> getChildren() {
@@ -76,5 +38,31 @@ public class VSeriesEntity {
 
     public void setChildren(LinkedList<VTypeEntity> children) {
         this.children = children;
+    }
+
+    public boolean checkCreateParams() {
+        if (this.getLabel() == null || this.getLabel().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkUpdateParams() {
+        if (this.getSeriesId() == null || this.getSeriesId().trim().equals("")
+                || this.getLabel() == null || this.getLabel().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkMarkParams() {
+        if (this.getSeriesId() == null || this.getSeriesId().trim().equals("")
+                || (this.getStatus() != -1 && this.getStatus() != 1 && this.getStatus() != 2)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

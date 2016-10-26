@@ -2,7 +2,6 @@ package cn.foodslab.init;
 
 import cn.foodslab.service.menu.MenuEntity;
 import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.Record;
 
 import java.util.LinkedList;
 
@@ -18,16 +17,7 @@ public class InitMenu extends InitBase{
         Db.update("truncate table menu");
         LinkedList<MenuEntity> menuEntities = genMenus();
         for (MenuEntity menuEntity:menuEntities){
-            Record menu = new Record()
-                    .set("menuId", menuEntity.getMenuId())
-                    .set("label", menuEntity.getLabel())
-                    .set("level", menuEntity.getLevel())
-                    .set("queue", menuEntity.getQueue())
-                    .set("method", menuEntity.getMethod())
-                    .set("positionId", menuEntity.getPositionId())
-                    .set("pId", menuEntity.getpId())
-                    .set("status", menuEntity.getStatus());
-            result = Db.save("menu", menu);
+
         }
         if (result) {
             System.out.println("success");
@@ -38,42 +28,43 @@ public class InitMenu extends InitBase{
 
     private static LinkedList<MenuEntity> genMenus() {
         //                                      id       显示名称  等级 顺序  方法名       位置标记                             父ID   状态
-        MenuEntity menuEntity01 = new MenuEntity(ids[0], "系统状态", 0, 0, "sys_status", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[0], 2);
-        MenuEntity menuEntity02 = new MenuEntity(ids[1], "系统日志", 0, 1, "sys_log", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[1], 2);
-        MenuEntity menuEntity03 = new MenuEntity(ids[2], "流量报表", 0, 2, "sys_flow", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[2], 2);
-        MenuEntity menuEntity04 = new MenuEntity(ids[3], "销售报表", 0, 3, "sale_chart", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[3], 1);
-        MenuEntity menuEntity05 = new MenuEntity(ids[4], "管理员", 0, 0, "manager", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[4], 2);
-        MenuEntity menuEntity06 = new MenuEntity(ids[5], "皮肤设置", 0, 1, "skin", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[5], 2);
-        MenuEntity menuEntity07 = new MenuEntity(ids[6], "链接管理", 0, 2, "link", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[6], 2);
-        MenuEntity menuEntity08 = new MenuEntity(ids[7], "产品管理", 0, 3, "product", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[7], 1);
-        MenuEntity menuEntity09 = new MenuEntity(ids[8], "海报管理", 0, 4, "poster", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[8], 1);
-        MenuEntity menuEntity10 = new MenuEntity(ids[9], "推荐管理", 0, 5, "recommend", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[9], 1);
-        MenuEntity menuEntity11 = new MenuEntity(ids[10], "消息管理", 0, 6, "message", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[10], 1);
-        MenuEntity menuEntity12 = new MenuEntity(ids[11], "用户管理", 0, 7, "user", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[11], 1);
-        MenuEntity menuEntity13 = new MenuEntity(ids[12], "订单管理", 0, 8, "order", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[12], 1);
-        MenuEntity menuEntity14 = new MenuEntity(ids[13], "预约设置", 0, 9, "reser_setting", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[13], 1);
-        MenuEntity menuEntity15 = new MenuEntity(ids[14], "预约管理", 0, 10, "reser_setting", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[14], 1);
+//        MenuEntity menuEntity01 = new MenuEntity(ids[0], "系统状态", 0, 0, "sys_status", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[0], 2);
+//        MenuEntity menuEntity02 = new MenuEntity(ids[1], "系统日志", 0, 1, "sys_log", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[1], 2);
+//        MenuEntity menuEntity03 = new MenuEntity(ids[2], "流量报表", 0, 2, "sys_flow", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[2], 2);
+//        MenuEntity menuEntity04 = new MenuEntity(ids[3], "销售报表", 0, 3, "sale_chart", "51bf4162-5270-11e6-8311-1cae145b8cab", ids[3], 1);
+//        MenuEntity menuEntity05 = new MenuEntity(ids[4], "管理员", 0, 0, "manager", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[4], 2);
+//        MenuEntity menuEntity06 = new MenuEntity(ids[5], "皮肤设置", 0, 1, "skin", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[5], 2);
+//        MenuEntity menuEntity07 = new MenuEntity(ids[6], "链接管理", 0, 2, "link", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[6], 2);
+//        MenuEntity menuEntity08 = new MenuEntity(ids[7], "产品管理", 0, 3, "product", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[7], 1);
+//        MenuEntity menuEntity09 = new MenuEntity(ids[8], "海报管理", 0, 4, "poster", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[8], 1);
+//        MenuEntity menuEntity10 = new MenuEntity(ids[9], "推荐管理", 0, 5, "recommend", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[9], 1);
+//        MenuEntity menuEntity11 = new MenuEntity(ids[10], "消息管理", 0, 6, "message", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[10], 1);
+//        MenuEntity menuEntity12 = new MenuEntity(ids[11], "用户管理", 0, 7, "user", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[11], 1);
+//        MenuEntity menuEntity13 = new MenuEntity(ids[12], "订单管理", 0, 8, "order", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[12], 1);
+//        MenuEntity menuEntity14 = new MenuEntity(ids[13], "预约设置", 0, 9, "reser_setting", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[13], 1);
+//        MenuEntity menuEntity15 = new MenuEntity(ids[14], "预约管理", 0, 10, "reser_setting", "8e2e3fc7-1968-4f1b-bd4c-07794c5855b5", ids[14], 1);
+//
+//        LinkedList<MenuEntity> menuEntities = new LinkedList<>();
+//
+//        menuEntities.add(menuEntity01);
+//        menuEntities.add(menuEntity02);
+//        menuEntities.add(menuEntity03);
+//        menuEntities.add(menuEntity04);
+//        menuEntities.add(menuEntity05);
+//        menuEntities.add(menuEntity06);
+//        menuEntities.add(menuEntity07);
+//        menuEntities.add(menuEntity08);
+//        menuEntities.add(menuEntity09);
+//        menuEntities.add(menuEntity10);
+//        menuEntities.add(menuEntity11);
+//        menuEntities.add(menuEntity12);
+//        menuEntities.add(menuEntity13);
+//        menuEntities.add(menuEntity14);
+//        menuEntities.add(menuEntity15);
+//
+//        return menuEntities;
 
-        LinkedList<MenuEntity> menuEntities = new LinkedList<>();
-
-        menuEntities.add(menuEntity01);
-        menuEntities.add(menuEntity02);
-        menuEntities.add(menuEntity03);
-        menuEntities.add(menuEntity04);
-        menuEntities.add(menuEntity05);
-        menuEntities.add(menuEntity06);
-        menuEntities.add(menuEntity07);
-        menuEntities.add(menuEntity08);
-        menuEntities.add(menuEntity09);
-        menuEntities.add(menuEntity10);
-        menuEntities.add(menuEntity11);
-        menuEntities.add(menuEntity12);
-        menuEntities.add(menuEntity13);
-        menuEntities.add(menuEntity14);
-        menuEntities.add(menuEntity15);
-
-        return menuEntities;
-
+        return null;
     }
 
     /**

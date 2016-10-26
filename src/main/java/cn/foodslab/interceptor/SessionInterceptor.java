@@ -19,16 +19,16 @@ public class SessionInterceptor implements Interceptor {
     @Override
     public void intercept(Invocation inv) {
         String params = inv.getController().getPara("p");
-        Map<String, Object> paramsMap = JSON.parseObject(params, Map.class);
         IResultSet iResultSet = new ResultSet();
         if (params == null || params.trim().equals("")){
             iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
             iResultSet.setData(params);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
-            inv.getController().renderJson(JSON.toJSONString(paramsMap));
+            inv.getController().renderJson(JSON.toJSONString(params));
             return;
         }
 
+        Map<String, Object> paramsMap = JSON.parseObject(params, Map.class);
         if (paramsMap == null || !paramsMap.containsKey("cs") || paramsMap.get("cs") == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
             iResultSet.setData(params);

@@ -32,8 +32,16 @@ public class LinkController extends Controller implements ILinkController {
 
     @Override
     public void retrieves() {
-        LinkedList<VLinkEntity> responseVLinkEntities = new LinkedList<>();
         LinkedList<LinkEntity> linkEntities = iLinkServices.retrieves();
+        IResultSet iResultSet = new ResultSet();
+        if (linkEntities == null){
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet));
+            return;
+        }
+
+        LinkedList<VLinkEntity> responseVLinkEntities = new LinkedList<>();
         for (LinkEntity linkEntity : linkEntities) {
             VLinkEntity vLinkEntity = new VLinkEntity(linkEntity);
             LinkedList<VLinkEntity> childrenVlinkEntities = new LinkedList<>();
@@ -44,7 +52,7 @@ public class LinkController extends Controller implements ILinkController {
             vLinkEntity.setChildren(childrenVlinkEntities);
             responseVLinkEntities.add(vLinkEntity);
         }
-        IResultSet iResultSet = new ResultSet();
+
         if (responseVLinkEntities.size() == 0) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
         } else {
@@ -108,7 +116,6 @@ public class LinkController extends Controller implements ILinkController {
             return;
         }
         VLinkEntity responseVLinkEntity = new VLinkEntity(linkEntity);
-        responseVLinkEntity.setCs(requestVLinkEntity.getCs());
         iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
         iResultSet.setData(responseVLinkEntity);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);

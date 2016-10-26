@@ -37,7 +37,6 @@ public class FormatEntity {
     private String typeId;// 规格的类型ID
     private long createTime;
     private long updateTime;
-    private TypeEntity typeEntity;
 
     public FormatEntity() {
         super();
@@ -291,11 +290,4 @@ public class FormatEntity {
         this.updateTime = updateTime;
     }
 
-    public TypeEntity getTypeEntity() {
-        return typeEntity;
-    }
-
-    public void setTypeEntity(TypeEntity typeEntity) {
-        this.typeEntity = typeEntity;
-    }
 }

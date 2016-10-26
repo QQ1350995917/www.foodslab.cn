@@ -1,9 +1,6 @@
 package cn.foodslab.back;
 
 
-import cn.foodslab.common.response.ResultSet;
-import com.alibaba.fastjson.JSON;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -30,10 +27,6 @@ public class FrameTest {
         LinkedList<Map> objects = new LinkedList<>();
         objects.add(hashMap1);
         objects.add(hashMap2);
-
-        ResultSet resultSet = new ResultSet(objects);
-
-        System.out.println(JSON.toJSONString(resultSet));
 
     }
 

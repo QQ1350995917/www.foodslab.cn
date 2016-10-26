@@ -32,13 +32,21 @@ public class PosterController extends Controller implements IPosterController {
 
     @Override
     public void retrieves() {
-        LinkedList<VPosterEntity> responseVPosterEntities = new LinkedList<>();
         LinkedList<PosterEntity> posterEntities = iPosterServices.retrieves();
+        IResultSet iResultSet = new ResultSet();
+        if (posterEntities == null){
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet));
+            return;
+        }
+
+        LinkedList<VPosterEntity> responseVPosterEntities = new LinkedList<>();
         for (PosterEntity posterEntity : posterEntities) {
             VPosterEntity vPosterEntity = new VPosterEntity(posterEntity);
             responseVPosterEntities.add(vPosterEntity);
         }
-        IResultSet iResultSet = new ResultSet();
+
         if (responseVPosterEntities.size() < 1) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
         } else {

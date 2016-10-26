@@ -1,7 +1,5 @@
 package cn.foodslab.service.product;
 
-import java.util.LinkedList;
-
 /**
  * Created by Pengwei Ding on 2016-07-30 21:28.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
@@ -14,7 +12,6 @@ public class SeriesEntity {
     private int status; // -1标示删除，1标示禁用，2标示正常
     private String createTime;
     private String updateTime;
-    private LinkedList<TypeEntity> typeEntities;
 
     public SeriesEntity() {
         super();
@@ -84,11 +81,4 @@ public class SeriesEntity {
         this.updateTime = updateTime;
     }
 
-    public LinkedList<TypeEntity> getTypeEntities() {
-        return typeEntities;
-    }
-
-    public void setTypeEntities(LinkedList<TypeEntity> typeEntities) {
-        this.typeEntities = typeEntities;
-    }
 }

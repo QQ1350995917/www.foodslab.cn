@@ -83,12 +83,12 @@ public class FormatController extends Controller implements IFormatController {
         LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
         LinkedList<FormatEntity> formatEntities = iFormatServices.mRetrieveByWeight(0, 0);
         for (FormatEntity formatEntity : formatEntities) {
-            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
-            VTypeEntity vTypeEntity = new VTypeEntity(formatEntity.getTypeEntity());
-            VSeriesEntity vSeriesEntity = new VSeriesEntity(formatEntity.getTypeEntity().getSeriesEntity());
-            vTypeEntity.setParent(vSeriesEntity);
-            vFormatEntity.setParent(vTypeEntity);
-            vFormatEntities.add(vFormatEntity);
+//            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+//            VTypeEntity vTypeEntity = new VTypeEntity(formatEntity.getTypeEntity());
+//            VSeriesEntity vSeriesEntity = new VSeriesEntity(formatEntity.getTypeEntity().getSeriesEntity());
+//            vTypeEntity.setParent(vSeriesEntity);
+//            vFormatEntity.setParent(vTypeEntity);
+//            vFormatEntities.add(vFormatEntity);
         }
 
         if (formatEntities == null) {
@@ -224,12 +224,12 @@ public class FormatController extends Controller implements IFormatController {
         LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
         LinkedList<FormatEntity> formatEntities = iFormatServices.mRetrieveByWeight(0, 0);
         for (FormatEntity formatEntity : formatEntities) {
-            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
-            VTypeEntity vTypeEntity = new VTypeEntity(formatEntity.getTypeEntity());
-            VSeriesEntity vSeriesEntity = new VSeriesEntity(formatEntity.getTypeEntity().getSeriesEntity());
-            vTypeEntity.setParent(vSeriesEntity);
-            vFormatEntity.setParent(vTypeEntity);
-            vFormatEntities.add(vFormatEntity);
+//            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+//            VTypeEntity vTypeEntity = new VTypeEntity(formatEntity.getTypeEntity());
+//            VSeriesEntity vSeriesEntity = new VSeriesEntity(formatEntity.getTypeEntity().getSeriesEntity());
+//            vTypeEntity.setParent(vSeriesEntity);
+//            vFormatEntity.setParent(vTypeEntity);
+//            vFormatEntities.add(vFormatEntity);
         }
 
         if (formatEntities == null) {

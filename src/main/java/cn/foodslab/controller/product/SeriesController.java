@@ -2,10 +2,13 @@ package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializeFilter;
+import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 
@@ -29,22 +32,27 @@ public class SeriesController extends Controller implements ISeriesController {
 
     @Override
     public void retrieves() {
-        String params = this.getPara("p");
-        VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
         LinkedList<SeriesEntity> seriesEntities = iSeriesServices.retrieves();
+        IResultSet iResultSet = new ResultSet();
         if (seriesEntities == null) {
-            IResultSet iResultSet = new ResultSet(3000, null, "fail");
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
             renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            LinkedList<VSeriesEntity> vSeriesEntities = new LinkedList<>();
-            for (SeriesEntity seriesEntity : seriesEntities) {
-                String sessionId = vSeriesEntity == null ? null : vSeriesEntity.getSessionId();
-                Integer status = vSeriesEntity == null ? -2 : vSeriesEntity.getStatus();
-                vSeriesEntities.add(new VSeriesEntity(sessionId, seriesEntity.getSeriesId(), seriesEntity.getLabel(), status));
-            }
-            IResultSet iResultSet = new ResultSet(3050, vSeriesEntities, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+            return;
         }
+
+        LinkedList<VSeriesEntity> responseVSeriesEntities = new LinkedList<>();
+        for (SeriesEntity seriesEntity : seriesEntities) {
+            responseVSeriesEntities.add(new VSeriesEntity(seriesEntity));
+        }
+        if (responseVSeriesEntities.size() == 0) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        iResultSet.setData(responseVSeriesEntities);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label", "queue")));
     }
 
     @Override
@@ -55,117 +63,189 @@ public class SeriesController extends Controller implements ISeriesController {
     @Override
     public void treeInversion() {
         String params = this.getPara("p");
-        LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
-        VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
-        SeriesEntity seriesEntity = iSeriesServices.retrieveById(vSeriesEntity.getSeriesId());
-        LinkedList<TypeEntity> typeEntities = iTypeServices.retrievesInSeries(seriesEntity);
-        for (TypeEntity typeEntity : typeEntities) {
-            LinkedList<FormatEntity> formatEntities = iFormatServices.retrievesInType(typeEntity);
-            for (FormatEntity formatEntity : formatEntities) {
-                VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
-                VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
-                vTypeEntity.setParent(new VSeriesEntity(seriesEntity));
-                vFormatEntity.setParent(vTypeEntity);
-                vFormatEntities.add(vFormatEntity);
+        VSeriesEntity requestVSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (requestVSeriesEntity.getSeriesId() == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVSeriesEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId")));
+            return;
+        }
+
+        LinkedList<VFormatEntity> responseVFormatEntities = new LinkedList<>();
+        SeriesEntity seriesEntity = iSeriesServices.retrieveById(requestVSeriesEntity.getSeriesId());
+        if (seriesEntity != null) {
+            LinkedList<TypeEntity> typeEntities = iTypeServices.retrievesInSeries(seriesEntity);
+            if (typeEntities != null) {
+                for (TypeEntity typeEntity : typeEntities) {
+                    LinkedList<FormatEntity> formatEntities = iFormatServices.retrievesInType(typeEntity);
+                    if (formatEntities != null) {
+                        for (FormatEntity formatEntity : formatEntities) {
+                            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+                            VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+                            vTypeEntity.setParent(new VSeriesEntity(seriesEntity));
+                            vFormatEntity.setParent(vTypeEntity);
+                            responseVFormatEntities.add(vFormatEntity);
+                        }
+                    }
+                }
             }
         }
-        IResultSet iResultSet = new ResultSet(3050, vFormatEntities, "success");
-        renderJson(JSON.toJSONString(iResultSet));
+        if (responseVFormatEntities.size() == 0) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        iResultSet.setData(responseVFormatEntities);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                new SimplePropertyPreFilter(VFormatEntity.class, "formatId", "label", "meta", "price", "priceMeta", "pricing", "postage", "postageMeta", "typeId"),
+                new SimplePropertyPreFilter(VTypeEntity.class, "typeId", "label", "seriesId"),
+                new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
+        }));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mCreate() {
         String params = this.getPara("p");
-        VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
-        String seriesId = UUID.randomUUID().toString();
-        SeriesEntity seriesEntity = new SeriesEntity(seriesId, vSeriesEntity.getLabel());
-        boolean mExist = iSeriesServices.mExist(seriesEntity.getLabel());
-        if (mExist) {
-            seriesEntity.setSeriesId(null);
-            IResultSet iResultSet = new ResultSet(ResultSet.ResultCode.EXE_FAIL.getCode());
-            iResultSet.setData(vSeriesEntity);
-            iResultSet.setMessage("已经存在同名系列");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            SeriesEntity result = iSeriesServices.mCreate(seriesEntity);
-            if (result == null) {
-                seriesEntity.setSeriesId(null);
-                IResultSet iResultSet = new ResultSet(ResultSet.ResultCode.EXE_FAIL.getCode(), vSeriesEntity, "fail");
-                renderJson(JSON.toJSONString(iResultSet));
-            } else {
-                vSeriesEntity.setSeriesId(result.getSeriesId());
-                IResultSet iResultSet = new ResultSet(ResultSet.ResultCode.EXE_SUCCESS.getCode(), vSeriesEntity, "success");
-                renderJson(JSON.toJSONString(iResultSet));
-            }
+        VSeriesEntity requestVSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVSeriesEntity.checkCreateParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVSeriesEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "label")));
+            return;
         }
+
+        boolean mExist = iSeriesServices.mExist(requestVSeriesEntity.getLabel());
+        if (mExist) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_REPEAT.getCode());
+            iResultSet.setData(requestVSeriesEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_CANNOT_REPEAT);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "label")));
+            return;
+        }
+
+        String seriesId = UUID.randomUUID().toString();
+        requestVSeriesEntity.setSeriesId(seriesId);
+        requestVSeriesEntity.setStatus(1);
+        requestVSeriesEntity.setQueue(0);
+        SeriesEntity result = iSeriesServices.mCreate(requestVSeriesEntity);
+        if (result == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVSeriesEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "label")));
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(requestVSeriesEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label", "status", "queue")));
 
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mUpdate() {
         String params = this.getPara("p");
-        VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
-        SeriesEntity seriesEntity = new SeriesEntity(vSeriesEntity.getSeriesId(), vSeriesEntity.getLabel());
-        boolean mExist = iSeriesServices.mExist(seriesEntity.getLabel());
-        if (mExist) {
-            IResultSet iResultSet = new ResultSet(ResultSet.ResultCode.EXE_FAIL.getCode());
-            iResultSet.setData(vSeriesEntity);
-            iResultSet.setMessage("已经存在同名系列");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            SeriesEntity result = iSeriesServices.mUpdate(seriesEntity);
-            if (result == null) {
-                IResultSet iResultSet = new ResultSet(ResultSet.ResultCode.EXE_FAIL.getCode(), vSeriesEntity, "fail");
-                renderJson(JSON.toJSONString(iResultSet));
-            } else {
-                IResultSet iResultSet = new ResultSet(ResultSet.ResultCode.EXE_SUCCESS.getCode(), vSeriesEntity, "success");
-                renderJson(JSON.toJSONString(iResultSet));
-            }
+        VSeriesEntity requestVSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVSeriesEntity.checkUpdateParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVSeriesEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")));
+            return;
         }
+
+        boolean mExist = iSeriesServices.mExist(requestVSeriesEntity.getLabel());
+        if (mExist) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_REPEAT.getCode());
+            iResultSet.setData(requestVSeriesEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_CANNOT_REPEAT);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")));
+            return;
+        }
+
+        SeriesEntity result = iSeriesServices.mUpdate(requestVSeriesEntity);
+        if (result == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVSeriesEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")));
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(requestVSeriesEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mMark() {
         String params = this.getPara("p");
-        VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
-        SeriesEntity seriesEntity = new SeriesEntity(vSeriesEntity.getSeriesId(), null, 0, vSeriesEntity.getStatus());
+        VSeriesEntity requestVSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVSeriesEntity.checkMarkParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVSeriesEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "status")));
+            return;
+        }
         SeriesEntity result = null;
-        if (seriesEntity.getStatus() == 1) {
-            result = iSeriesServices.mBlock(seriesEntity);
-        } else if (seriesEntity.getStatus() == 2) {
-            result = iSeriesServices.mUnBlock(seriesEntity);
-        } else if (seriesEntity.getStatus() == -1) {
-            result = iSeriesServices.mDelete(seriesEntity);
+        if (requestVSeriesEntity.getStatus() == 1) {
+            result = iSeriesServices.mBlock(requestVSeriesEntity);
+        } else if (requestVSeriesEntity.getStatus() == 2) {
+            result = iSeriesServices.mUnBlock(requestVSeriesEntity);
+        } else if (requestVSeriesEntity.getStatus() == -1) {
+            result = iSeriesServices.mDelete(requestVSeriesEntity);
         }
+
         if (result == null) {
-            IResultSet iResultSet = new ResultSet(3000, vSeriesEntity, "fail");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            IResultSet iResultSet = new ResultSet(3050, vSeriesEntity, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVSeriesEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "status")));
+            return;
         }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(requestVSeriesEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "status")));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mRetrieves() {
-        String params = this.getPara("p");
-        VSeriesEntity vSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
         LinkedList<SeriesEntity> seriesEntities = iSeriesServices.mRetrieves();
+        IResultSet iResultSet = new ResultSet();
         if (seriesEntities == null) {
-            IResultSet iResultSet = new ResultSet(3000, null, "fail");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            LinkedList<VSeriesEntity> vSeriesEntities = new LinkedList<>();
-            for (SeriesEntity seriesEntity : seriesEntities) {
-                String sessionId = vSeriesEntity == null ? null : vSeriesEntity.getSessionId();
-                vSeriesEntities.add(new VSeriesEntity(sessionId, seriesEntity.getSeriesId(), seriesEntity.getLabel(), seriesEntity.getStatus()));
-            }
-            IResultSet iResultSet = new ResultSet(3050, vSeriesEntities, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "status")));
+            return;
         }
+
+        LinkedList<VSeriesEntity> responseVSeriesEntities = new LinkedList<>();
+        for (SeriesEntity seriesEntity : seriesEntities) {
+            responseVSeriesEntities.add(new VSeriesEntity(seriesEntity));
+        }
+        if (responseVSeriesEntities.size() == 0) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        iResultSet.setData(responseVSeriesEntities);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label","status","queue")));
     }
 }

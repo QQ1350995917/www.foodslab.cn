@@ -10,7 +10,7 @@ import java.util.LinkedList;
  * Description: @TODO
  */
 public class VTypeEntity extends TypeEntity {
-    private String sessionId;
+    private String cs;
     private LinkedList<VFormatEntity> children;
     private VSeriesEntity parent;
 
@@ -27,23 +27,12 @@ public class VTypeEntity extends TypeEntity {
         this.setStatus(typeEntity.getStatus());
     }
 
-    public VTypeEntity(String sessionId, String seriesId, String typeId, String label, String summary, String directions, int queue, int status) {
-        this.sessionId = sessionId;
-        this.setSeriesId(seriesId);
-        this.setTypeId(typeId);
-        this.setLabel(label);
-        this.setSummary(summary);
-        this.setDirections(directions);
-        this.setQueue(queue);
-        this.setStatus(status);
+    public String getCs() {
+        return cs;
     }
 
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setCs(String cs) {
+        this.cs = cs;
     }
 
     public LinkedList<VFormatEntity> getChildren() {

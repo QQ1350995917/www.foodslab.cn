@@ -211,8 +211,8 @@ public class FormatServices implements IFormatServices {
             TypeEntity typeEntity = JSON.parseObject(JSON.toJSONString(typeIdRecords.get(0).getColumns()), TypeEntity.class);
             List<Record> seriesRecords = Db.find("SELECT * FROM product_series WHERE seriesId = ?", typeEntity.getSeriesId());
             SeriesEntity seriesEntity = JSON.parseObject(JSON.toJSONString(seriesRecords.get(0).getColumns()), SeriesEntity.class);
-            typeEntity.setSeriesEntity(seriesEntity);
-            formatEntity.setTypeEntity(typeEntity);
+//            typeEntity.setSeriesEntity(seriesEntity);
+//            formatEntity.setTypeEntity(typeEntity);
             result.add(formatEntity);
         }
         return result;
