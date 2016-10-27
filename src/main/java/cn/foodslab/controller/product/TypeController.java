@@ -209,7 +209,7 @@ public class TypeController extends Controller implements ITypeController {
         String params = this.getPara("p");
         VTypeEntity requestVTypeEntity = JSON.parseObject(params, VTypeEntity.class);
         IResultSet iResultSet = new ResultSet();
-        if (!requestVTypeEntity.checkTypeId()) {
+        if (!requestVTypeEntity.checkTypeIdParams()) {
             iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
             iResultSet.setData(requestVTypeEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
@@ -239,7 +239,7 @@ public class TypeController extends Controller implements ITypeController {
         String params = this.getPara("p");
         VTypeEntity requestVTypeEntity = JSON.parseObject(params, VTypeEntity.class);
         IResultSet iResultSet = new ResultSet();
-        if (!requestVTypeEntity.checkTypeId()) {
+        if (!requestVTypeEntity.checkTypeIdParams()) {
             iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
             iResultSet.setData(requestVTypeEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
@@ -306,7 +306,7 @@ public class TypeController extends Controller implements ITypeController {
         String params = this.getPara("p");
         VTypeEntity requestVTypeEntity = JSON.parseObject(params, VTypeEntity.class);
         IResultSet iResultSet = new ResultSet();
-        if (!requestVTypeEntity.checkTypeId()) {
+        if (!requestVTypeEntity.checkTypeIdParams()) {
             iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
             iResultSet.setData(requestVTypeEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);

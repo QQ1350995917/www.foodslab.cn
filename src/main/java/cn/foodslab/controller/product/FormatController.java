@@ -2,15 +2,17 @@ package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializeFilter;
+import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -31,26 +33,72 @@ public class FormatController extends Controller implements IFormatController {
     @Override
     public void retrieves() {
         String params = this.getPara("p");
-        VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
-        LinkedList<FormatEntity> formatEntities = iFormatServices.retrievesInType(vTypeEntity);
-
-        LinkedList<VFormatEntity> result = new LinkedList<>();
-        for (FormatEntity formatEntity : formatEntities) {
-            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
-            result.add(vFormatEntity);
+        VTypeEntity requestVTypeEntity = JSON.parseObject(params, VTypeEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVTypeEntity.checkTypeIdParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVTypeEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VTypeEntity.class, "typeId")));
+            return;
         }
-        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), result, "success");
-        renderJson(JSON.toJSONString(iResultSet));
+
+        LinkedList<FormatEntity> formatEntities = iFormatServices.retrievesInType(requestVTypeEntity);
+        if (formatEntities == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVTypeEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VTypeEntity.class, "typeId")));
+            return;
+        }
+
+        LinkedList<VFormatEntity> responseVFormatEntities = new LinkedList<>();
+        for (FormatEntity formatEntity : formatEntities) {
+            responseVFormatEntities.add(new VFormatEntity(formatEntity));
+        }
+        if (responseVFormatEntities.size() == 0) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        iResultSet.setData(responseVFormatEntities);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
+                VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
     }
 
     @Override
     public void retrieve() {
         String params = this.getPara("p");
-        VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
-        FormatEntity formatEntity = iFormatServices.retrieveById(vFormatEntity.getFormatId());
-        VFormatEntity result = new VFormatEntity(formatEntity);
-        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), result, "success");
-        renderJson(JSON.toJSONString(iResultSet));
+        VFormatEntity requestVFormatEntity = JSON.parseObject(params, VFormatEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVFormatEntity.checkFormatIdParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId")));
+            return;
+        }
+
+        FormatEntity formatEntity = iFormatServices.retrieveById(requestVFormatEntity.getFormatId());
+        if (formatEntity == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId")));
+            return;
+        }
+
+        VFormatEntity responseFormatEntity = new VFormatEntity(formatEntity);
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(responseFormatEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
+                VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
     }
 
     @Override
@@ -61,203 +109,405 @@ public class FormatController extends Controller implements IFormatController {
     @Override
     public void retrieveTreeInversion() {
         String params = this.getPara("p");
-        VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
-        FormatEntity formatEntity = iFormatServices.retrieveById(vFormatEntity.getFormatId());
-        if (formatEntity == null) {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vFormatEntity, "fail");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
-            SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
-            VFormatEntity result = new VFormatEntity(formatEntity);
-            VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
-            vTypeEntity.setParent(new VSeriesEntity(seriesEntity));
-            result.setParent(vTypeEntity);
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), result, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+        VFormatEntity requestVFormatEntity = JSON.parseObject(params, VFormatEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVFormatEntity.checkFormatIdParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId")));
+            return;
         }
+
+        FormatEntity formatEntity = iFormatServices.retrieveById(requestVFormatEntity.getFormatId());
+        if (formatEntity == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId")));
+            return;
+        }
+
+        TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
+        if (typeEntity == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId")));
+            return;
+        }
+
+        SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
+        if (seriesEntity == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId")));
+            return;
+        }
+
+        VFormatEntity responseFormatEntity = new VFormatEntity(formatEntity);
+        VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+        vTypeEntity.setParent(new VSeriesEntity(seriesEntity));
+        responseFormatEntity.setParent(vTypeEntity);
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(responseFormatEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                new SimplePropertyPreFilter(
+                        VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                        "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                        "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status"),
+                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label"),
+                new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
+        }));
+
     }
 
     @Override
     public void recommends() {
-        LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
-        LinkedList<FormatEntity> formatEntities = iFormatServices.mRetrieveByWeight(0, 0);
-        for (FormatEntity formatEntity : formatEntities) {
-//            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
-//            VTypeEntity vTypeEntity = new VTypeEntity(formatEntity.getTypeEntity());
-//            VSeriesEntity vSeriesEntity = new VSeriesEntity(formatEntity.getTypeEntity().getSeriesEntity());
-//            vTypeEntity.setParent(vSeriesEntity);
-//            vFormatEntity.setParent(vTypeEntity);
-//            vFormatEntities.add(vFormatEntity);
+        LinkedList<FormatEntity> formatEntities = iFormatServices.retrievesByWeight(0, 0);
+        IResultSet iResultSet = new ResultSet();
+        if (formatEntities == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId")));
+            return;
         }
 
-        if (formatEntities == null) {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vFormatEntities, "fail");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), vFormatEntities, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+        LinkedList<VFormatEntity> responseVFormatEntities = new LinkedList<>();
+        for (FormatEntity formatEntity : formatEntities) {
+            TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());//这里有可能是存在被禁用而无法查找到
+            if (typeEntity == null) {
+                responseVFormatEntities.clear();
+                continue;//存在上层被禁用就先跳过
+            }
+            SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());//这里有可能是存在被禁用而无法查找到
+            if (seriesEntity == null) {
+                responseVFormatEntities.clear();
+                continue;//存在上层被禁用就先跳过
+            }
+            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+            VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+            VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
+            vTypeEntity.setParent(vSeriesEntity);
+            vFormatEntity.setParent(vTypeEntity);
+            responseVFormatEntities.add(vFormatEntity);
         }
+
+        if (responseVFormatEntities.size() == 0) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                new SimplePropertyPreFilter(
+                        VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                        "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                        "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status"),
+                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label"),
+                new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
+        }));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mCreate() {
         String params = this.getPara("p");
-        VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
-        String formatId = UUID.randomUUID().toString();
-        vFormatEntity.setFormatId(formatId);
-        vFormatEntity.setStatus(1);
-        if (iFormatServices.mExist(vFormatEntity)) {
-            vFormatEntity.setFormatId(null);
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vFormatEntity, "fail");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            FormatEntity result = iFormatServices.mCreate(vFormatEntity);
-            if (result == null) {
-                vFormatEntity.setFormatId(null);
-                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vFormatEntity, "fail");
-                renderJson(JSON.toJSONString(iResultSet));
-            } else {
-                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), vFormatEntity, "success");
-                renderJson(JSON.toJSONString(iResultSet));
-            }
+        VFormatEntity requestVFormatEntity = JSON.parseObject(params, VFormatEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVFormatEntity.checkCreateParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
+                    VFormatEntity.class, "typeId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                    "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                    "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
+            return;
         }
+        String formatId = UUID.randomUUID().toString();
+        requestVFormatEntity.setFormatId(formatId);
+        requestVFormatEntity.setStatus(1);
+        boolean mExist = iFormatServices.mExist(requestVFormatEntity);
+        if (mExist) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_REPEAT.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_CANNOT_REPEAT);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
+                    VFormatEntity.class, "typeId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                    "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                    "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
+            return;
+        }
+
+        FormatEntity result = iFormatServices.mCreate(requestVFormatEntity);
+        if (result == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
+                    VFormatEntity.class, "typeId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                    "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                    "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
+            return;
+        }
+
+        VFormatEntity responseFormatEntity = new VFormatEntity(result);
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(responseFormatEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
+                VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mUpdate() {
         String params = this.getPara("p");
-        VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
-        if (iFormatServices.mExist(vFormatEntity)) {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vFormatEntity, "fail");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            FormatEntity result = iFormatServices.mUpdate(vFormatEntity);
-            if (result == null) {
-                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vFormatEntity, "fail");
-                renderJson(JSON.toJSONString(iResultSet));
-            } else {
-                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), result, "success");
-                renderJson(JSON.toJSONString(iResultSet));
-            }
+        VFormatEntity requestVFormatEntity = JSON.parseObject(params, VFormatEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVFormatEntity.checkUpdateParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
+                    VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                    "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                    "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
+            return;
         }
+
+        boolean mExist = iFormatServices.mExist(requestVFormatEntity);
+        if (mExist) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_REPEAT.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_CANNOT_REPEAT);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
+                    VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                    "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                    "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
+            return;
+        }
+
+        FormatEntity result = iFormatServices.mUpdate(requestVFormatEntity);
+        if (result == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
+                    VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                    "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                    "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
+            return;
+        }
+
+        VFormatEntity responseFormatEntity = new VFormatEntity(result);
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(responseFormatEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
+                VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mMark() {
         String params = this.getPara("p");
-        VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
-        FormatEntity formatEntity = new FormatEntity();
-        formatEntity.setFormatId(vFormatEntity.getFormatId());
-        formatEntity.setStatus(vFormatEntity.getStatus());
-        FormatEntity result = null;
-        if (formatEntity.getStatus() == -1) {
-            result = iFormatServices.mDelete(formatEntity);
-        } else if (formatEntity.getStatus() == 1) {
-            result = iFormatServices.mBlock(formatEntity);
-        } else if (formatEntity.getStatus() == 2) {
-            result = iFormatServices.mUnBlock(formatEntity);
+        VFormatEntity requestVFormatEntity = JSON.parseObject(params, VFormatEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVFormatEntity.checkMarkParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId", "status")));
+            return;
         }
 
-        if (result == null) {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vFormatEntity, "fail");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), result, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+        FormatEntity result = null;
+        if (requestVFormatEntity.getStatus() == -1) {
+            result = iFormatServices.mDelete(requestVFormatEntity);
+        } else if (requestVFormatEntity.getStatus() == 1) {
+            result = iFormatServices.mBlock(requestVFormatEntity);
+        } else if (requestVFormatEntity.getStatus() == 2) {
+            result = iFormatServices.mUnBlock(requestVFormatEntity);
         }
+        if (result == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId", "status")));
+            return;
+        }
+
+        VFormatEntity responseFormatEntity = new VFormatEntity(result);
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(responseFormatEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId", "status")));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mKingWeight() {
         String params = this.getPara("p");
-        VFormatEntity vFormatEntity = JSON.parseObject(params, VFormatEntity.class);
-        FormatEntity formatEntity = new FormatEntity();
-        formatEntity.setFormatId(vFormatEntity.getFormatId());
-        formatEntity.setWeight(vFormatEntity.getWeight());
-        FormatEntity result = iFormatServices.mKingWeight(formatEntity);
-        if (result == null) {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vFormatEntity, "fail");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), result, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+        VFormatEntity requestVFormatEntity = JSON.parseObject(params, VFormatEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVFormatEntity.checkFormatIdParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId")));
+            return;
         }
+
+        FormatEntity result = iFormatServices.mKingWeight(requestVFormatEntity);
+        if (result == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId")));
+            return;
+        }
+
+        VFormatEntity responseFormatEntity = new VFormatEntity(result);
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(responseFormatEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId")));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mSwapWeight() {
         String params = this.getPara("p");
-        Map paramsMap = JSON.parseObject(params, Map.class);
+        VFormatEntity requestVFormatEntity = JSON.parseObject(params, VFormatEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVFormatEntity.checkSwapParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId1", "formatId2", "weight1", "weight2")));
+            return;
+        }
 
-        String formatId1 = paramsMap.get("formatId1").toString();
-        int weight1 = Integer.parseInt(paramsMap.get("weight1").toString());
         FormatEntity formatEntity1 = new FormatEntity();
-        formatEntity1.setFormatId(formatId1);
-        formatEntity1.setWeight(weight1);
-
-        String formatId2 = paramsMap.get("formatId2").toString();
-        int weight2 = Integer.parseInt(paramsMap.get("weight2").toString());
+        formatEntity1.setFormatId(requestVFormatEntity.getFormatId1());
+        formatEntity1.setWeight(requestVFormatEntity.getWeight1());
         FormatEntity formatEntity2 = new FormatEntity();
-        formatEntity2.setFormatId(formatId2);
-        formatEntity2.setWeight(weight2);
-
+        formatEntity2.setFormatId(requestVFormatEntity.getFormatId2());
+        formatEntity2.setWeight(requestVFormatEntity.getWeight2());
         FormatEntity[] result = iFormatServices.mSwapWeight(formatEntity1, formatEntity2);
-
         if (result == null) {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), paramsMap, "fail");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), result, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVFormatEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId1", "formatId2", "weight1", "weight2")));
+            return;
         }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(requestVFormatEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFormatEntity.class, "formatId1", "formatId2", "weight1", "weight2")));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mWeights() {
-        LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
         LinkedList<FormatEntity> formatEntities = iFormatServices.mRetrieveByWeight(0, 0);
-        for (FormatEntity formatEntity : formatEntities) {
-//            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
-//            VTypeEntity vTypeEntity = new VTypeEntity(formatEntity.getTypeEntity());
-//            VSeriesEntity vSeriesEntity = new VSeriesEntity(formatEntity.getTypeEntity().getSeriesEntity());
-//            vTypeEntity.setParent(vSeriesEntity);
-//            vFormatEntity.setParent(vTypeEntity);
-//            vFormatEntities.add(vFormatEntity);
+        IResultSet iResultSet = new ResultSet();
+        if (formatEntities == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet));
+            return;
         }
 
-        if (formatEntities == null) {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vFormatEntities, "fail");
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), vFormatEntities, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+        LinkedList<VFormatEntity> responseVFormatEntities = new LinkedList<>();
+        for (FormatEntity formatEntity : formatEntities) {
+            TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());//这里有可能是存在被禁用而无法查找到
+            if (typeEntity == null) {
+                responseVFormatEntities.clear();
+                continue;//存在上层被禁用就先跳过
+            }
+            SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());//这里有可能是存在被禁用而无法查找到
+            if (seriesEntity == null) {
+                responseVFormatEntities.clear();
+                continue;//存在上层被禁用就先跳过
+            }
+            VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
+            VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+            VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
+            vTypeEntity.setParent(vSeriesEntity);
+            vFormatEntity.setParent(vTypeEntity);
+            responseVFormatEntities.add(vFormatEntity);
         }
+
+        if (responseVFormatEntities.size() == 0) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        iResultSet.setData(responseVFormatEntities);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                new SimplePropertyPreFilter(
+                        VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                        "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                        "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status"),
+                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label"),
+                new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
+        }));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mRetrieves() {
         String params = this.getPara("p");
-        VTypeEntity vTypeEntity = JSON.parseObject(params, VTypeEntity.class);
-        TypeEntity typeEntity = new TypeEntity(vTypeEntity.getSeriesId(), vTypeEntity.getTypeId(), vTypeEntity.getLabel());
-        LinkedList<FormatEntity> formatEntities = iFormatServices.mRetrievesInType(typeEntity);
-        LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
-        for (FormatEntity formatEntity : formatEntities) {
-            vFormatEntities.add(new VFormatEntity(formatEntity));
+        VTypeEntity requestVTypeEntity = JSON.parseObject(params, VTypeEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVTypeEntity.checkTypeIdParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVTypeEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VTypeEntity.class, "typeId")));
+            return;
         }
-        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), vFormatEntities, "success");
-        renderJson(JSON.toJSONString(iResultSet));
+
+        LinkedList<FormatEntity> formatEntities = iFormatServices.mRetrievesInType(requestVTypeEntity);
+        if (formatEntities == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVTypeEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VTypeEntity.class, "typeId")));
+            return;
+        }
+
+        LinkedList<VFormatEntity> responseVFormatEntities = new LinkedList<>();
+        for (FormatEntity formatEntity : formatEntities) {
+            responseVFormatEntities.add(new VFormatEntity(formatEntity));
+        }
+        if (responseVFormatEntities.size() == 0) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        iResultSet.setData(responseVFormatEntities);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                new SimplePropertyPreFilter(
+                        VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
+                        "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                        "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")}));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mRetrieve() {
 
     }

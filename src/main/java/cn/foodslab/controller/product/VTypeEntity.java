@@ -80,7 +80,7 @@ public class VTypeEntity extends TypeEntity {
         }
     }
 
-    public boolean checkTypeId() {
+    public boolean checkTypeIdParams() {
         if (this.getTypeId() == null || this.getTypeId().equals("")) {
             return false;
         } else {

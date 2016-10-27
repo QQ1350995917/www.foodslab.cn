@@ -41,7 +41,13 @@ public class FormatServices implements IFormatServices {
 
     @Override
     public LinkedList<FormatEntity> retrievesByWeight(int min, int max) {
-        return null;
+        LinkedList<FormatEntity> result = new LinkedList<>();
+        List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE status = 2 order by weight ASC limit 12 offset 0 ");
+        for (Record formatRecord : formatRecords) {
+            FormatEntity formatEntity = JSON.parseObject(JSON.toJSONString(formatRecord.getColumns()), FormatEntity.class);
+            result.add(formatEntity);
+        }
+        return result;
     }
 
     @Override
@@ -77,12 +83,12 @@ public class FormatServices implements IFormatServices {
                 .set("expressStart", formatEntity.getExpressStart())
                 .set("expressEnd", formatEntity.getExpressEnd())
                 .set("expressStatus", formatEntity.getExpressStatus())
-                .set("giftCount", formatEntity.getGiftCount())
-                .set("giftLabel", formatEntity.getGiftLabel())
-                .set("giftId", formatEntity.getGiftId())
-                .set("giftStart", formatEntity.getGiftStart())
-                .set("giftEnd", formatEntity.getGiftEnd())
-                .set("giftStatus", formatEntity.getGiftStatus())
+//                .set("giftCount", formatEntity.getGiftCount())
+//                .set("giftLabel", formatEntity.getGiftLabel())
+//                .set("giftId", formatEntity.getGiftId())
+//                .set("giftStart", formatEntity.getGiftStart())
+//                .set("giftEnd", formatEntity.getGiftEnd())
+//                .set("giftStatus", formatEntity.getGiftStatus())
                 .set("queue", formatEntity.getQueue())
                 .set("status", formatEntity.getStatus())
                 .set("typeId", formatEntity.getTypeId());
@@ -116,12 +122,12 @@ public class FormatServices implements IFormatServices {
                 .set("expressStart", formatEntity.getExpressStart())
                 .set("expressEnd", formatEntity.getExpressEnd())
                 .set("expressStatus", formatEntity.getExpressStatus())
-                .set("giftCount", formatEntity.getGiftCount())
-                .set("giftLabel", formatEntity.getGiftLabel())
-                .set("giftId", formatEntity.getGiftId())
-                .set("giftStart", formatEntity.getGiftStart())
-                .set("giftEnd", formatEntity.getGiftEnd())
-                .set("giftStatus", formatEntity.getGiftStatus())
+//                .set("giftCount", formatEntity.getGiftCount())
+//                .set("giftLabel", formatEntity.getGiftLabel())
+//                .set("giftId", formatEntity.getGiftId())
+//                .set("giftStart", formatEntity.getGiftStart())
+//                .set("giftEnd", formatEntity.getGiftEnd())
+//                .set("giftStatus", formatEntity.getGiftStatus())
                 .set("queue", formatEntity.getQueue())
                 .set("status", formatEntity.getStatus())
                 .set("typeId", formatEntity.getTypeId());
@@ -207,12 +213,6 @@ public class FormatServices implements IFormatServices {
         List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE status = 2 order by weight ASC limit 12 offset 0 ");
         for (Record formatRecord : formatRecords) {
             FormatEntity formatEntity = JSON.parseObject(JSON.toJSONString(formatRecord.getColumns()), FormatEntity.class);
-            List<Record> typeIdRecords = Db.find("SELECT * FROM product_type WHERE typeId = ? ", formatEntity.getTypeId());
-            TypeEntity typeEntity = JSON.parseObject(JSON.toJSONString(typeIdRecords.get(0).getColumns()), TypeEntity.class);
-            List<Record> seriesRecords = Db.find("SELECT * FROM product_series WHERE seriesId = ?", typeEntity.getSeriesId());
-            SeriesEntity seriesEntity = JSON.parseObject(JSON.toJSONString(seriesRecords.get(0).getColumns()), SeriesEntity.class);
-//            typeEntity.setSeriesEntity(seriesEntity);
-//            formatEntity.setTypeEntity(typeEntity);
             result.add(formatEntity);
         }
         return result;
