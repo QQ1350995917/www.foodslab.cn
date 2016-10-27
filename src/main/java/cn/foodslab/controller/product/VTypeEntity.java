@@ -25,6 +25,7 @@ public class VTypeEntity extends TypeEntity {
         this.setSummary(typeEntity.getSummary());
         this.setDirections(typeEntity.getDirections());
         this.setStatus(typeEntity.getStatus());
+        this.setQueue(typeEntity.getQueue());
     }
 
     public String getCs() {
@@ -50,4 +51,42 @@ public class VTypeEntity extends TypeEntity {
     public void setParent(VSeriesEntity parent) {
         this.parent = parent;
     }
+
+    public boolean checkCreateParams() {
+        if (this.getLabel() == null || this.getLabel().trim().equals("")
+                || this.getSeriesId() == null || this.getSeriesId().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkUpdateParams() {
+        if (this.getSeriesId() == null || this.getSeriesId().trim().equals("")
+                || this.getTypeId() == null || this.getTypeId().trim().equals("")
+                || this.getLabel() == null || this.getLabel().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkMarkParams() {
+        if (this.getTypeId() == null || this.getTypeId().equals("")
+                || (this.getStatus() != -1 && this.getStatus() != 1 && this.getStatus() != 2)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkTypeId() {
+        if (this.getTypeId() == null || this.getTypeId().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
 }

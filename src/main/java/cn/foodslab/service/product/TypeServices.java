@@ -48,6 +48,7 @@ public class TypeServices implements ITypeServices {
 
     @Override
     public TypeEntity mCreate(TypeEntity typeEntity) {
+        Db.update("UPDATE product_type SET queue = queue + 1");
         Record record = new Record().set("seriesId", typeEntity.getSeriesId()).set("typeId", typeEntity.getTypeId()).set("label", typeEntity.getLabel());
         boolean save = Db.save("product_type", record);
         if (save) {
@@ -59,7 +60,6 @@ public class TypeServices implements ITypeServices {
 
     @Override
     public TypeEntity mUpdate(TypeEntity typeEntity) {
-        Db.update("UPDATE product_type SET queue = queue + 1");
         int update = Db.update("UPDATE product_type SET label = ? WHERE typeId = ? ", typeEntity.getLabel(), typeEntity.getTypeId());
         if (update == 1) {
             return typeEntity;

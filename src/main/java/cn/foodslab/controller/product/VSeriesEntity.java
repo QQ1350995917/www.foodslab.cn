@@ -65,4 +65,12 @@ public class VSeriesEntity extends SeriesEntity {
             return true;
         }
     }
+
+    public boolean checkSeriesId() {
+        if (this.getSeriesId() == null || this.getSeriesId().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
