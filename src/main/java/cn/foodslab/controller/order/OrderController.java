@@ -9,6 +9,7 @@ import cn.foodslab.controller.product.VSeriesEntity;
 import cn.foodslab.controller.product.VTypeEntity;
 import cn.foodslab.controller.receiver.VReceiverEntity;
 import cn.foodslab.controller.user.VUserEntity;
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.cart.CartEntity;
@@ -25,6 +26,8 @@ import cn.foodslab.service.user.AccountEntity;
 import cn.foodslab.service.user.AccountServices;
 import cn.foodslab.service.user.IAccountServices;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializeFilter;
+import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 
@@ -58,7 +61,7 @@ public class OrderController extends Controller implements IOrderController {
         vOrderEntity.setStatus(1);
         String orderId = UUID.randomUUID().toString();
         float orderTotalPrice = 0.0f;
-        VUserEntity vUserEntity = (VUserEntity)SessionContext.getSession(vOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
+        VUserEntity vUserEntity = (VUserEntity) SessionContext.getSession(vOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
         vOrderEntity.setAccountId(vUserEntity.getChildren().get(0).getAccountId());
         vOrderEntity.setOrderId(orderId);
         vOrderEntity.setCost(orderTotalPrice);
@@ -91,7 +94,7 @@ public class OrderController extends Controller implements IOrderController {
          */
         VReceiverEntity receiverEntity = vOrderEntity.getReceiver();
         receiverEntity.setReceiverId(UUID.randomUUID().toString());
-        ReceiverEntity resultReceiver = iReceiverService.create(null,receiverEntity);
+        ReceiverEntity resultReceiver = iReceiverService.create(null, receiverEntity);
         if (resultReceiver != null) {
             String orderId = UUID.randomUUID().toString();
             vOrderEntity.setOrderId(orderId);
@@ -131,26 +134,45 @@ public class OrderController extends Controller implements IOrderController {
     @Override
     public void expressed() {
         String params = this.getPara("p");
-        VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
-        VUserEntity vUserEntity = (VUserEntity)SessionContext.getSession(vOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
-        OrderEntity result = iOrderServices.expressed(vUserEntity.getChildren(),vOrderEntity);
-        if (result == null) {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "fail");
+        VOrderEntity requestVOrderEntity = JSON.parseObject(params, VOrderEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVOrderEntity.checkOrderIdParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
             renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), vOrderEntity, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+            return;
         }
+
+        VUserEntity vUserEntity = (VUserEntity) SessionContext.getSession(requestVOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
+        OrderEntity result = iOrderServices.expressed(vUserEntity.getChildren(), requestVOrderEntity);
+        if (result == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet));
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet));
     }
 
     @Before(SessionInterceptor.class)
     @Override
     public void retrieves() {
         String params = this.getPara("p");
-        VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
-        VUserEntity vUserEntity = (VUserEntity)SessionContext.getSession(vOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
-        LinkedList<VOrderEntity> result = new LinkedList<>();
+        VOrderEntity requestVOrderEntity = JSON.parseObject(params, VOrderEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        VUserEntity vUserEntity = (VUserEntity) SessionContext.getSession(requestVOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
         LinkedList<OrderEntity> orderEntities = iOrderServices.retrievesByAccounts(vUserEntity.getChildren(), 0, 0, 0);
+        if (orderEntities == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet));
+            return;
+        }
+
+        LinkedList<VOrderEntity> responseVOrderEntities = new LinkedList<>();
         for (int index = 0; index < orderEntities.size(); index++) {
             OrderEntity orderEntity = orderEntities.get(index);
             VOrderEntity vOrderEntity1 = new VOrderEntity(orderEntity);
@@ -168,22 +190,33 @@ public class OrderController extends Controller implements IOrderController {
                 vFormatEntities.add(vFormatEntity);
             }
             vOrderEntity1.setFormatEntities(vFormatEntities);
-            result.add(vOrderEntity1);
+            responseVOrderEntities.add(vOrderEntity1);
         }
-        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-        iResultSet.setData(result);
-        iResultSet.setMessage("success");
-        renderJson(JSON.toJSONString(iResultSet));
+
+        if (responseVOrderEntities.size() == 0) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        iResultSet.setData(responseVOrderEntities);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "formatEntities"),
+                new SimplePropertyPreFilter(VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "parent"),
+                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label", "parent"),
+                new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
+        }));
     }
 
 
     @Override
     public void query() {
+        String params = this.getPara("p");
+        VOrderEntity requestVOrderEntity = JSON.parseObject(params, VOrderEntity.class);
         IResultSet iResultSet = new ResultSet();
-        String orderId = getPara("orderId");
-        if (orderId != null) {
+        if (requestVOrderEntity.checkOrderIdParams()) {
             QueryPageEntity queryPageEntity = new QueryPageEntity();
-            LinkedList<OrderEntity> query = iOrderServices.query(orderId, 0, 0);
+            LinkedList<OrderEntity> query = iOrderServices.query(requestVOrderEntity.getOrderId(), 0, 0);
             OrderEntity orderEntity = query.get(0);
             ReceiverEntity receiverEntity = iReceiverService.retrieveById(orderEntity.getReceiverId());
 
@@ -197,22 +230,50 @@ public class OrderController extends Controller implements IOrderController {
             queryPageEntity.setExpressNumber("1234567890");
             queryPageEntity.setExpressStatus("2016年1月25日 下午7:06:38  北京市|到件|到北京市【北京分拨中心】北京市|发件|北京市【BEX北京昌平区天龙二部】，正发往【北京金盏分拨中心】");
 
-            iResultSet.setCode(200);
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
             iResultSet.setData(queryPageEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
             renderJson(JSON.toJSONString(iResultSet));
         } else {
-
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+            renderJson(JSON.toJSONString(iResultSet));
         }
     }
 
     @Override
-    @Before({SessionInterceptor.class, MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mRetrievesByUser() {
         String params = this.getPara("p");
-        VManagerEntity vManagerEntity = JSON.parseObject(params, VManagerEntity.class);
-        LinkedList<VOrderEntity> result = new LinkedList<>();
-        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(vManagerEntity.getUser().getUserId());
+        VManagerEntity requestVManagerEntity = JSON.parseObject(params, VManagerEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVManagerEntity.checkUserParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVManagerEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VManagerEntity.class, "user")));
+            return;
+        }
+
+        LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(requestVManagerEntity.getUser().getUserId());
+        if (accountEntities == null || accountEntities.size() < 1) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVManagerEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VManagerEntity.class, "user")));
+            return;
+        }
+
         LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrievesByUser(accountEntities, 0, 0, 0);
+        if (orderEntities == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVManagerEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VManagerEntity.class, "user")));
+            return;
+        }
+
+        LinkedList<VOrderEntity> responseVOrderEntities = new LinkedList<>();
         for (int index = 0; index < orderEntities.size(); index++) {
             OrderEntity orderEntity = orderEntities.get(index);
             VOrderEntity vOrderEntity = new VOrderEntity(orderEntity);
@@ -230,21 +291,47 @@ public class OrderController extends Controller implements IOrderController {
                 vFormatEntities.add(vFormatEntity);
             }
             vOrderEntity.setFormatEntities(vFormatEntities);
-            result.add(vOrderEntity);
+            responseVOrderEntities.add(vOrderEntity);
         }
-        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-        iResultSet.setData(result);
-        iResultSet.setMessage("success");
-        renderJson(JSON.toJSONString(iResultSet));
+        if (responseVOrderEntities.size() == 0) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        iResultSet.setData(responseVOrderEntities);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "formatEntities"),
+                new SimplePropertyPreFilter(VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "parent"),
+                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label", "parent"),
+                new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
+        }));
     }
 
     @Override
-    @Before({SessionInterceptor.class, MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mRetrieves() {
         String params = this.getPara("p");
-        VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
-        LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrieves(vOrderEntity.getStatus(), 0, 0);
-        LinkedList<VOrderEntity> vOrderEntities = new LinkedList<>();
+        VOrderEntity requestVOrderEntity = JSON.parseObject(params, VOrderEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVOrderEntity.checkStatusParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVOrderEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VOrderEntity.class, "status")));
+            return;
+        }
+
+        LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrieves(requestVOrderEntity.getStatus(), 0, 0);
+        if (orderEntities == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVOrderEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VOrderEntity.class, "status")));
+            return;
+        }
+
+        LinkedList<VOrderEntity> responseVOrderEntities = new LinkedList<>();
         for (OrderEntity orderEntity : orderEntities) {
             VOrderEntity result = new VOrderEntity(orderEntity);
             LinkedList<CartEntity> cartEntities = iCartServices.mRetrievesByOrderId(orderEntity.getOrderId());
@@ -261,28 +348,48 @@ public class OrderController extends Controller implements IOrderController {
                 vFormatEntities.add(vFormatEntity);
             }
             result.setFormatEntities(vFormatEntities);
-            vOrderEntities.add(result);
+            responseVOrderEntities.add(result);
         }
-        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-        iResultSet.setData(vOrderEntities);
-        renderJson(JSON.toJSONString(iResultSet));
+        if (responseVOrderEntities.size() == 0) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        iResultSet.setData(responseVOrderEntities);
+        renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "formatEntities"),
+                new SimplePropertyPreFilter(VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "parent"),
+                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label", "parent"),
+                new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
+        }));
     }
 
     @Override
-    @Before({SessionInterceptor.class, MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mExpressing() {
         String params = this.getPara("p");
-        VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
-        OrderEntity result = iOrderServices.mExpressing(vOrderEntity);
-        if (result == null) {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode());
-            iResultSet.setData(vOrderEntity);
-            renderJson(JSON.toJSONString(iResultSet));
-        } else {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-            iResultSet.setData(vOrderEntity);
-            renderJson(JSON.toJSONString(iResultSet));
+        VOrderEntity requestVOrderEntity = JSON.parseObject(params, VOrderEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVOrderEntity.checkExpressParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVOrderEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VOrderEntity.class, "expressLabel", "expressNumber")));
+            return;
         }
+        OrderEntity result = iOrderServices.mExpressing(requestVOrderEntity);
+        if (result == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVOrderEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VOrderEntity.class, "expressLabel", "expressNumber")));
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(requestVOrderEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VOrderEntity.class, "expressLabel", "expressNumber")));
     }
 
     @Override

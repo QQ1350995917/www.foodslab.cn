@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 2016-10-27 06:25:41
+-- Generation Time: 2016-10-28 08:43:22
 -- 服务器版本： 5.6.22
 -- PHP Version: 5.5.20
 
@@ -175,7 +175,6 @@ CREATE TABLE IF NOT EXISTS `poster` (
   `createTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
 -- --------------------------------------------------------
 
 --
@@ -184,14 +183,14 @@ CREATE TABLE IF NOT EXISTS `poster` (
 
 CREATE TABLE IF NOT EXISTS `product_format` (
   `formatId` varchar(36) NOT NULL,
-  `label` varchar(32) NOT NULL,
+  `label` int(11) NOT NULL COMMENT '规格的数量',
   `meta` varchar(8) NOT NULL COMMENT '单位',
   `amount` int(11) NOT NULL COMMENT '该规格下的产品数量',
   `amountMeta` varchar(8) NOT NULL COMMENT '该规格下的产品数量单位',
   `price` float NOT NULL COMMENT '额定定价',
-  `priceMeta` varchar(8) NOT NULL COMMENT '数量单位',
+  `priceMeta` varchar(8) DEFAULT '￥' COMMENT '数量单位',
   `postage` int(4) NOT NULL COMMENT '邮费',
-  `postageMeta` varchar(8) NOT NULL COMMENT '邮费单位',
+  `postageMeta` varchar(8) DEFAULT '￥' COMMENT '邮费单位',
   `pricing` float DEFAULT NULL COMMENT '现价',
   `pricingDiscount` float NOT NULL DEFAULT '1' COMMENT '折扣',
   `pricingStart` bigint(20) DEFAULT NULL COMMENT '折扣和价格的开始时间',
@@ -207,7 +206,7 @@ CREATE TABLE IF NOT EXISTS `product_format` (
   `giftId` varchar(36) DEFAULT NULL COMMENT '满赠产品的ID',
   `giftStart` bigint(20) DEFAULT NULL COMMENT '满赠开始时间',
   `giftEnd` bigint(20) DEFAULT NULL COMMENT '满赠结束时间',
-  `giftStatus` int(1) NOT NULL DEFAULT '1' COMMENT '满赠的状，1禁用，2启用',
+  `giftStatus` int(1) DEFAULT '1' COMMENT '满赠的状，1禁用，2启用',
   `queue` int(4) NOT NULL DEFAULT '0' COMMENT '排序字段',
   `weight` int(4) NOT NULL DEFAULT '0' COMMENT '全局权重，推荐相关，小于0为推荐，越小权重越高',
   `status` int(1) NOT NULL DEFAULT '1' COMMENT '-1标示删除，1标示禁用，2标示正常',
@@ -215,7 +214,6 @@ CREATE TABLE IF NOT EXISTS `product_format` (
   `createTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 -- --------------------------------------------------------
 
@@ -283,7 +281,6 @@ CREATE TABLE IF NOT EXISTS `user_account` (
   `createTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 -- --------------------------------------------------------
 

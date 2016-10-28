@@ -16,7 +16,7 @@ public class VManagerEntity extends ManagerEntity implements ISessionEntity {
     private String cs;//驻留session的内容
     private LinkedList<String> actionKeys;//驻留session的内容
     private LinkedList<VMenuEntity> menus;
-    private VUserEntity user;
+    private VUserEntity user;//管理员访问某个用户的信息
 
     public VManagerEntity() {
         super();
@@ -162,4 +162,14 @@ public class VManagerEntity extends ManagerEntity implements ISessionEntity {
             return false;
         }
     }
+
+    public boolean checkUserParams() {
+        if (this.getUser() == null || this.getUser().getUserId() == null || this.getUser().getUserId().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    ;
 }

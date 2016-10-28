@@ -9,6 +9,7 @@ import cn.foodslab.service.receiver.ReceiverEntity;
  */
 public class VReceiverEntity extends ReceiverEntity {
     private String cs;
+
     public VReceiverEntity() {
         super();
     }
@@ -34,4 +35,51 @@ public class VReceiverEntity extends ReceiverEntity {
     public void setCs(String cs) {
         this.cs = cs;
     }
+
+    public boolean checkReceiverIdParams() {
+        if (this.getReceiverId() == null || this.getReceiverId().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkCreateParams() {
+        if (this.getName() == null || this.getName().trim().equals("")) {
+            return false;
+        }
+        if (this.getPhone0() == null || this.getPhone0().trim().equals("")) {
+            return false;
+        }
+        if (this.getProvince() == null || this.getProvince().trim().equals("")) {
+            return false;
+        }
+        if (this.getCity() == null || this.getCity().trim().equals("")) {
+            return false;
+        }
+        if (this.getCounty() == null || this.getCounty().trim().equals("")) {
+            return false;
+        }
+        if (this.getTown() == null || this.getTown().trim().equals("")) {
+            return false;
+        }
+        if (this.getVillage() == null || this.getVillage().trim().equals("")) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean checkUpdateParams() {
+        if (!this.checkCreateParams()) {
+            return false;
+        }
+        if (this.getReceiverId() == null || this.getReceiverId().trim().equals("")) {
+            return false;
+        }
+        if (this.getStatus() != 2 && this.getStatus() != 3) {
+            return false;
+        }
+        return true;
+    }
+
 }

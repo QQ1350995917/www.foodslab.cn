@@ -3,7 +3,9 @@ package cn.foodslab.controller.receiver;
 import cn.foodslab.common.cache.SessionContext;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.controller.manager.VManagerEntity;
 import cn.foodslab.controller.user.VUserEntity;
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.receiver.IReceiverService;
@@ -13,6 +15,7 @@ import cn.foodslab.service.user.AccountEntity;
 import cn.foodslab.service.user.AccountServices;
 import cn.foodslab.service.user.IAccountServices;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 
@@ -38,122 +41,212 @@ public class ReceiverController extends Controller implements IReceiverControlle
     @Before(SessionInterceptor.class)
     public void retrieves() {
         String params = this.getPara("p");
-        VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
-        VUserEntity sessionUserEntity = SessionContext.getSessionUser(vUserEntity.getCs());
-        LinkedList<VReceiverEntity> result = new LinkedList<>();
+        VUserEntity requestVUserEntity = JSON.parseObject(params, VUserEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        VUserEntity sessionUserEntity = SessionContext.getSessionUser(requestVUserEntity.getCs());
         LinkedList<ReceiverEntity> receiverEntities = iReceiverService.retrieves(sessionUserEntity.getChildren());
-        for (ReceiverEntity receiverEntity : receiverEntities) {
-            result.add(new VReceiverEntity(receiverEntity));
+        if (receiverEntities == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet));
+            return;
         }
-        IResultSet resultSet = new ResultSet();
-        resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-        resultSet.setData(result);
-        renderJson(JSON.toJSONString(resultSet));
+
+        LinkedList<VReceiverEntity> responseVReceiverEntities = new LinkedList<>();
+        for (ReceiverEntity receiverEntity : receiverEntities) {
+            responseVReceiverEntities.add(new VReceiverEntity(receiverEntity));
+        }
+        if (responseVReceiverEntities.size() == 0) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        iResultSet.setData(responseVReceiverEntities);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet,
+                new SimplePropertyPreFilter(
+                        VReceiverEntity.class, "receiverId", "name", "phone0", "phone1", "province", "city", "county", "town",
+                        "village", "append", "status", "accountId")));
     }
 
     @Override
     @Before(SessionInterceptor.class)
     public void create() {
         String params = this.getPara("p");
-        VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
-        vReceiverEntity.setStatus(2);
-        VUserEntity sessionUser = SessionContext.getSessionUser(vReceiverEntity.getCs());
-        String receiverId = UUID.randomUUID().toString();
-        vReceiverEntity.setReceiverId(receiverId);
-        ReceiverEntity receiverEntity = iReceiverService.create(sessionUser.getChildren().get(0),vReceiverEntity);
-        if (receiverEntity == null) {
-            vReceiverEntity.setReceiverId(null);
-            IResultSet resultSet = new ResultSet();
-            resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
-            resultSet.setData(vReceiverEntity);
-            renderJson(JSON.toJSONString(resultSet));
-        } else {
-            VReceiverEntity result = new VReceiverEntity(receiverEntity);
-            IResultSet resultSet = new ResultSet();
-            resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-            resultSet.setData(result);
-            renderJson(JSON.toJSONString(resultSet));
+        VReceiverEntity requestVReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVReceiverEntity.checkCreateParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVReceiverEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet,
+                    new SimplePropertyPreFilter(VReceiverEntity.class,
+                            "name", "phone0", "phone1", "province", "city", "county", "town", "village", "append")));
+            return;
         }
+
+        VUserEntity sessionUser = SessionContext.getSessionUser(requestVReceiverEntity.getCs());
+        String receiverId = UUID.randomUUID().toString();
+        requestVReceiverEntity.setStatus(2);
+        requestVReceiverEntity.setReceiverId(receiverId);
+        ReceiverEntity receiverEntity = iReceiverService.create(sessionUser.getChildren().get(0), requestVReceiverEntity);
+        if (receiverEntity == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVReceiverEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet,
+                    new SimplePropertyPreFilter(VReceiverEntity.class,
+                            "name", "phone0", "phone1", "province", "city", "county", "town", "village", "append")));
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(new VReceiverEntity(receiverEntity));
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VReceiverEntity.class, "receiverId",
+                "name", "phone0", "phone1", "province", "city", "county", "town", "village", "append", "status")));
+        return;
     }
 
     @Override
     @Before(SessionInterceptor.class)
     public void update() {
         String params = this.getPara("p");
-        VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
-        VUserEntity sessionUser = SessionContext.getSessionUser(vReceiverEntity.getCs());
-        ReceiverEntity receiverEntity = iReceiverService.updateById(sessionUser.getChildren(),vReceiverEntity);
-        if (receiverEntity == null) {
-            IResultSet resultSet = new ResultSet();
-            resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
-            resultSet.setData(vReceiverEntity);
-            renderJson(JSON.toJSONString(resultSet));
-        } else {
-            VReceiverEntity result = new VReceiverEntity(receiverEntity);
-            IResultSet resultSet = new ResultSet();
-            resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-            resultSet.setData(result);
-            renderJson(JSON.toJSONString(resultSet));
+        VReceiverEntity requestVReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVReceiverEntity.checkUpdateParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVReceiverEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VReceiverEntity.class, "receiverId",
+                    "name", "phone0", "phone1", "province", "city", "county", "town", "village", "append", "status")));
+            return;
         }
+
+        VUserEntity sessionUser = SessionContext.getSessionUser(requestVReceiverEntity.getCs());
+        ReceiverEntity receiverEntity = iReceiverService.updateById(sessionUser.getChildren(), requestVReceiverEntity);
+        if (receiverEntity == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVReceiverEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VReceiverEntity.class, "receiverId",
+                    "name", "phone0", "phone1", "province", "city", "county", "town", "village", "append", "status")));
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(new VReceiverEntity(receiverEntity));
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VReceiverEntity.class, "receiverId",
+                "name", "phone0", "phone1", "province", "city", "county", "town", "village", "append", "status")));
+        return;
     }
 
     @Override
     @Before(SessionInterceptor.class)
     public void delete() {
         String params = this.getPara("p");
-        VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
-        VUserEntity sessionUser = SessionContext.getSessionUser(vReceiverEntity.getCs());
-        ReceiverEntity receiverEntity = iReceiverService.deleteById(sessionUser.getChildren(),vReceiverEntity.getReceiverId());
-        if (receiverEntity == null) {
-            IResultSet resultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode());
-            resultSet.setData(vReceiverEntity);
-            renderJson(JSON.toJSONString(resultSet));
-        } else {
-            IResultSet resultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-            resultSet.setData(vReceiverEntity);
-            renderJson(JSON.toJSONString(resultSet));
+        VReceiverEntity requestVReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVReceiverEntity.checkReceiverIdParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVReceiverEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VReceiverEntity.class, "receiverId")));
+            return;
         }
+
+        VUserEntity sessionUser = SessionContext.getSessionUser(requestVReceiverEntity.getCs());
+        ReceiverEntity receiverEntity = iReceiverService.deleteById(sessionUser.getChildren(), requestVReceiverEntity.getReceiverId());
+        if (receiverEntity == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVReceiverEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VReceiverEntity.class, "receiverId")));
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(requestVReceiverEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VReceiverEntity.class, "receiverId")));
     }
 
     @Override
     @Before(SessionInterceptor.class)
     public void king() {
         String params = this.getPara("p");
-        VReceiverEntity vReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
-        VUserEntity sessionUser = SessionContext.getSessionUser(vReceiverEntity.getCs());
-        ReceiverEntity receiverEntity = iReceiverService.kingReceiverInUser(sessionUser.getChildren(), vReceiverEntity);
-        if (receiverEntity == null) {
-            IResultSet resultSet = new ResultSet();
-            resultSet.setCode(IResultSet.ResultCode.EXE_FAIL.getCode());
-            resultSet.setData(new VReceiverEntity(vReceiverEntity));
-            renderJson(JSON.toJSONString(resultSet));
-        } else {
-            IResultSet resultSet = new ResultSet();
-            resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-            VReceiverEntity result = new VReceiverEntity(receiverEntity);
-            resultSet.setData(result);
-            renderJson(JSON.toJSONString(resultSet));
+        VReceiverEntity requestVReceiverEntity = JSON.parseObject(params, VReceiverEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVReceiverEntity.checkReceiverIdParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVReceiverEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VReceiverEntity.class, "receiverId")));
+            return;
         }
+
+        VUserEntity sessionUser = SessionContext.getSessionUser(requestVReceiverEntity.getCs());
+        ReceiverEntity receiverEntity = iReceiverService.kingReceiverInUser(sessionUser.getChildren(), requestVReceiverEntity);
+        if (receiverEntity == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVReceiverEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VReceiverEntity.class, "receiverId")));
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(requestVReceiverEntity);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VReceiverEntity.class, "receiverId")));
     }
 
     @Override
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mRetrieveByUser() {
         String params = this.getPara("p");
-        VUserEntity vUserEntity = JSON.parseObject(params, VUserEntity.class);
-        LinkedList<AccountEntity> accountEntities = iAccountServices.mRetrieveByUserId(vUserEntity.getUserId());
-        String[] accountIds = new String[accountEntities.size()];
-        for (int index = 0; index < accountEntities.size(); index++) {
-            accountIds[index] = accountEntities.get(index).getAccountId();
+        VManagerEntity requestVManagerEntity = JSON.parseObject(params, VManagerEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (!requestVManagerEntity.checkUserParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVManagerEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VManagerEntity.class, "user")));
+            return;
         }
-        LinkedList<VReceiverEntity> result = new LinkedList<>();
-        LinkedList<ReceiverEntity> receiverEntities = iReceiverService.mRetrieves(accountIds);
+
+        LinkedList<AccountEntity> accountEntities = iAccountServices.mRetrieveByUserId(requestVManagerEntity.getUser().getUserId());
+        if (accountEntities == null || accountEntities.size() < 1) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVManagerEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VManagerEntity.class, "user")));
+            return;
+        }
+
+        LinkedList<ReceiverEntity> receiverEntities = iReceiverService.mRetrieves(accountEntities);
+        if (receiverEntities == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVManagerEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VManagerEntity.class, "user")));
+            return;
+        }
+
+        LinkedList<VReceiverEntity> responseVReceiverEntities = new LinkedList<>();
         for (ReceiverEntity receiverEntity : receiverEntities) {
-            result.add(new VReceiverEntity(receiverEntity));
+            responseVReceiverEntities.add(new VReceiverEntity(receiverEntity));
         }
-        IResultSet resultSet = new ResultSet();
-        resultSet.setCode(IResultSet.ResultCode.EXE_SUCCESS.getCode());
-        resultSet.setData(result);
-        renderJson(JSON.toJSONString(resultSet));
+        if (responseVReceiverEntities.size() == 0) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
+        iResultSet.setData(responseVReceiverEntities);
+        renderJson(JSON.toJSONString(iResultSet,
+                new SimplePropertyPreFilter(
+                        VReceiverEntity.class, "receiverId", "name", "phone0", "phone1", "province", "city", "county", "town",
+                        "village", "append", "status", "accountId")));
     }
 }

@@ -1,5 +1,6 @@
 package cn.foodslab.controller.order;
 
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import com.jfinal.aop.Before;
@@ -53,28 +54,28 @@ public interface IOrderController {
      * 管理员接口
      * 根据状态分页查找所有订单
      */
-    @Before({SessionInterceptor.class, MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class,MenuInterceptor.class})
     void mRetrieves();
 
     /**
      * 管理员接口
      * 根据用户分页分状态查询订单
      */
-    @Before({SessionInterceptor.class, MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class,MenuInterceptor.class})
     void mRetrievesByUser();
 
     /**
      * 管理员接口
      * 根据订单发货
      */
-    @Before({SessionInterceptor.class, MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class,MenuInterceptor.class})
     void mExpressing();
 
     /**
      * 管理员接口
      * 管理员查询订单
      */
-    @Before({SessionInterceptor.class, MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class,MenuInterceptor.class})
     void mQuery();
 
 }

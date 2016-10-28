@@ -200,6 +200,8 @@ public class FormatController extends Controller implements IFormatController {
         } else {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
         }
+        iResultSet.setData(responseVFormatEntities);
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
                 new SimplePropertyPreFilter(
                         VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price",

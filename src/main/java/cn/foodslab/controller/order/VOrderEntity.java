@@ -74,4 +74,29 @@ public class VOrderEntity extends OrderEntity implements Comparable {
             return 1;
         }
     }
+
+    public boolean checkOrderIdParams() {
+        if (this.getOrderId() == null || this.getOrderId().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkStatusParams() {
+        if (this.getStatus() != -1 && this.getStatus() != 0 && this.getStatus() != 1 && this.getStatus() != 2 && this.getStatus() != 3) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkExpressParams() {
+        if (this.getExpressLabel() == null || this.getExpressLabel().trim().equals("")
+                || this.getExpressNumber() == null || this.getExpressNumber().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

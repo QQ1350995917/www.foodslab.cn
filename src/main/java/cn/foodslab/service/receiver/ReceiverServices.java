@@ -137,15 +137,19 @@ public class ReceiverServices implements IReceiverService {
     }
 
     @Override
-    public LinkedList<ReceiverEntity> mRetrieves(String accountId) {
-        return this.mRetrieves(new String[]{accountId});
+    public LinkedList<ReceiverEntity> mRetrieves(AccountEntity accountEntity) {
+        LinkedList<AccountEntity> accountEntities = new LinkedList<>();
+        accountEntities.add(accountEntity);
+        return this.mRetrieves(accountEntities);
     }
 
     @Override
-    public LinkedList<ReceiverEntity> mRetrieves(String[] accountIds) {
+    public LinkedList<ReceiverEntity> mRetrieves(LinkedList<AccountEntity> accountEntities) {
         String in = "";
-        for (String accountId : accountIds) {
+        String[] accountIds = new String[accountEntities.size()];
+        for (int index=0;index<accountEntities.size();index++) {
             in = in + " ? ,";
+            accountIds[index] = accountEntities.get(index).getAccountId();
         }
         if (in.length() > 0) {
             in = in.substring(0, in.length() - 1);

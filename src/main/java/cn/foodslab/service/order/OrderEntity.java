@@ -1,9 +1,5 @@
 package cn.foodslab.service.order;
 
-import cn.foodslab.service.product.FormatEntity;
-
-import java.util.LinkedList;
-
 /**
  * Created by Pengwei Ding on 2016-08-31 13:54.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
@@ -22,36 +18,10 @@ public class OrderEntity {
     private String expressNumber;
     private long createTime;
     private long updateTime;
-    private LinkedList<FormatEntity> products;
+
 
     public OrderEntity() {
         super();
-    }
-
-    public OrderEntity(String orderId, String accountId, String senderName, String senderPhone, String receiverId, float cost, float postage, int status, String expressLabel, String expressNumber, long createTime, long updateTime) {
-        this.orderId = orderId;
-        this.accountId = accountId;
-        this.senderName = senderName;
-        this.senderPhone = senderPhone;
-        this.receiverId = receiverId;
-        this.cost = cost;
-        this.postage = postage;
-        this.status = status;
-        this.expressLabel = expressLabel;
-        this.expressNumber = expressNumber;
-        this.createTime = createTime;
-        this.updateTime = updateTime;
-    }
-
-    public OrderEntity(String orderId, String accountId, String senderName, String senderPhone, String receiverId, float cost, float postage, int status) {
-        this.orderId = orderId;
-        this.accountId = accountId;
-        this.senderName = senderName;
-        this.senderPhone = senderPhone;
-        this.receiverId = receiverId;
-        this.cost = cost;
-        this.postage = postage;
-        this.status = status;
     }
 
     public String getOrderId() {
@@ -148,13 +118,5 @@ public class OrderEntity {
 
     public void setUpdateTime(long updateTime) {
         this.updateTime = updateTime;
-    }
-
-    public LinkedList<FormatEntity> getProducts() {
-        return products;
-    }
-
-    public void setProducts(LinkedList<FormatEntity> products) {
-        this.products = products;
     }
 }

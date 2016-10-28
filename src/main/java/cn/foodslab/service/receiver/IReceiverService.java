@@ -81,18 +81,18 @@ public interface IReceiverService {
      * 管理员接口
      * 在后台读取账户名下的收货人信息
      *
-     * @param accountId 用户ID
+     * @param accountEntity 用户账户
      * @return fail null success 收货人信息集合
      */
-    LinkedList<ReceiverEntity> mRetrieves(String accountId);
+    LinkedList<ReceiverEntity> mRetrieves(AccountEntity accountEntity);
 
     /**
      * 管理员接口
      * 在后台读取账户名下的收货人信息
      *
-     * @param accountIds 用户IDs
+     * @param accountEntities 用户账户
      * @return fail null success 收货人信息集合
      */
-    LinkedList<ReceiverEntity> mRetrieves(String[] accountIds);
+    LinkedList<ReceiverEntity> mRetrieves(LinkedList<AccountEntity> accountEntities);
 
 }

@@ -1,5 +1,6 @@
 package cn.foodslab.controller.receiver;
 
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import com.jfinal.aop.Before;
@@ -62,7 +63,7 @@ public interface IReceiverController {
      * 读取用户名下的收货人地址
      * 该接口由被授权的管理员调用
      */
-    @Before({SessionInterceptor.class,MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class,MenuInterceptor.class})
     void mRetrieveByUser();
 
 }
