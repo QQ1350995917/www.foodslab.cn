@@ -64,8 +64,8 @@ public class FormatController extends Controller implements IFormatController {
         iResultSet.setData(responseVFormatEntities);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
-                VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price",
+                "postage", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
                 "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
     }
 
@@ -96,8 +96,8 @@ public class FormatController extends Controller implements IFormatController {
         iResultSet.setData(responseFormatEntity);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
-                VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price",
+                "postage", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
                 "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
     }
 
@@ -155,10 +155,10 @@ public class FormatController extends Controller implements IFormatController {
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
                 new SimplePropertyPreFilter(
-                        VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                        "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
-                        "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status"),
-                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label"),
+                        VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price",
+                        "postage", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                        "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status","parent"),
+                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label","parent"),
                 new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
         }));
 
@@ -202,10 +202,10 @@ public class FormatController extends Controller implements IFormatController {
         }
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
                 new SimplePropertyPreFilter(
-                        VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                        "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
-                        "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status"),
-                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label"),
+                        VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price",
+                        "postage", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                        "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status","parent"),
+                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label","parent"),
                 new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
         }));
     }
@@ -221,8 +221,8 @@ public class FormatController extends Controller implements IFormatController {
             iResultSet.setData(requestVFormatEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
             renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
-                    VFormatEntity.class, "typeId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                    "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                    VFormatEntity.class, "typeId", "label", "meta", "amount", "amountMeta", "price",
+                    "postage", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
                     "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
             return;
         }
@@ -235,8 +235,8 @@ public class FormatController extends Controller implements IFormatController {
             iResultSet.setData(requestVFormatEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_CANNOT_REPEAT);
             renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
-                    VFormatEntity.class, "typeId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                    "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                    VFormatEntity.class, "typeId", "label", "meta", "amount", "amountMeta", "price",
+                    "postage",  "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
                     "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
             return;
         }
@@ -247,8 +247,8 @@ public class FormatController extends Controller implements IFormatController {
             iResultSet.setData(requestVFormatEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
             renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
-                    VFormatEntity.class, "typeId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                    "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                    VFormatEntity.class, "typeId", "label", "meta", "amount", "amountMeta", "price",
+                    "postage",  "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
                     "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
             return;
         }
@@ -258,8 +258,8 @@ public class FormatController extends Controller implements IFormatController {
         iResultSet.setData(responseFormatEntity);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
-                VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price",
+                "postage",  "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
                 "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
     }
 
@@ -274,8 +274,8 @@ public class FormatController extends Controller implements IFormatController {
             iResultSet.setData(requestVFormatEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
             renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
-                    VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                    "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                    VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price",
+                    "postage", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
                     "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
             return;
         }
@@ -286,8 +286,8 @@ public class FormatController extends Controller implements IFormatController {
             iResultSet.setData(requestVFormatEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_CANNOT_REPEAT);
             renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
-                    VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                    "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                    VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price",
+                    "postage", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
                     "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
             return;
         }
@@ -298,8 +298,8 @@ public class FormatController extends Controller implements IFormatController {
             iResultSet.setData(requestVFormatEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
             renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
-                    VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                    "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                    VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price",
+                    "postage",  "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
                     "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
             return;
         }
@@ -309,8 +309,8 @@ public class FormatController extends Controller implements IFormatController {
         iResultSet.setData(responseFormatEntity);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(
-                VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price",
+                "postage", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
                 "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")));
     }
 
@@ -457,10 +457,10 @@ public class FormatController extends Controller implements IFormatController {
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
                 new SimplePropertyPreFilter(
-                        VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                        "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
-                        "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status"),
-                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label"),
+                        VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price",
+                        "postage", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                        "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status","parent"),
+                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label","parent"),
                 new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
         }));
     }
@@ -501,8 +501,8 @@ public class FormatController extends Controller implements IFormatController {
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
                 new SimplePropertyPreFilter(
-                        VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
-                        "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
+                        VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price",
+                        "postage", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",
                         "expressCount", "expressName", "expressStart", "expressEnd", "expressStatus", "queue", "weight", "status")}));
     }
 

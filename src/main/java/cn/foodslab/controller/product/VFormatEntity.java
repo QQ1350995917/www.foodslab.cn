@@ -1,5 +1,6 @@
 package cn.foodslab.controller.product;
 
+import cn.foodslab.common.utils.DateTime;
 import cn.foodslab.service.product.FormatEntity;
 
 /**
@@ -27,9 +28,9 @@ public class VFormatEntity extends FormatEntity {
         this.setAmount(formatEntity.getAmount());
         this.setAmountMeta(formatEntity.getAmountMeta());
         this.setPrice(formatEntity.getPrice());
-        this.setPriceMeta(formatEntity.getPriceMeta());
+//        this.setPriceMeta(formatEntity.getPriceMeta());
         this.setPostage(formatEntity.getPostage());
-        this.setPostageMeta(formatEntity.getPostageMeta());
+//        this.setPostageMeta(formatEntity.getPostageMeta());
         this.setPricing(formatEntity.getPricing());
         this.setPricingDiscount(formatEntity.getPricingDiscount());
         this.setPricingStart(formatEntity.getPricingStart());
@@ -108,29 +109,59 @@ public class VFormatEntity extends FormatEntity {
     }
 
     public boolean checkCreateParams() {
-        if (this.getTypeId() == null || this.getTypeId().trim().equals("")){
+        //所属的类型ID是不能为空
+        if (this.getTypeId() == null || this.getTypeId().trim().equals("")) {
             return false;
         }
+        //规格的状态必须符合规定
         if (this.getStatus() != -1 && this.getStatus() != 1 && this.getStatus() != 2) {
             return false;
         }
+        //规格不能小于0，单位不能为空，数量不能为空，数量单位不能为空，定价不能小于0，邮费不能小于0
         if (this.getLabel() <= 0 || this.getMeta() == null || this.getMeta().trim().equals("")
                 || this.getAmount() <= 0 || this.getAmountMeta() == null || this.getAmountMeta().trim().equals("")
-                || this.getPrice() <= 0 || this.getPriceMeta() == null || this.getPriceMeta().trim().equals("")
-                || this.getPostage() < 0 || this.getPostageMeta() == null || this.getPostageMeta().trim().equals("")
-                ) {
+                || this.getPrice() <= 0 || this.getPostage() < 0) {
             return false;
         }
-        if (this.getPricingStatus() != 0 && this.getPricingStatus() != 1 && this.getPricingStatus() != 2) {
+        //打折状态必须符合规定
+        if (this.getPricingStatus() != 1 && this.getPricingStatus() != 2) {
             return false;
         }
-        if (this.getPricingStatus() == 2 && (this.getPricingDiscount() <= 0 || this.getPricing() <= 0)) {
+        //折扣不能小于0，现价不能小于0
+        if (this.getPricingDiscount() <= 0 || this.getPricing() <= 0) {
             return false;
         }
-        if (this.getExpressStatus() != 0 && this.getExpressStatus() != 1 && this.getExpressStatus() != 2) {
+        //折扣开始时间如果有，就必须大于一个固定时间（系统初始上线时间）
+        try {
+            if (this.getPricingStart() > 0 && this.getPricingStart() - DateTime.getFixedTimestamp() < 0) {
+                return false;
+            }
+        } catch (Exception e) {
             return false;
         }
-        if (this.getExpressStatus() == 2 && (this.getExpressCount() <= 0)) {
+        //折扣结束时间如果有，就必须大于折扣开始时间
+        if (this.getPricingEnd() > 0 && this.getPricingEnd() - this.getPricingStart() < 0) {
+            return false;
+        }
+
+        //包邮状态必须符合规定
+        if (this.getExpressStatus() != 1 && this.getExpressStatus() != 2) {
+            return false;
+        }
+        //包邮数量不能小于0
+        if (this.getExpressCount() <= 0) {
+            return false;
+        }
+        //包邮开始时间如果有，就必须大于一个固定时间（系统初始上线时间）
+        try {
+            if (this.getExpressStart() > 0 && this.getExpressStart() - DateTime.getFixedTimestamp() < 0) {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        //折扣结束时间如果有，就必须大于折扣开始时间
+        if (this.getExpressEnd() > 0 && this.getExpressEnd() - this.getExpressStart() < 0) {
             return false;
         }
 

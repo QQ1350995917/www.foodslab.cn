@@ -8,8 +8,11 @@ package cn.foodslab.common.utils;
 public class DateTimeTest {
 
     public static void main(String[] args) throws Exception {
-        String dataTime = "2016-06-06";
+        String dataTime = "2016-12-31";
         long l = DateTime.parseYMDToLong(dataTime);
         System.out.println(l);
+
+        String s = DateTime.parseLongToFullTime(1470182500000l);
+        System.out.println(s);
     }
 }

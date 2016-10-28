@@ -12,9 +12,9 @@ public class FormatEntity {
     private int amount;// 规格下的数量 通常是在，盒，包下的包含个数，比如每盒有4瓶
     private String amountMeta;// 规格下的数量的单位
     private float price;// 定价
-    private String priceMeta;// 定价单位 通常是￥
+//    private String priceMeta;// 定价单位 通常是￥
     private float postage;// 邮费
-    private String postageMeta;// 邮费单位 通常是￥
+//    private String postageMeta;// 邮费单位 通常是￥
     private float pricing;// 现价
     private float pricingDiscount;// 现价对比定价的折扣
     private long pricingStart;// 折扣活动开始时间
@@ -90,13 +90,13 @@ public class FormatEntity {
         this.price = price;
     }
 
-    public String getPriceMeta() {
-        return priceMeta;
-    }
-
-    public void setPriceMeta(String priceMeta) {
-        this.priceMeta = priceMeta;
-    }
+//    public String getPriceMeta() {
+//        return priceMeta;
+//    }
+//
+//    public void setPriceMeta(String priceMeta) {
+//        this.priceMeta = priceMeta;
+//    }
 
     public float getPostage() {
         return postage;
@@ -106,13 +106,13 @@ public class FormatEntity {
         this.postage = postage;
     }
 
-    public String getPostageMeta() {
-        return postageMeta;
-    }
-
-    public void setPostageMeta(String postageMeta) {
-        this.postageMeta = postageMeta;
-    }
+//    public String getPostageMeta() {
+//        return postageMeta;
+//    }
+//
+//    public void setPostageMeta(String postageMeta) {
+//        this.postageMeta = postageMeta;
+//    }
 
     public float getPricing() {
         return pricing;
@@ -131,6 +131,9 @@ public class FormatEntity {
     }
 
     public long getPricingStart() {
+        if (this.pricingStart < 0){
+            pricingStart = 0;
+        }
         return pricingStart;
     }
 
@@ -139,6 +142,9 @@ public class FormatEntity {
     }
 
     public long getPricingEnd() {
+        if (this.pricingEnd < 0){
+            pricingEnd = 0;
+        }
         return pricingEnd;
     }
 

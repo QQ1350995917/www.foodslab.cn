@@ -40,4 +40,9 @@ public class DateTime {
         String format = simpleDateFormat.format(date);
         return format;
     }
+
+    public static long getFixedTimestamp() throws Exception {
+        long fixTime = parseFullTimeToLong("2015-12-31 23:59:59");
+        return fixTime;
+    }
 }
