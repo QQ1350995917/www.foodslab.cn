@@ -1,9 +1,9 @@
 /**
  * Created by dingpengwei on 9/8/16.
  */
-function requestMineOrder(cs) {
+function requestMineOrder() {
     let orderEntity = new Object();
-    orderEntity.cs = cs;
+    orderEntity.cs = getCookie(KEY_CS);
     let url = BASE_PATH + "order/retrieves?p=" + JSON.stringify(orderEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
@@ -141,6 +141,7 @@ function createOrderStatusView(orderEntity) {
         orderExpressed.style.cursor = "pointer";
         orderExpressed.onclick = function () {
             let requestOrderEntity = new Object();
+            requestOrderEntity.cs = getCookie(KEY_CS);
             requestOrderEntity.orderId = orderEntity.orderId;
             let url = BASE_PATH + "order/expressed?p=" + JSON.stringify(requestOrderEntity);
             asyncRequestByGet(url, function (data) {
@@ -148,7 +149,7 @@ function createOrderStatusView(orderEntity) {
                 if (result) {
                     var jsonData = JSON.parse(data);
                     if (jsonData.code == RC_SUCCESS) {
-                        requestMineOrder(tempAccountId);
+                        requestMineOrder();
                     } else {
                         new Toast().show("操作失败");
                     }

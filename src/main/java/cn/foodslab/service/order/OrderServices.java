@@ -81,7 +81,7 @@ public class OrderServices implements IOrderServices {
         if (in.length() > 0) {
             in = in.substring(0, in.length() - 1);
         }
-        int update = Db.update("UPDATE user_order SET status = 3 WHERE orderId = ? AND accountId IN (" + in + ")", in);
+        int update = Db.update("UPDATE user_order SET status = 3 WHERE orderId = ? AND accountId IN (" + in + ")", params);
         if (update == 1) {
             return orderEntity;
         }

@@ -168,7 +168,7 @@ function fillRecommendContainer(recommendContainer, formatEntities, onResizeCall
         formatEntityBuyView.className = "productItem_buy";
         formatEntityBuyView.innerHTML = "立即购买";
         formatEntityBuyView.onclick = function () {
-            if (!isNullValue(KEY_CS)) {
+            if (!isNullValue(getCookie(KEY_CS))) {
                 let requestFormatEntity = new Object();
                 requestFormatEntity.cs = getCookie(KEY_CS);
                 requestFormatEntity.formatId = formatEntity.formatId;

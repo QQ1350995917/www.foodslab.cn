@@ -40,7 +40,7 @@ function onMineRequestSessionStatusCommonCallback(data) {
         var jsonData = JSON.parse(data);
         if (jsonData.code == RC_SUCCESS) {
             let userEntity = jsonData.data;
-            let accountEntity = userEntity.children[0];
+            let accountEntity = userEntity[0];
             let headerMenuTop = document.getElementById(ID_HEADER_MENU_TOP);
             headerMenuTop.innerHTML = null;
             let logoutAction = document.createElement("div");

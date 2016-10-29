@@ -24,8 +24,7 @@ window.onload = function () {
     payBarContainer.style.height = "38px";
     mainView.appendChild(payBarContainer);
 
-    let cs = getCookie(KEY_CS);
-    if (isNullValue(cs)) {
+    if (isNullValue(getCookie(KEY_CS))) {
         attachAnonymousReceiverContainer(receiverContainer, function (data) {
         });
 

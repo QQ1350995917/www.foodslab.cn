@@ -218,7 +218,7 @@ public class OrderController extends Controller implements IOrderController {
         iResultSet.setData(responseVOrderEntities);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
-                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "formatEntities"),
+                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "createTime","formatEntities"),
                 new SimplePropertyPreFilter(VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "parent"),
                 new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label", "parent"),
                 new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
@@ -318,7 +318,7 @@ public class OrderController extends Controller implements IOrderController {
         iResultSet.setData(responseVOrderEntities);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
-                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "formatEntities"),
+                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "createTime","formatEntities"),
                 new SimplePropertyPreFilter(VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "parent"),
                 new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label", "parent"),
                 new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
@@ -374,7 +374,7 @@ public class OrderController extends Controller implements IOrderController {
         }
         iResultSet.setData(responseVOrderEntities);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
-                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "formatEntities"),
+                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "createTime","formatEntities"),
                 new SimplePropertyPreFilter(VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "parent"),
                 new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label", "parent"),
                 new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")

@@ -273,13 +273,14 @@ function createFormatDiscountItemView(formatEntity) {
     buyNow.className = "formatLabel button";
     buyNow.innerHTML = "立即购买";
     buyNow.onclick = function () {
-        if (!isNullValue(KEY_CS)) {
+        if (!isNullValue(getCookie(KEY_CS))) {
             let requestFormatEntity = new Object();
             requestFormatEntity.cs = getCookie(KEY_CS);
             requestFormatEntity.formatId = formatEntity.formatId;
             requestFormatEntity.amount = formatCounterEdit.value;
-            let url = BASE_PATH + "cart/create?p=" + JSON.stringify(formatEntity);
+            let url = BASE_PATH + "cart/create?p=" + JSON.stringify(requestFormatEntity);
             asyncRequestByGet(url, function (data) {
+                console.log(data);
                 var result = checkResponseDataFormat(data);
                 if (result) {
                     var jsonData = JSON.parse(data);

@@ -145,7 +145,7 @@ public class CartServices implements ICartServices {
             inMappingIds = inMappingIds.substring(0, inMappingIds.length() - 1);
         }
 
-        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND accountId IN (" + inMappingIds + ") AND mappingId IN (" + inAccountIds + ") ORDER BY updateTime DESC", params);
+        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND accountId IN (" + inAccountIds + ") AND mappingId IN (" +  inMappingIds + ") ORDER BY updateTime DESC", params);
         for (Record record : records) {
             cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
         }

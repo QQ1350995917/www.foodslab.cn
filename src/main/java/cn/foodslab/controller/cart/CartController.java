@@ -144,8 +144,8 @@ public class CartController extends Controller implements ICartController {
         IResultSet iResultSet = new ResultSet();
         LinkedList<CartEntity> cartEntities;
         VUserEntity vUserEntity = (VUserEntity) SessionContext.getSession(requestVCartEntity.getCs()).getAttribute(SessionContext.KEY_USER);
-        if (requestVCartEntity.getMappingIds() != null) {
-            cartEntities = iCartServices.retrievesByIds(vUserEntity.getChildren(), requestVCartEntity.getMappingIds());
+        if (requestVCartEntity.getProductIds() != null) {
+            cartEntities = iCartServices.retrievesByIds(vUserEntity.getChildren(), requestVCartEntity.getProductIds());
         } else {
             cartEntities = iCartServices.retrievesByAccounts(vUserEntity.getChildren());
         }

@@ -10,7 +10,7 @@ import cn.foodslab.service.cart.CartEntity;
  */
 public class VCartEntity extends CartEntity {
     private String cs;
-    private String[] mappingIds;//支持一个或多个的mappingIds查找
+    private String[] productIds;//支持一个或多个的mappingIds查找
     private VFormatEntity formatEntity;
 
     public VCartEntity() {
@@ -34,12 +34,12 @@ public class VCartEntity extends CartEntity {
         this.cs = cs;
     }
 
-    public String[] getMappingIds() {
-        return mappingIds;
+    public String[] getProductIds() {
+        return productIds;
     }
 
-    public void setMappingIds(String[] mappingIds) {
-        this.mappingIds = mappingIds;
+    public void setProductIds(String[] productIds) {
+        this.productIds = productIds;
     }
 
     public VFormatEntity getFormatEntity() {
