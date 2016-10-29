@@ -12,7 +12,7 @@ public class VAccountEntity extends AccountEntity {
         super();
     }
 
-    public VAccountEntity(String accountId,String identity,int source,String userId) {
+    public VAccountEntity(String accountId, String identity, int source, String userId) {
         this.setAccountId(accountId);
         this.setIdentity(identity);
         this.setSource(source);
@@ -29,5 +29,24 @@ public class VAccountEntity extends AccountEntity {
         this.setBirthday(accountEntity.getBirthday());
         this.setSource(accountEntity.getSource());
         this.setUserId(accountEntity.getUserId());
+    }
+
+    public boolean checkCreateParams(){
+        if (this.getIdentity() == null || this.getIdentity().trim().equals("")
+                || this.getPassword() == null || this.getPassword().trim().equals("")
+                || (this.getSource() != 1 && this.getSource() != 2 && this.getSource() != 3)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkLoginParams() {
+        if (this.getIdentity() == null || this.getIdentity().trim().equals("")
+                || this.getPassword() == null || this.getPassword().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

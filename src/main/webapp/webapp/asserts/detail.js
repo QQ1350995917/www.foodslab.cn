@@ -17,8 +17,22 @@ function requestType(typeEntity, selectedFormatId) {
         var result = checkResponseDataFormat(data);
         if (result) {
             var jsonData = JSON.parse(data);
-            createTypeTitle(jsonData.data);
-            createTypeMainView(jsonData.data, selectedFormatId);
+            let typeEntity = jsonData.data;
+            createTypeMainView(typeEntity, selectedFormatId);
+            requestSeries(typeEntity.seriesId,typeEntity);
+        }
+    }, onErrorCallback, onTimeoutCallback);
+}
+
+function requestSeries(seriesId,typeEntity) {
+    let requestObject = new Object();
+    requestObject.seriesId = seriesId;
+    let url = BASE_PATH + "series/retrieve?p=" + JSON.stringify(requestObject);
+    asyncRequestByGet(url, function (data) {
+        var result = checkResponseDataFormat(data);
+        if (result) {
+            var jsonData = JSON.parse(data);
+            createTypeTitle(jsonData.data,typeEntity);
         }
     }, onErrorCallback, onTimeoutCallback);
 }
@@ -39,7 +53,7 @@ function onRequestPutInCartCallback(data) {
     createPutInCartResultView(data);
 }
 
-function createTypeTitle(typeEntity) {
+function createTypeTitle(seriesEntity,typeEntity) {
     let typeEntityView = document.getElementById(ID_HEADER_MENU_DOWN);
     typeEntityView.innerHTML = null;
 
@@ -51,9 +65,9 @@ function createTypeTitle(typeEntity) {
 
     let seriesEntityView = document.createElement("div");
     seriesEntityView.className = "tabItem_normal";
-    seriesEntityView.innerHTML = typeEntity.parent.label;
+    seriesEntityView.innerHTML = seriesEntity.label;
     seriesEntityView.onclick = function () {
-        let url = BASE_PATH + "ps?seriesId=" + typeEntity.parent.seriesId;
+        let url = BASE_PATH + "ps?seriesId=" + seriesEntity.seriesId;
         window.open(url, "_self");
     };
     typeEntityView.appendChild(seriesEntityView);
@@ -259,10 +273,30 @@ function createFormatDiscountItemView(formatEntity) {
     buyNow.className = "formatLabel button";
     buyNow.innerHTML = "立即购买";
     buyNow.onclick = function () {
-        let object = new Object();
-        object.productIds = formatEntity.formatId;
-        let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
-        window.open(url);
+        if (!isNullValue(KEY_CS)) {
+            let requestFormatEntity = new Object();
+            requestFormatEntity.cs = getCookie(KEY_CS);
+            requestFormatEntity.formatId = formatEntity.formatId;
+            requestFormatEntity.amount = formatCounterEdit.value;
+            let url = BASE_PATH + "cart/create?p=" + JSON.stringify(formatEntity);
+            asyncRequestByGet(url, function (data) {
+                var result = checkResponseDataFormat(data);
+                if (result) {
+                    var jsonData = JSON.parse(data);
+                    if (jsonData.code == RC_SUCCESS){
+                        let object = new Object();
+                        object.productIds = jsonData.data.mappingId;
+                        let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
+                        window.open(url);
+                    }
+                }
+            }, onErrorCallback, onTimeoutCallback);
+        } else {
+            let object = new Object();
+            object.productIds = formatEntity.formatId;
+            let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
+            window.open(url);
+        }
     };
     formatDiscountView.appendChild(buyNow);
 
@@ -276,7 +310,7 @@ function createFormatDiscountItemView(formatEntity) {
                 var result = checkResponseDataFormat(data);
                 if (result) {
                     var jsonData = JSON.parse(data);
-                    if (jsonData.code == RESPONSE_SUCCESS) {
+                    if (jsonData.code == RC_SUCCESS) {
                         let requestFormatEntity = new Object();
                         requestFormatEntity.cs = getCookie(KEY_CS);
                         requestFormatEntity.formatId = formatEntity.formatId;

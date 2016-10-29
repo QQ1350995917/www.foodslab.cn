@@ -54,7 +54,7 @@ window.onload = function () {
             var result = checkResponseDataFormat(data);
             if (result) {
                 var jsonData = JSON.parse(data);
-                if (jsonData.code == RESPONSE_SUCCESS) {
+                if (jsonData.code == RC_SUCCESS) {
                     let requestUserEntity = new Object();
                     requestUserEntity.cs = getCookie(KEY_CS);
                     asyncRequestByGet(BASE_PATH + "receiver/retrieves?p=" + JSON.stringify(requestUserEntity), function (data) {
@@ -100,7 +100,7 @@ window.onload = function () {
  */
 function onBillingRequestSessionStatusCommonCallback(data) {
     var jsonData = JSON.parse(data);
-    if (jsonData.code == RESPONSE_SUCCESS) {
+    if (jsonData.code == RC_SUCCESS) {
         let userEntity = jsonData.data;
         setTitleViewLoginStatus(userEntity);
         document.getElementById(ID_HEADER_MENU_LOGOUT).onclick = function () {
@@ -434,8 +434,10 @@ function requestCreateAnonymousOrder(orderEntity) {
         var result = checkResponseDataFormat(data);
         if (result) {
             var jsonData = JSON.parse(data);
-            if (jsonData.code = RESPONSE_SUCCESS){
-                let url = BASE_PATH + "pq?orderId=" + data.orderId;
+            if (jsonData.code = RC_SUCCESS){
+                let requestObject = new Object();
+                requestObject.orderId = jsonData.data.orderId;
+                let url = BASE_PATH + "pq?p=" + JSON.stringify(requestObject);
                 window.open(url, "_self");
             }
         }
@@ -448,12 +450,12 @@ function requestCreateOrder(orderEntity) {
         var result = checkResponseDataFormat(data);
         if (result) {
             var jsonData = JSON.parse(data);
-            if (jsonData.code == RESPONSE_SUCCESS){
+            if (jsonData.code == RC_SUCCESS){
                 let pageEntity = new Object();
                 pageEntity.cs = getCookie(KEY_CS);
                 pageEntity.dir = "order";
                 let url = BASE_PATH + "pm?p=" + JSON.stringify(pageEntity);
-                window.open(url, "_self");    
+                window.open(url, "_self");
             }
         }
     }, onErrorCallback, onTimeoutCallback);

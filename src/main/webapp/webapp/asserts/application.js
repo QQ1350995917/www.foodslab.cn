@@ -11,7 +11,14 @@ const ID_HEADER_MENU_DOWN = "headerMenuDown";
 const MAIN = "main";
 const KEY_CS = "cs";
 
-const RESPONSE_SUCCESS = 3050;
+const RC_SUCCESS = 200;//执行成功
+const RC_SUCCESS_EMPTY = 204;//执行成功,符合请求条件的参数是空
+const RC_PARAMS_BAD = 400;//提交参数不符合要求
+const RC_ACCESS_BAD = 401;//权限限制的无法访问
+const RC_PARAMS_REPEAT = 406;//登录名重复
+const RC_ACCESS_TIMEOUT = 408;//权限超时造成的无法访问
+const RC_TO_MANY = 429;//访问频率造成的拒绝服务
+const RC_SEVER_ERROR = 500;//服务器内部异常导致的失败
 
 const COLORS = new Array("#715595", "#006AA8", "#3EAF5C", "#F0DB4F", "#715595", "#006AA8", "#3EAF5C", "#F0DB4F", "#715595", "#006AA8", "#3EAF5C", "#F0DB4F");
 
@@ -76,7 +83,7 @@ function setTitleViewLogoutStatus() {
  * @param userEntity
  */
 function setTitleViewLoginStatus(userEntity) {
-    let accountEntity = userEntity.children[0];
+    let accountEntity = userEntity[0];
     let headerMenuTop = document.getElementById(ID_HEADER_MENU_TOP);
     headerMenuTop.innerHTML = null;
     let logoutAction = document.createElement("div");
@@ -91,7 +98,7 @@ function setTitleViewLoginStatus(userEntity) {
             var result = checkResponseDataFormat(data);
             if (result) {
                 var jsonData = JSON.parse(data);
-                if (jsonData.code == RESPONSE_SUCCESS) {
+                if (jsonData.code == RC_SUCCESS) {
                     setTitleViewLogoutStatus();
                 } else {
                     new Toast().show("退出失败");
@@ -102,7 +109,11 @@ function setTitleViewLoginStatus(userEntity) {
     headerMenuTop.appendChild(logoutAction);
     let loginAction = document.createElement("div");
     loginAction.className = "header_menu_top_item";
-    loginAction.innerHTML = accountEntity.nickName == undefined ? accountEntity.identity : accountEntity.nickName;
+    if (isNullValue(accountEntity.nickName)) {
+        loginAction.innerHTML = accountEntity.identity;
+    } else {
+        loginAction.innerHTML = accountEntity.nickName;
+    }
     headerMenuTop.appendChild(loginAction);
     let queryAction = document.createElement("div");
     queryAction.className = "header_menu_top_item";
@@ -144,7 +155,7 @@ function requestSessionStatus(onRequestCallback) {
  */
 function onRequestSessionStatusCommonCallback(data) {
     var jsonData = JSON.parse(data);
-    if (jsonData.code == RESPONSE_SUCCESS) {
+    if (jsonData.code == RC_SUCCESS) {
         let userEntity = jsonData.data;
         setTitleViewLoginStatus(userEntity);
     } else {

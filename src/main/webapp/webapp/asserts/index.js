@@ -112,6 +112,7 @@ function createPosterView(posterContainer, posterEntities, onResizeCallback) {
 function fillRecommendContainer(recommendContainer, formatEntities, onResizeCallback) {
     let length = formatEntities == undefined ? 0 : formatEntities.length;
     for (let i = 0; i < length; i++) {
+        let formatEntity = formatEntities[i];
         if (i % 4 == 0) {
             let clearFloat = document.createElement("div")
             clearFloat.className = "clearFloat";
@@ -125,9 +126,9 @@ function fillRecommendContainer(recommendContainer, formatEntities, onResizeCall
         let formatEntityTitleView = document.createElement("div")
         formatEntityTitleView.className = "productItem_title";
         formatEntityTitleView.style.backgroundColor = COLORS[Math.floor(Math.random() * 10)];
-        formatEntityTitleView.innerHTML = formatEntities[i].parent.parent.label;
+        formatEntityTitleView.innerHTML = formatEntity.parent.parent.label;
         formatEntityTitleView.onclick = function () {
-            let url = BASE_PATH + "ps?seriesId=" + formatEntities[i].parent.parent.seriesId;
+            let url = BASE_PATH + "ps?seriesId=" + formatEntity.parent.parent.seriesId;
             window.open(url);
         };
         formatEntityView.appendChild(formatEntityTitleView);
@@ -137,7 +138,7 @@ function fillRecommendContainer(recommendContainer, formatEntities, onResizeCall
         let formatEntityImageView = document.createElement("img")
         formatEntityImageView.className = "productItem_img";
         formatEntityImageView.onclick = function () {
-            let url = BASE_PATH + "pd?typeId=" + formatEntities[i].typeId + "&formatId=" + formatEntities[i].formatId;
+            let url = BASE_PATH + "pd?typeId=" + formatEntity.typeId + "&formatId=" + formatEntity.formatId;
             window.open(url);
         };
         formatEntityView.appendChild(formatEntityImageView);
@@ -148,29 +149,50 @@ function fillRecommendContainer(recommendContainer, formatEntities, onResizeCall
         formatEntityLinkView.className = "productItem_link";
         let formatEntityTypeLabel = document.createElement("div")
         formatEntityTypeLabel.className = "productItem_link_label";
-        formatEntityTypeLabel.innerHTML = formatEntities[i].parent.label;
+        formatEntityTypeLabel.innerHTML = formatEntity.parent.label;
         formatEntityLinkView.appendChild(formatEntityTypeLabel);
         let formatEntityFormatLabel = document.createElement("div")
         formatEntityFormatLabel.className = "productItem_link_label";
-        formatEntityFormatLabel.innerHTML = formatEntities[i].label + formatEntities[i].meta;
+        formatEntityFormatLabel.innerHTML = formatEntity.label + formatEntity.meta;
         formatEntityLinkView.appendChild(formatEntityFormatLabel);
         let formatEntityPriceLabel = document.createElement("div")
         formatEntityPriceLabel.className = "productItem_link_label";
-        formatEntityPriceLabel.innerHTML = formatEntities[i].price + formatEntities[i].priceMeta;
+        formatEntityPriceLabel.innerHTML = formatEntity.price + formatEntity.priceMeta;
         formatEntityLinkView.appendChild(formatEntityPriceLabel);
         formatEntityView.appendChild(formatEntityLinkView);
         formatEntityLinkView.onclick = function () {
-            let url = BASE_PATH + "pd?typeId=" + formatEntities[i].typeId + "&formatId=" + formatEntities[i].formatId;
+            let url = BASE_PATH + "pd?typeId=" + formatEntity.typeId + "&formatId=" + formatEntity.formatId;
             window.open(url);
         };
         let formatEntityBuyView = document.createElement("div")
         formatEntityBuyView.className = "productItem_buy";
         formatEntityBuyView.innerHTML = "立即购买";
         formatEntityBuyView.onclick = function () {
-            let object = new Object();
-            object.productIds = formatEntities[i].formatId;
-            let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
-            window.open(url);
+            if (!isNullValue(KEY_CS)) {
+                let requestFormatEntity = new Object();
+                requestFormatEntity.cs = getCookie(KEY_CS);
+                requestFormatEntity.formatId = formatEntity.formatId;
+                requestFormatEntity.amount = 1;
+                let url = BASE_PATH + "cart/create?p=" + JSON.stringify(requestFormatEntity);
+                asyncRequestByGet(url, function (data) {
+                    var result = checkResponseDataFormat(data);
+                    if (result) {
+                        var jsonData = JSON.parse(data);
+                        if (jsonData.code == RC_SUCCESS){
+                            let object = new Object();
+                            object.productIds = jsonData.data.mappingId;
+                            console.log(jsonData.data.mappingId);
+                            let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
+                            window.open(url);
+                        }
+                    }
+                }, onErrorCallback, onTimeoutCallback);
+            } else {
+                let object = new Object();
+                object.productIds = formatEntity.formatId;
+                let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
+                window.open(url);
+            }
         };
         formatEntityView.appendChild(formatEntityBuyView);
         recommendContainer.appendChild(formatEntityView);

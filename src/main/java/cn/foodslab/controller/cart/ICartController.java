@@ -1,5 +1,6 @@
 package cn.foodslab.controller.cart;
 
+import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
 import com.jfinal.aop.Before;
@@ -48,7 +49,7 @@ public interface ICartController {
      * 管理员接口
      * 管理员后台根据用户信息读取用户购物车
      */
-    @Before({SessionInterceptor.class, MenuInterceptor.class})
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     void mRetrieve();
 }
 

@@ -57,77 +57,94 @@ public class OrderController extends Controller implements IOrderController {
     @Before(SessionInterceptor.class)
     public void create() {
         String params = this.getPara("p");
-        VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
-        vOrderEntity.setStatus(1);
+        VOrderEntity requestVOrderEntity = JSON.parseObject(params, VOrderEntity.class);
+        IResultSet iResultSet = new ResultSet();
+
+        requestVOrderEntity.setStatus(1);
         String orderId = UUID.randomUUID().toString();
         float orderTotalPrice = 0.0f;
-        VUserEntity vUserEntity = (VUserEntity) SessionContext.getSession(vOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
-        vOrderEntity.setAccountId(vUserEntity.getChildren().get(0).getAccountId());
-        vOrderEntity.setOrderId(orderId);
-        vOrderEntity.setCost(orderTotalPrice);
-        vOrderEntity.setPostage(0);
-        OrderEntity createOrderEntity = iOrderServices.create(vOrderEntity);
-        if (createOrderEntity != null) {
-            boolean attachToOrder = iCartServices.attachToOrder(createOrderEntity, vOrderEntity.getProductIds());
-            if (attachToOrder) {
-                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), new VOrderEntity(createOrderEntity), "success");
-                renderJson(JSON.toJSONString(iResultSet));
-            } else {
-                vOrderEntity.setOrderId(null);
-                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "success");
-                renderJson(JSON.toJSONString(iResultSet));
-            }
-        } else {
-            vOrderEntity.setOrderId(null);
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+        VUserEntity vUserEntity = (VUserEntity) SessionContext.getSession(requestVOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
+        requestVOrderEntity.setAccountId(vUserEntity.getChildren().get(0).getAccountId());
+        requestVOrderEntity.setOrderId(orderId);
+        requestVOrderEntity.setCost(orderTotalPrice);
+        requestVOrderEntity.setPostage(0);
+        OrderEntity createOrderEntity = iOrderServices.create(requestVOrderEntity);
+        if (createOrderEntity == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVOrderEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet));//TODO 裁剪返回参数
+            return;
         }
+        boolean attachToOrder = iCartServices.attachToOrder(createOrderEntity, requestVOrderEntity.getProductIds());
+        if (!attachToOrder) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVOrderEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet));//TODO 裁剪返回参数
+            return;
+        }
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(new VOrderEntity(createOrderEntity));
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet));//TODO 裁剪返回参数
     }
 
     @Override
     public void createAnonymous() {
         String params = this.getPara("p");
-        VOrderEntity vOrderEntity = JSON.parseObject(params, VOrderEntity.class);
-        vOrderEntity.setStatus(1);
+        VOrderEntity requestVOrderEntity = JSON.parseObject(params, VOrderEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        requestVOrderEntity.setStatus(1);
         /**
          * 保存匿名订单的收货人信息
          */
-        VReceiverEntity receiverEntity = vOrderEntity.getReceiver();
+        VReceiverEntity receiverEntity = requestVOrderEntity.getReceiver();
         receiverEntity.setReceiverId(UUID.randomUUID().toString());
-        ReceiverEntity resultReceiver = iReceiverService.create(null, receiverEntity);
-        if (resultReceiver != null) {
-            String orderId = UUID.randomUUID().toString();
-            vOrderEntity.setOrderId(orderId);
-            vOrderEntity.setReceiverId(resultReceiver.getReceiverId());
-            /**
-             * 保存匿名订单的订单信息
-             */
-            OrderEntity createOrderEntity = iOrderServices.create(vOrderEntity);
-            if (createOrderEntity != null) {
-                CartEntity cartEntity = new CartEntity();
-                String mappingId = UUID.randomUUID().toString();
-                cartEntity.setMappingId(mappingId);
-                cartEntity.setFormatId(vOrderEntity.getProductIds()[0]);
-                cartEntity.setAmount(1);
-                cartEntity.setPricing(0);
-                cartEntity.setOrderId(createOrderEntity.getOrderId());
-                cartEntity.setStatus(2);
-                CartEntity resultCartEntity = iCartServices.create(cartEntity);
-                if (resultCartEntity != null) {
-                    IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode(), new VOrderEntity(createOrderEntity), "success");
-                    renderJson(JSON.toJSONString(iResultSet));
-                } else {
-                    IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "success");
-                    renderJson(JSON.toJSONString(iResultSet));
-                }
-            } else {
-                IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "success");
-                renderJson(JSON.toJSONString(iResultSet));
-            }
-        } else {
-            IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_FAIL.getCode(), vOrderEntity, "success");
-            renderJson(JSON.toJSONString(iResultSet));
+        ReceiverEntity createReceiver = iReceiverService.create(null, receiverEntity);
+        if (createReceiver == null){
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVOrderEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet));//TODO 裁剪返回参数
+            return;
         }
+
+        String orderId = UUID.randomUUID().toString();
+        requestVOrderEntity.setOrderId(orderId);
+        requestVOrderEntity.setReceiverId(createReceiver.getReceiverId());
+        /**
+         * 保存匿名订单的订单信息
+         */
+        OrderEntity createOrderEntity = iOrderServices.create(requestVOrderEntity);
+        if (createOrderEntity == null){
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVOrderEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet));//TODO 裁剪返回参数
+            return;
+        }
+        CartEntity cartEntity = new CartEntity();
+        String mappingId = UUID.randomUUID().toString();
+        cartEntity.setMappingId(mappingId);
+        cartEntity.setFormatId(requestVOrderEntity.getProductIds()[0]);
+        cartEntity.setAmount(1);
+        cartEntity.setPricing(0);
+        cartEntity.setOrderId(createOrderEntity.getOrderId());
+        cartEntity.setStatus(2);
+        CartEntity resultCartEntity = iCartServices.create(cartEntity);
+        if (resultCartEntity == null){
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVOrderEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet));//TODO 裁剪返回参数
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(new VOrderEntity(createOrderEntity));
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet));//TODO 裁剪返回参数
     }
 
     @Before(SessionInterceptor.class)

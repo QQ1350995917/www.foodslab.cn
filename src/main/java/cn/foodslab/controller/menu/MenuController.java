@@ -3,6 +3,7 @@ package cn.foodslab.controller.menu;
 import cn.foodslab.common.cache.SessionContext;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.controller.link.VLinkEntity;
 import cn.foodslab.controller.manager.VManagerEntity;
 import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.menu.IMenuServices;
@@ -33,14 +34,26 @@ public class MenuController extends Controller implements IMenuController {
     public void mRetrieves() {
         String params = this.getPara("p");
         VManagerEntity requestVManagerEntity = JSON.parseObject(params, VManagerEntity.class);
+        IResultSet iResultSet = new ResultSet();
         VManagerEntity sessionManager = SessionContext.getSessionManager(requestVManagerEntity.getCs());
-        LinkedList<VMenuEntity> responseVMenuEntities = new LinkedList<>();
         LinkedList<MenuEntity> menuEntities = iMenuServices.retrievesByManager(sessionManager);
+        if (menuEntities == null){
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVManagerEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            renderJson(JSON.toJSONString(iResultSet));
+            return;
+        }
+
+        LinkedList<VMenuEntity> responseVMenuEntities = new LinkedList<>();
         for (MenuEntity menuEntity:menuEntities){
             responseVMenuEntities.add(new VMenuEntity(menuEntity));
         }
-        IResultSet iResultSet = new ResultSet();
-        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        if (responseVMenuEntities.size() == 0) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
+        } else {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        }
         iResultSet.setData(responseVMenuEntities);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet,new SimplePropertyPreFilter(VMenuEntity.class,"menuId","label","flag","category")));

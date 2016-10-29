@@ -129,14 +129,17 @@ public class PageController extends Controller implements IPageController {
     @Override
     public void pq() {
         this.setAttr("title", "食坊-订单查询");
-
-        String orderId = this.getPara("orderId");
+        String params = this.getPara("p");
+        Map<String,Object> requestEntity = JSON.parseObject(params, Map.class);
         LinkedList<Map<String, String>> metas = new LinkedList<>();
-        if (orderId != null) {
-            LinkedHashMap<String, String> formatMap = new LinkedHashMap<>();
-            formatMap.put("metaId", "orderId");
-            formatMap.put("metaValue", orderId);
-            metas.add(formatMap);
+        if (requestEntity != null && requestEntity.get("orderId") != null){
+            String orderId = requestEntity.get("orderId").toString();
+            if (orderId != null) {
+                LinkedHashMap<String, String> formatMap = new LinkedHashMap<>();
+                formatMap.put("metaId", "orderId");
+                formatMap.put("metaValue", orderId);
+                metas.add(formatMap);
+            }
         }
         this.setAttr("metas", metas);
 

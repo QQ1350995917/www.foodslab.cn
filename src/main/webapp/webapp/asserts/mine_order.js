@@ -147,7 +147,7 @@ function createOrderStatusView(orderEntity) {
                 var result = checkResponseDataFormat(data);
                 if (result) {
                     var jsonData = JSON.parse(data);
-                    if (jsonData.code == RESPONSE_SUCCESS) {
+                    if (jsonData.code == RC_SUCCESS) {
                         requestMineOrder(tempAccountId);
                     } else {
                         new Toast().show("操作失败");

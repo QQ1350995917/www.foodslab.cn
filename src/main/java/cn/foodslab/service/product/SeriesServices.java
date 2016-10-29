@@ -2,8 +2,10 @@ package cn.foodslab.service.product;
 
 import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,7 @@ public class SeriesServices implements ISeriesServices {
 
     @Override
     public SeriesEntity retrieveById(String seriesId) {
-        List<Record> records = Db.find("SELECT * FROM product_series WHERE seriesId = ?", seriesId);
+        List<Record> records = Db.find("SELECT * FROM product_series WHERE seriesId = ? AND status = 2", seriesId);
         if (records.size() == 1) {
             SeriesEntity result = JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), SeriesEntity.class);
             return result;
@@ -54,9 +56,9 @@ public class SeriesServices implements ISeriesServices {
         Db.update("UPDATE product_series SET queue = queue + 1");
         Record record = new Record().set("seriesId", seriesEntity.getSeriesId())
                 .set("label", seriesEntity.getLabel())
-                .set("status",seriesEntity.getStatus())
-                .set("queue",seriesEntity.getQueue());
-        boolean save = Db.save("product_series","seriesId", record);
+                .set("status", seriesEntity.getStatus())
+                .set("queue", seriesEntity.getQueue());
+        boolean save = Db.save("product_series", "seriesId", record);
         if (save) {
             return seriesEntity;
         } else {
@@ -76,8 +78,16 @@ public class SeriesServices implements ISeriesServices {
 
     @Override
     public SeriesEntity mBlock(SeriesEntity seriesEntity) {
-        int update = Db.update("UPDATE product_series SET status = 1 WHERE seriesId = ? ", seriesEntity.getSeriesId());
-        if (update == 1) {
+        boolean succeed = Db.tx(new IAtom() {
+            public boolean run() throws SQLException {
+                int update = Db.update("UPDATE product_series SET status = 1 WHERE seriesId = ? ", seriesEntity.getSeriesId());
+                Db.update("UPDATE product_format SET status = 1 WHERE status = 2 AND typeId IN (SELECT typeId FROM product_type WHERE seriesId = ?)", seriesEntity.getSeriesId());
+                Db.update("UPDATE product_type SET status = 1 WHERE status = 2 AND seriesId = ?", seriesEntity.getSeriesId());
+                return update == 1;
+            }
+        });
+
+        if (succeed) {
             return seriesEntity;
         } else {
             return null;
@@ -96,8 +106,15 @@ public class SeriesServices implements ISeriesServices {
 
     @Override
     public SeriesEntity mDelete(SeriesEntity seriesEntity) {
-        int update = Db.update("UPDATE product_series SET status = -1 WHERE seriesId = ? ", seriesEntity.getSeriesId());
-        if (update == 1) {
+        boolean succeed = Db.tx(new IAtom() {
+            public boolean run() throws SQLException {
+                int update = Db.update("UPDATE product_series SET status = -1 WHERE seriesId = ? ", seriesEntity.getSeriesId());
+                Db.update("UPDATE product_format SET status = -1 WHERE typeId IN (SELECT typeId FROM product_type WHERE seriesId = ?)", seriesEntity.getSeriesId());
+                Db.update("UPDATE product_type SET status = 1 WHERE seriesId = ?", seriesEntity.getSeriesId());
+                return update == 1;
+            }
+        });
+        if (succeed) {
             return seriesEntity;
         } else {
             return null;

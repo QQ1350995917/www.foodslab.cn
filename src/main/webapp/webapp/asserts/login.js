@@ -213,6 +213,7 @@ function addRegisterContainer(container,loginSuccessCallback) {
         let requestAccount = new Object();
         requestAccount.identity = identity;
         requestAccount.password = password;
+        requestAccount.source = 1;
         requestCreateAccount(requestAccount);
     }
 
@@ -347,8 +348,8 @@ function requestLogin(accountEntity,loginSuccessCallback) {
         var result = checkResponseDataFormat(data);
         if (result) {
             var jsonData = JSON.parse(data);
-            if (jsonData.code == RESPONSE_SUCCESS) {
-                setCookie("cs",jsonData.data.cs);
+            if (jsonData.code == RC_SUCCESS) {
+                setCookie(KEY_CS,jsonData.data.cs);
                 new Toast().show(jsonData.message);
                 dismissLoginView();
                 loginSuccessCallback();

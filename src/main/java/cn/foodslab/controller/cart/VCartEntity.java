@@ -18,9 +18,12 @@ public class VCartEntity extends CartEntity {
     }
 
     public VCartEntity(CartEntity cartEntity) {
-        this.setMappingId(cartEntity.getMappingId());;
-        this.setFormatId(cartEntity.getFormatId());;
-        this.setAmount(cartEntity.getAmount());;
+        this.setMappingId(cartEntity.getMappingId());
+        ;
+        this.setFormatId(cartEntity.getFormatId());
+        ;
+        this.setAmount(cartEntity.getAmount());
+        ;
     }
 
     public String getCs() {
@@ -45,6 +48,32 @@ public class VCartEntity extends CartEntity {
 
     public void setFormatEntity(VFormatEntity formatEntity) {
         this.formatEntity = formatEntity;
+    }
+
+    public boolean checkCreateParams() {
+        if (this.getFormatId() == null || this.getFormatId().trim().equals("")
+                || this.getAmount() < 1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkUpdateParams() {
+        if (this.getMappingId() == null || this.getMappingId().trim().equals("")
+                || this.getAmount() < 1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkDeleteParams() {
+        if (this.getMappingId() == null || this.getMappingId().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

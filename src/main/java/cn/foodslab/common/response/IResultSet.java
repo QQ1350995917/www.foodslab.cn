@@ -18,13 +18,7 @@ public interface IResultSet {
         RC_PARAMS_REPEAT(406),//内容重复无法进行正确响应-登录名重复等
         RC_ACCESS_TIMEOUT(408),//权限超时造成的无法访问
         RC_TO_MANY(429),//访问频率造成的拒绝服务
-        RC_SEVER_ERROR(500),//服务器内部异常导致的失败
-
-
-
-        EXE_FAIL(3000),
-        EXE_SUCCESS(3050);
-
+        RC_SEVER_ERROR(500);//服务器内部异常导致的失败
         private int code;
         ResultCode(int code){
             this.code = code;
@@ -44,7 +38,6 @@ public interface IResultSet {
         public static final String RM_SERVER_ERROR = "SERVER ERROR";//服务器执行错误
         public static final String RM_CANNOT_REPEAT = "REPEAT ERROR";//服务器无法执行重复内容
         public static final String RM_SERVER_OK = "SERVER OK";//服务器执行完成
-
     }
 
     /**

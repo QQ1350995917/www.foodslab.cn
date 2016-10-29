@@ -1,5 +1,10 @@
 package cn.foodslab.service.product;
 
+import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.MenuInterceptor;
+import cn.foodslab.interceptor.SessionInterceptor;
+import com.jfinal.aop.Before;
+
 import java.util.LinkedList;
 
 /**
@@ -35,6 +40,7 @@ public interface ITypeServices {
      * @param seriesId 系列ID
      * @return true exist false not exist
      */
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     boolean mExistInSeries(String typeName, String seriesId);
 
     /**
@@ -44,6 +50,7 @@ public interface ITypeServices {
      * @param typeEntity 类型数据
      * @return success 类型数据 fail null
      */
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     TypeEntity mCreate(TypeEntity typeEntity);
 
     /**
@@ -53,6 +60,7 @@ public interface ITypeServices {
      * @param typeEntity 类型数据
      * @return success 类型数据 fail null
      */
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     TypeEntity mUpdate(TypeEntity typeEntity);
 
     /**
@@ -62,6 +70,7 @@ public interface ITypeServices {
      * @param typeEntity 类型数据
      * @return success 类型数据 fail null
      */
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     TypeEntity mBlock(TypeEntity typeEntity);
 
     /**
@@ -71,6 +80,7 @@ public interface ITypeServices {
      * @param typeEntity 类型数据
      * @return success 类型数据 fail null
      */
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     TypeEntity mUnBlock(TypeEntity typeEntity);
 
     /**
@@ -80,6 +90,7 @@ public interface ITypeServices {
      * @param typeEntity 类型数据
      * @return success 类型数据 fail null
      */
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     TypeEntity mDelete(TypeEntity typeEntity);
 
     /**
@@ -89,6 +100,7 @@ public interface ITypeServices {
      * @param seriesEntity 最少包含系列ID的数据对象
      * @return success 类型数据集 fail null
      */
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     LinkedList<TypeEntity> mRetrievesInSeries(SeriesEntity seriesEntity);
 
     /**
@@ -98,6 +110,7 @@ public interface ITypeServices {
      * @param typeId 类型ID
      * @return success 类型数据 fail null
      */
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     TypeEntity mRetrieveById(String typeId);
 
     /**
@@ -107,6 +120,7 @@ public interface ITypeServices {
      * @param typeEntity 类型数据对象
      * @return success 类型数据 fail null
      */
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     TypeEntity mUpdateSummary(TypeEntity typeEntity);
 
     /**
@@ -116,16 +130,19 @@ public interface ITypeServices {
      * @param typeEntity 类型数据对象
      * @return success 类型数据 fail null
      */
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     TypeEntity mUpdateDirections(TypeEntity typeEntity);
 
     /**
      * 管理员接口
+     *
      * @param typeEntity 类型数据对象
      * @return success 类型数据 fail null
      */
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     TypeEntity mUpdateImage(TypeEntity typeEntity);
 
+
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     TypeEntity mImageDelete(TypeEntity typeEntity);
-
-
 }

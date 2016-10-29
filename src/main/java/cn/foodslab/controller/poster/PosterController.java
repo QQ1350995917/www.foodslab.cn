@@ -46,7 +46,6 @@ public class PosterController extends Controller implements IPosterController {
             VPosterEntity vPosterEntity = new VPosterEntity(posterEntity);
             responseVPosterEntities.add(vPosterEntity);
         }
-
         if (responseVPosterEntities.size() < 1) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
         } else {
@@ -67,7 +66,7 @@ public class PosterController extends Controller implements IPosterController {
             iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
             iResultSet.setData(requestVPosterEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
-            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId", "name", "fileId", "imageUrl", "clickable", "href")));
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "name", "fileId", "imageUrl", "clickable", "href")));
             return;
         }
 
@@ -76,11 +75,10 @@ public class PosterController extends Controller implements IPosterController {
         requestVPosterEntity.setStatus(1);
         PosterEntity result = iPosterServices.mCreate(requestVPosterEntity);
         if (result == null) {
-            requestVPosterEntity.setPosterId(null);
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
             iResultSet.setData(requestVPosterEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
-            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class, "posterId", "name", "fileId", "imageUrl", "clickable", "href")));
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VPosterEntity.class,  "name", "fileId", "imageUrl", "clickable", "href")));
             return;
         }
 

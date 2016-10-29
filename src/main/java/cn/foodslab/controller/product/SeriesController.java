@@ -31,6 +31,35 @@ public class SeriesController extends Controller implements ISeriesController {
     }
 
     @Override
+    public void retrieve() {
+        String params = this.getPara("p");
+        VSeriesEntity requestVSeriesEntity = JSON.parseObject(params, VSeriesEntity.class);
+        IResultSet iResultSet = new ResultSet();
+        if (requestVSeriesEntity.getSeriesId() == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVSeriesEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId")));
+            return;
+        }
+
+        SeriesEntity seriesEntity = iSeriesServices.retrieveById(requestVSeriesEntity.getSeriesId());
+        if (seriesEntity == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_REPEAT.getCode());
+            iResultSet.setData(requestVSeriesEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_CANNOT_REPEAT);
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId")));
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(new VSeriesEntity(seriesEntity));
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId","label")));
+
+    }
+
+    @Override
     public void retrieves() {
         LinkedList<SeriesEntity> seriesEntities = iSeriesServices.retrieves();
         IResultSet iResultSet = new ResultSet();
@@ -100,8 +129,8 @@ public class SeriesController extends Controller implements ISeriesController {
         iResultSet.setData(responseVFormatEntities);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
-                new SimplePropertyPreFilter(VFormatEntity.class, "formatId", "label", "meta", "price", "priceMeta", "pricing", "postage", "postageMeta", "typeId"),
-                new SimplePropertyPreFilter(VTypeEntity.class, "typeId", "label", "seriesId"),
+                new SimplePropertyPreFilter(VFormatEntity.class, "formatId", "label", "meta", "price", "priceMeta", "pricing", "postage", "postageMeta", "typeId", "parent"),
+                new SimplePropertyPreFilter(VTypeEntity.class, "typeId", "label", "seriesId", "parent"),
                 new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
         }));
     }
@@ -246,6 +275,6 @@ public class SeriesController extends Controller implements ISeriesController {
         }
         iResultSet.setData(responseVSeriesEntities);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
-        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label","status","queue")));
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label", "status", "queue")));
     }
 }

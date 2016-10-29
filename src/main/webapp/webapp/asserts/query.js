@@ -9,7 +9,7 @@ window.onload = function () {
     diversifyMainView();
     let orderId = document.getElementById("orderId") == undefined ? null : document.getElementById("orderId").content;
     if (orderId != null) {
-        requestOrderByLean(orderId);
+         requestOrderByLean(orderId);
     }
 };
 
@@ -29,7 +29,7 @@ function onQueryRequestSessionStatusCommonCallback(data) {
         }
     }else{
         var jsonData = JSON.parse(data);
-        if (jsonData.code == RESPONSE_SUCCESS) {
+        if (jsonData.code == RC_SUCCESS) {
             let userEntity = jsonData.data;
             let accountEntity = userEntity.children[0];
             let headerMenuTop = document.getElementById(ID_HEADER_MENU_TOP);
@@ -85,7 +85,10 @@ function onQueryRequestSessionStatusCommonCallback(data) {
 
 
 function requestOrderByLean(orderId) {
-    let url = BASE_PATH + "order/query?orderId=" + orderId;
+    let requestObject = new Object();
+    requestObject.orderId = orderId;
+    let url = BASE_PATH + "order/query?p=" + JSON.stringify(requestObject);
+    console.log(url);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {

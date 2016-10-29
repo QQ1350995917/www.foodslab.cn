@@ -29,7 +29,7 @@ public class MetaController extends Controller implements IMetaController {
         for (UnitEntity unitEntity : unitEntities){
             vUnitEntities.add(new VUnitEntity(unitEntity));
         }
-        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.EXE_SUCCESS.getCode());
+        IResultSet iResultSet = new ResultSet(IResultSet.ResultCode.RC_SUCCESS.getCode());
         iResultSet.setData(vUnitEntities);
         renderJson(JSON.toJSONString(iResultSet));
     }

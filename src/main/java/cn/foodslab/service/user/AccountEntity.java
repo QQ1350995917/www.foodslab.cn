@@ -6,7 +6,7 @@ package cn.foodslab.service.user;
  * Description: @TODO
  */
 public class AccountEntity {
-    private String accountId;
+    private String accountId;//
     private String identity;// 账户名称，电话号码或auth的openId
     private String password;// 账户密码，用户Identity+Password的sha1摘要
     private String nickName;
@@ -22,18 +22,6 @@ public class AccountEntity {
     public AccountEntity() {
         super();
     }
-
-//    public AccountEntity(String accountId, String identity, String nickName, int gender, String address, String portrait, String birthday, int source, String userId) {
-//        this.accountId = accountId;
-//        this.identity = identity;
-//        this.nickName = nickName;
-//        this.gender = gender;
-//        this.address = address;
-//        this.portrait = portrait;
-//        this.birthday = birthday;
-//        this.source = source;
-//        this.userId = userId;
-//    }
 
     public String getAccountId() {
         return accountId;

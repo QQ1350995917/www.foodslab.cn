@@ -18,10 +18,14 @@ public class VUserEntity extends UserEntity implements ISessionEntity {
         super();
     }
 
-    public VUserEntity(String cs,String userId,LinkedList<VAccountEntity> children) {
+    public VUserEntity(String cs, String userId, LinkedList<VAccountEntity> children) {
         this.cs = cs;
         this.setUserId(userId);
         this.children = children;
+    }
+
+    public VUserEntity(String cs) {
+        this.cs = cs;
     }
 
     public VUserEntity(UserEntity userEntity) {
@@ -49,6 +53,23 @@ public class VUserEntity extends UserEntity implements ISessionEntity {
 
     public void setChildren(LinkedList<VAccountEntity> children) {
         this.children = children;
+    }
+
+    public boolean checkUserIdParams() {
+        if (this.getUserId() == null || this.getUserId().trim().equals("")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean checkMarkParams() {
+        if (this.getUserId() == null || this.getUserId().trim().equals("")
+                || (this.getStatus() != -1 && this.getStatus() != 1 && this.getStatus() != 2)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

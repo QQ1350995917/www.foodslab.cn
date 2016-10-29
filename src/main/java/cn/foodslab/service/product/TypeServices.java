@@ -2,8 +2,10 @@ package cn.foodslab.service.product;
 
 import com.alibaba.fastjson.JSON;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Record;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -70,8 +72,15 @@ public class TypeServices implements ITypeServices {
 
     @Override
     public TypeEntity mBlock(TypeEntity typeEntity) {
-        int update = Db.update("UPDATE product_type SET status = 1 WHERE typeId = ? ", typeEntity.getTypeId());
-        if (update == 1) {
+        boolean succeed = Db.tx(new IAtom() {
+            public boolean run() throws SQLException {
+                int update = Db.update("UPDATE product_type SET status = 1 WHERE typeId = ? ", typeEntity.getTypeId());
+                Db.update("UPDATE product_format SET status = 1 WHERE status = 2 AND typeId = ? ", typeEntity.getTypeId());
+                return update == 1;
+            }
+        });
+
+        if (succeed) {
             return typeEntity;
         } else {
             return null;
@@ -90,8 +99,15 @@ public class TypeServices implements ITypeServices {
 
     @Override
     public TypeEntity mDelete(TypeEntity typeEntity) {
-        int update = Db.update("UPDATE product_type SET status = -1 WHERE typeId = ? ", typeEntity.getTypeId());
-        if (update == 1) {
+        boolean succeed = Db.tx(new IAtom() {
+            public boolean run() throws SQLException {
+                int update = Db.update("UPDATE product_type SET status = -1 WHERE typeId = ? ", typeEntity.getTypeId());
+                Db.update("UPDATE product_format SET status = -1 WHERE typeId = ? ", typeEntity.getTypeId());
+                return update == 1;
+            }
+        });
+
+        if (succeed) {
             return typeEntity;
         } else {
             return null;
@@ -108,7 +124,6 @@ public class TypeServices implements ITypeServices {
         }
         return typeEntities;
     }
-
 
 
     @Override
