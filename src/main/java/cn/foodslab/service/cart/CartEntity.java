@@ -10,7 +10,7 @@ public class CartEntity {
     private String accountId;
     private String formatId;
     private int amount;
-    private float pricing;
+    private float pricing;//这个字段是记录了在支付成功时候的对应数量下的价格，也就是说formatId对应下现价乘以amount
     private String orderId;
     private int status;
     private String createTime;

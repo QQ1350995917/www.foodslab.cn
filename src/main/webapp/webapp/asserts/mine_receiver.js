@@ -14,36 +14,6 @@ function requestMineReceiver() {
     }, onErrorCallback, onTimeoutCallback);
 }
 
-/**
- * 请求创建新收货人
- * @param data
- */
-function requestCreateReceiver(receiverEntity) {
-    let url = BASE_PATH + "receiver/create?p="  + JSON.stringify(receiverEntity);
-    asyncRequestByGet(url, function (data) {
-        var result = checkResponseDataFormat(data);
-        if (result) {
-            var jsonData = JSON.parse(data);
-            onRequestCreateReceiverCallback(jsonData.data);
-        }
-    }, onErrorCallback, onTimeoutCallback);
-}
-
-/**
- * 更新收货人地址
- * @param data
- */
-function requestUpdateReceiver(receiverEntity) {
-    let url = BASE_PATH + "receiver/update?p="  + JSON.stringify(receiverEntity);
-    asyncRequestByGet(url, function (data) {
-        var result = checkResponseDataFormat(data);
-        if (result) {
-            var jsonData = JSON.parse(data);
-            requestMineReceiver(jsonData.data.sessionId);
-        }
-    }, onErrorCallback, onTimeoutCallback);
-}
-
 function requestDeleteReceiver(receiverEntity) {
     let url = BASE_PATH + "receiver/delete?p=" + JSON.stringify(receiverEntity);
     asyncRequestByGet(url, function (data) {
@@ -94,16 +64,16 @@ function onRequestRetrieveCallback(cs, data) {
 
 /**
  * 请求创建新收货人的回调
- * @param data
+ * @param receiverEntity
  */
-function onRequestCreateReceiverCallback(data) {
+function onRequestCreateReceiverCallback(receiverEntity) {
     let mainView = document.getElementById(MAIN);
     mainView.removeChild(mainView.childNodes[mainView.childNodes.length - 1]);
-    let receiverItemContainer = createReceiverItemContainer(data);
+    let receiverItemContainer = createReceiverItemContainer(receiverEntity);
     mainView.appendChild(receiverItemContainer);
 
     if (mainView.childNodes.length < 12) {
-        let receiverAddNewContainer = createAddNewReceiverContainer(data.cs);
+        let receiverAddNewContainer = createAddNewReceiverContainer();
         mainView.appendChild(receiverAddNewContainer);
         mainView.style.height = mainView.clientHeight + receiverItemContainer.clientHeight + "px";
     }
@@ -217,21 +187,21 @@ function createReceiverItemContainer(receiverEntity, receiverItemContainer) {
         };
     }
 
-    nameView.ondblclick = function () {
+    nameView.onclick = function () {
         showReceiverEditorView(receiverEntity, function (newReceiverEntity) {
-            requestUpdateReceiver(newReceiverEntity);
-        });
+            onRequestUpdateReceiverCallback(newReceiverEntity, nameView, addressView);
+        }, true);
     };
 
-    addressView.ondblclick = function () {
+    addressView.onclick = function () {
         showReceiverEditorView(receiverEntity, function (newReceiverEntity) {
-            requestUpdateReceiver(newReceiverEntity);
-        });
+            onRequestUpdateReceiverCallback(newReceiverEntity, nameView, addressView);
+        }, true);
     };
     return receiverItemContainer;
 }
 
-function createAddNewReceiverContainer(cs) {
+function createAddNewReceiverContainer() {
     let addReceiverView = document.createElement("div");
     addReceiverView.id = "addReceiverView";
     addReceiverView.className = "receiverItemContainer";
@@ -245,9 +215,8 @@ function createAddNewReceiverContainer(cs) {
     addReceiverView.appendChild(addView);
     addView.onclick = function () {
         showReceiverEditorView(undefined, function (receiverEntity) {
-            receiverEntity.cs = cs;
-            requestCreateReceiver(receiverEntity);
-        });
+            onRequestCreateReceiverCallback(receiverEntity);
+        }, true);
     };
     return addReceiverView;
 }

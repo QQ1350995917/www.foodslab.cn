@@ -4,20 +4,20 @@
 window.onload = function () {
     this.initFrameView();
     requestSessionStatus(onMineRequestSessionStatusCommonCallback);
-    let dir = document.getElementById("dir") == undefined ? null : document.getElementById("dir").content == "" ? "cart":document.getElementById("dir").content;
-    if (dir == "cart"){
+    let dir = document.getElementById("dir") == undefined ? null : document.getElementById("dir").content == "" ? "cart" : document.getElementById("dir").content;
+    if (dir == "cart") {
         createMineTabView(0);
     }
-    
-    if (dir == "order"){
+
+    if (dir == "order") {
         createMineTabView(1);
     }
 
-    if (dir == "account"){
+    if (dir == "account") {
         createMineTabView(2);
     }
-    
-    if (dir == "receiver"){
+
+    if (dir == "receiver") {
         createMineTabView(3);
     }
 };
@@ -27,7 +27,7 @@ window.onload = function () {
  * @param data
  */
 function onMineRequestSessionStatusCommonCallback(data) {
-    if (data == undefined){
+    if (data == undefined) {
         document.getElementById(ID_HEADER_MENU_LOGIN).onclick = function () {
             showLoginView(function () {
                 requestSessionStatus(onRequestSessionStatusCommonCallback);
@@ -36,7 +36,7 @@ function onMineRequestSessionStatusCommonCallback(data) {
         document.getElementById(ID_HEADER_MENU_QUERY).onclick = function () {
             window.open(BASE_PATH + "pq");
         }
-    }else{
+    } else {
         var jsonData = JSON.parse(data);
         if (jsonData.code == RC_SUCCESS) {
             let userEntity = jsonData.data;
@@ -51,7 +51,7 @@ function onMineRequestSessionStatusCommonCallback(data) {
                 requestUserEntity.cs = getCookie(KEY_CS);
                 let url = BASE_PATH + "account/logout?p=" + JSON.stringify(requestUserEntity);
                 asyncRequestByGet(url, function (data) {
-                    window.open(BASE_PATH,"_self");
+                    window.open(BASE_PATH, "_self");
                 }, onErrorCallback, onTimeoutCallback);
             }
             headerMenuTop.appendChild(logoutAction);

@@ -1,23 +1,27 @@
 /**
  * Created by dingpengwei on 9/6/16.
  */
+let CURRENT_CART_ENTITIES = new Array();
+let CURRENT_SELECTED_CART_ENTITIES = new Array();
 function requestMineCart(cs) {
     let cartEntity = new Object();
     cartEntity.cs = cs;
-    let mainView = document.getElementById(MAIN);
-    mainView.innerHTML = null;
     let url = BASE_PATH + "cart/retrieves?p=" + JSON.stringify(cartEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
             var jsonData = JSON.parse(data);
-            if (jsonData.data == undefined || jsonData.data.length == 0) {
+            if (jsonData.code == RC_SUCCESS) {
+                CURRENT_CART_ENTITIES = jsonData.data;
+                let mainView = document.getElementById(MAIN);
+                mainView.innerHTML = null;
+                mainView.appendChild(createMainTitleView());
+                attachMineCartToContent(mainView, jsonData.data);
+                attachBillingBarView(mainView);
+            } else if (jsonData.code == RC_SUCCESS_EMPTY) {
                 createEmptyCartView();
             } else {
-                let mainView = document.getElementById(MAIN);
-                mainView.appendChild(createMainTitleView());
-                createMainContentView(mainView, jsonData.data);
-                createMainFloatView(mainView);
+
             }
         }
     }, onErrorCallback, onTimeoutCallback);
@@ -42,9 +46,7 @@ function requestDelete(cartEntity, parentView, currentView) {
         var result = checkResponseDataFormat(data);
         if (result) {
             parentView.removeChild(currentView);
-            console.log(parentView.clientHeight);
             parentView.style.height = (parentView.clientHeight - 100) + "px";
-            console.log(parentView.clientHeight);
         } else {
             new Toast().show("删除失败");
         }
@@ -52,7 +54,6 @@ function requestDelete(cartEntity, parentView, currentView) {
 }
 
 function createEmptyCartView() {
-
 }
 
 function createMainTitleView() {
@@ -65,6 +66,12 @@ function createMainTitleView() {
     selectAll.onclick = function () {
         onSelectAllCartItem(selectAll.checked);
         document.getElementById("selectAllCartOnBottom").checked = selectAll.checked;
+        if (selectAll.checked) {
+            CURRENT_SELECTED_CART_ENTITIES = CURRENT_CART_ENTITIES;
+        } else {
+            CURRENT_SELECTED_CART_ENTITIES = new Array();
+        }
+        resetBillingBarMessage();
     };
     titleView.appendChild(selectAll);
     let selectorText = document.createElement("div");
@@ -104,8 +111,8 @@ function createMainTitleView() {
     return titleView;
 }
 
-function createMainContentView(mainView, cartEntities) {
-    let length = cartEntities == undefined ? 0:cartEntities.length;
+function attachMineCartToContent(productContainer, cartEntities) {
+    let length = cartEntities == undefined ? 0 : cartEntities.length;
     for (let i = 0; i < length; i++) {
         let cartEntity = cartEntities[i];
         let itemView = document.createElement("div");
@@ -116,6 +123,23 @@ function createMainContentView(mainView, cartEntities) {
         selector.className = "selector";
         selector.value = cartEntity.mappingId;
         itemView.appendChild(selector);
+        selector.onclick = function () {
+            if (selector.checked) {
+                CURRENT_SELECTED_CART_ENTITIES.push(cartEntity);
+            } else {
+                let index = 0;
+                for (let j=0;j<CURRENT_SELECTED_CART_ENTITIES.length;j++){
+                    if (cartEntity.mappingId == CURRENT_SELECTED_CART_ENTITIES[j].mappingId){
+                        index = j;
+                        break;
+                    }
+                }
+                let part1 = CURRENT_SELECTED_CART_ENTITIES.slice(0, index);
+                let part2 = CURRENT_SELECTED_CART_ENTITIES.slice(index + 1, CURRENT_SELECTED_CART_ENTITIES.length);
+                CURRENT_SELECTED_CART_ENTITIES = part1.concat(part2);
+            }
+            resetBillingBarMessage();
+        };
 
         let itemIcon = document.createElement("img");
         itemIcon.className = "itemIcon";
@@ -129,7 +153,7 @@ function createMainContentView(mainView, cartEntities) {
         productName.className = "label";
         productName.style.width = "450px";
         productName.style.textAlign = "left";
-        productName.innerHTML = " " + cartEntity.formatEntity.parent.parent.label + " " + cartEntity.formatEntity.parent.label + " " + cartEntity.formatEntity.label+ cartEntity.formatEntity.meta;
+        productName.innerHTML = " " + cartEntity.formatEntity.parent.parent.label + " " + cartEntity.formatEntity.parent.label + " " + cartEntity.formatEntity.label + cartEntity.formatEntity.meta;
         productName.style.cursor = "pointer";
         productName.onclick = function () {
             let url = BASE_PATH + "pd?typeId=" + cartEntity.formatEntity.parent.typeId + "&formatId=" + cartEntity.formatEntity.formatId;
@@ -192,7 +216,7 @@ function createMainContentView(mainView, cartEntities) {
         deleteAction.innerHTML = "删除";
         itemView.appendChild(deleteAction);
 
-        mainView.appendChild(itemView);
+        productContainer.appendChild(itemView);
 
         totalNumberMinus.onclick = function () {
             if (totalNumber.value > 1) {
@@ -221,14 +245,13 @@ function createMainContentView(mainView, cartEntities) {
             let requestCartEntity = new Object();
             requestCartEntity.cs = getCookie("cs");
             requestCartEntity.mappingId = cartEntity.mappingId;
-            requestDelete(requestCartEntity, mainView, itemView);
+            requestDelete(requestCartEntity, productContainer, itemView);
         };
     }
-
-    mainView.style.height = 50 + length * 100 + "px";
+    productContainer.style.height = (50 + length * 100) + "px";
 }
 
-function createMainFloatView(mainView) {
+function attachBillingBarView(mainView) {
     let titleView = document.createElement("div");
     titleView.className = "billingBarFloat";
     let selectAll = document.createElement("input");
@@ -238,6 +261,12 @@ function createMainFloatView(mainView) {
     selectAll.onclick = function () {
         onSelectAllCartItem(selectAll.checked);
         document.getElementById("selectAllCartOnTop").checked = selectAll.checked;
+        if (selectAll.checked) {
+            CURRENT_SELECTED_CART_ENTITIES = CURRENT_CART_ENTITIES;
+        } else {
+            CURRENT_SELECTED_CART_ENTITIES = new Array();
+        }
+        resetBillingBarMessage();
     };
     titleView.appendChild(selectAll);
 
@@ -256,20 +285,22 @@ function createMainFloatView(mainView) {
     titleView.appendChild(deleteSelect);
 
     let productName = document.createElement("div");
+    productName.id = "cartBillingBarSelectedProductAmount";
     productName.className = "label";
     productName.style.width = "414px";
-    productName.innerHTML = "已经选择N件商品";
+    productName.innerHTML = "已经选择0件商品";
     titleView.appendChild(productName);
 
     let price = document.createElement("div");
+    price.id = "cartBillingBarSelectedProductPricingAmount";
     price.className = "label";
     price.style.width = "200px";
-    price.innerHTML = "总价(不含运费):8888元";
+    price.innerHTML = "总价(不含运费):0元";
     titleView.appendChild(price);
 
     let totalNumber = document.createElement("div");
     totalNumber.className = "label";
-    totalNumber.innerHTML = "运费:123元";
+    totalNumber.innerHTML = "运费:0元";
     titleView.appendChild(totalNumber);
 
     let action = document.createElement("div");
@@ -310,6 +341,23 @@ function createMainFloatView(mainView) {
     }
 }
 
+function resetBillingBarMessage() {
+    let cartBillingBarSelectedProductAmount = document.getElementById("cartBillingBarSelectedProductAmount");
+    let cartBillingBarSelectedProductPricingAmount = document.getElementById("cartBillingBarSelectedProductPricingAmount");
+    let productAmount = 0;
+    let pricingAmount = 0;
+    if (CURRENT_SELECTED_CART_ENTITIES != undefined) {
+        for (let i = 0; i < CURRENT_SELECTED_CART_ENTITIES.length; i++) {
+            let selectCartEntity = CURRENT_SELECTED_CART_ENTITIES[i];
+            productAmount = productAmount + selectCartEntity.amount;
+            pricingAmount = pricingAmount + (selectCartEntity.amount * selectCartEntity.formatEntity.pricing);
+        }
+    }
+
+    cartBillingBarSelectedProductAmount.innerHTML = "已经选择" + productAmount + "件商品";
+    cartBillingBarSelectedProductPricingAmount.innerHTML = "总价(不含运费):" + pricingAmount + "元";
+}
+
 function onSelectAllCartItem(checked) {
     let cartItemSelectorViews = document.getElementsByName("cartItemSelectorName");
     for (let i = 0; i < cartItemSelectorViews.length; i++) {
@@ -325,9 +373,8 @@ function onBillingAction() {
             mappingIds = mappingIds + "," + cartItemSelectorViews[j].value;
         }
     }
-
-    if (mappingIds == "") {
-
+    if (isNullValue(mappingIds)) {
+        new Toast().show("请选择结算项");
     } else {
         mappingIds = mappingIds.replace(/,/, "");
         let requestObject = new Object();
@@ -337,6 +384,4 @@ function onBillingAction() {
         let url = BASE_PATH + "pb?p=" + JSON.stringify(requestObject);
         window.open(url, "_self");
     }
-
 }
-

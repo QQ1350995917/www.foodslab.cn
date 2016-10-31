@@ -4,6 +4,17 @@ div.BHContainer{
     border-top-width: 1px;
 }
 
+div.billingMoreReceiverItem{
+    width: 998px;
+    height: 40px;
+    line-height: 40px;
+    border: 1px solid #000000;
+    margin-bottom: 1px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: #000000;
+}
+
 
 
 /*////////////////////////*/
