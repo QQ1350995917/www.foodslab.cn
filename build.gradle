@@ -32,6 +32,7 @@ repositories {
 dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.jfinal:jfinal:2.2'
+    compile 'com.jfinal:cos:26Dec2008'
     compile 'com.alibaba:druid:1.0.23'
     compile 'com.alibaba:fastjson:1.2.14'
     compile 'com.mchange:c3p0:0.9.5.2'
@@ -44,5 +45,3 @@ dependencies {
             "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
     providedCompile 'javax.servlet:javax.servlet-api:3.0.1'
 }
-
-

@@ -3,6 +3,7 @@ package cn.foodslab.controller.order;
 import cn.foodslab.common.cache.SessionContext;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.controller.cart.VCartEntity;
 import cn.foodslab.controller.manager.VManagerEntity;
 import cn.foodslab.controller.product.VFormatEntity;
 import cn.foodslab.controller.product.VSeriesEntity;
@@ -62,12 +63,9 @@ public class OrderController extends Controller implements IOrderController {
 
         requestVOrderEntity.setStatus(1);
         String orderId = UUID.randomUUID().toString();
-        float orderTotalPrice = 0.0f;
         VUserEntity vUserEntity = (VUserEntity) SessionContext.getSession(requestVOrderEntity.getCs()).getAttribute(SessionContext.KEY_USER);
         requestVOrderEntity.setAccountId(vUserEntity.getChildren().get(0).getAccountId());
         requestVOrderEntity.setOrderId(orderId);
-        requestVOrderEntity.setCost(orderTotalPrice);
-        requestVOrderEntity.setPostage(0);
         OrderEntity createOrderEntity = iOrderServices.create(requestVOrderEntity);
         if (createOrderEntity == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
@@ -192,10 +190,13 @@ public class OrderController extends Controller implements IOrderController {
         LinkedList<VOrderEntity> responseVOrderEntities = new LinkedList<>();
         for (int index = 0; index < orderEntities.size(); index++) {
             OrderEntity orderEntity = orderEntities.get(index);
-            VOrderEntity vOrderEntity1 = new VOrderEntity(orderEntity);
-            LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
+            ReceiverEntity receiverEntity = iReceiverService.retrieveById(orderEntity.getReceiverId());
+            VOrderEntity vOrderEntity = new VOrderEntity(orderEntity);
+            vOrderEntity.setReceiver(new VReceiverEntity(receiverEntity));
+            LinkedList<VCartEntity> vCartEntities = new LinkedList<>();
             LinkedList<CartEntity> cartEntities = iCartServices.retrievesByOrderId(vUserEntity.getChildren(), orderEntity.getOrderId());
             for (CartEntity cartEntity : cartEntities) {
+                VCartEntity vCartEntity = new VCartEntity(cartEntity);
                 FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
                 TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
                 SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
@@ -204,10 +205,11 @@ public class OrderController extends Controller implements IOrderController {
                 VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
                 vTypeEntity.setParent(vSeriesEntity);
                 vFormatEntity.setParent(vTypeEntity);
-                vFormatEntities.add(vFormatEntity);
+                vCartEntity.setFormatEntity(vFormatEntity);
+                vCartEntities.add(vCartEntity);
             }
-            vOrderEntity1.setFormatEntities(vFormatEntities);
-            responseVOrderEntities.add(vOrderEntity1);
+            vOrderEntity.setCartEntities(vCartEntities);
+            responseVOrderEntities.add(vOrderEntity);
         }
 
         if (responseVOrderEntities.size() == 0) {
@@ -218,7 +220,9 @@ public class OrderController extends Controller implements IOrderController {
         iResultSet.setData(responseVOrderEntities);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
-                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "createTime","formatEntities"),
+                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "createTime","receiver","cartEntities"),
+                new SimplePropertyPreFilter(VReceiverEntity.class, "name", "phone0", "phone1", "province", "city", "county", "town", "village", "append"),
+                new SimplePropertyPreFilter(VCartEntity.class, "mappingId", "accountId",  "amount", "pricing","formatEntity"),
                 new SimplePropertyPreFilter(VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "parent"),
                 new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label", "parent"),
                 new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
@@ -294,9 +298,12 @@ public class OrderController extends Controller implements IOrderController {
         for (int index = 0; index < orderEntities.size(); index++) {
             OrderEntity orderEntity = orderEntities.get(index);
             VOrderEntity vOrderEntity = new VOrderEntity(orderEntity);
-            LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
+            ReceiverEntity receiverEntity = iReceiverService.retrieveById(orderEntity.getReceiverId());
+            vOrderEntity.setReceiver(new VReceiverEntity(receiverEntity));
+            LinkedList<VCartEntity> vCartEntities = new LinkedList<>();
             LinkedList<CartEntity> cartEntities = iCartServices.mRetrievesByOrderId(accountEntities, orderEntity.getOrderId());
             for (CartEntity cartEntity : cartEntities) {
+                VCartEntity vCartEntity = new VCartEntity(cartEntity);
                 FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
                 TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
                 SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
@@ -305,9 +312,10 @@ public class OrderController extends Controller implements IOrderController {
                 VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
                 vTypeEntity.setParent(vSeriesEntity);
                 vFormatEntity.setParent(vTypeEntity);
-                vFormatEntities.add(vFormatEntity);
+                vCartEntity.setFormatEntity(vFormatEntity);
+                vCartEntities.add(vCartEntity);
             }
-            vOrderEntity.setFormatEntities(vFormatEntities);
+            vOrderEntity.setCartEntities(vCartEntities);
             responseVOrderEntities.add(vOrderEntity);
         }
         if (responseVOrderEntities.size() == 0) {
@@ -317,8 +325,10 @@ public class OrderController extends Controller implements IOrderController {
         }
         iResultSet.setData(responseVOrderEntities);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
-        renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
-                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "createTime","formatEntities"),
+        renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{//TODO 裁剪参数
+                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "createTime","receiver","cartEntities"),
+                new SimplePropertyPreFilter(VReceiverEntity.class, "name", "phone0", "phone1", "province", "city", "county", "town", "village", "append"),
+                new SimplePropertyPreFilter(VCartEntity.class, "mappingId", "accountId",  "amount", "pricing","formatEntity"),
                 new SimplePropertyPreFilter(VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "parent"),
                 new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label", "parent"),
                 new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
@@ -350,10 +360,13 @@ public class OrderController extends Controller implements IOrderController {
 
         LinkedList<VOrderEntity> responseVOrderEntities = new LinkedList<>();
         for (OrderEntity orderEntity : orderEntities) {
+            ReceiverEntity receiverEntity = iReceiverService.retrieveById(orderEntity.getReceiverId());
             VOrderEntity result = new VOrderEntity(orderEntity);
+            result.setReceiver(new VReceiverEntity(receiverEntity));
             LinkedList<CartEntity> cartEntities = iCartServices.mRetrievesByOrderId(orderEntity.getOrderId());
-            LinkedList<VFormatEntity> vFormatEntities = new LinkedList<>();
+            LinkedList<VCartEntity> vCartEntities = new LinkedList<>();
             for (CartEntity cartEntity : cartEntities) {
+                VCartEntity vCartEntity = new VCartEntity(cartEntity);
                 FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
                 TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
                 SeriesEntity seriesEntity = iSeriesServices.retrieveById(typeEntity.getSeriesId());
@@ -362,9 +375,10 @@ public class OrderController extends Controller implements IOrderController {
                 VSeriesEntity vSeriesEntity = new VSeriesEntity(seriesEntity);
                 vTypeEntity.setParent(vSeriesEntity);
                 vFormatEntity.setParent(vTypeEntity);
-                vFormatEntities.add(vFormatEntity);
+                vCartEntity.setFormatEntity(vFormatEntity);
+                vCartEntities.add(vCartEntity);
             }
-            result.setFormatEntities(vFormatEntities);
+            result.setCartEntities(vCartEntities);
             responseVOrderEntities.add(result);
         }
         if (responseVOrderEntities.size() == 0) {
@@ -374,7 +388,9 @@ public class OrderController extends Controller implements IOrderController {
         }
         iResultSet.setData(responseVOrderEntities);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
-                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "createTime","formatEntities"),
+                new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "createTime","receiver","cartEntities"),
+                new SimplePropertyPreFilter(VReceiverEntity.class, "name", "phone0", "phone1", "province", "city", "county", "town", "village", "append"),
+                new SimplePropertyPreFilter(VCartEntity.class, "mappingId", "accountId",  "amount", "pricing","formatEntity"),
                 new SimplePropertyPreFilter(VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "parent"),
                 new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label", "parent"),
                 new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")

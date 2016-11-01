@@ -1,6 +1,7 @@
 package cn.foodslab;
 
 import cn.foodslab.controller.cart.CartController;
+import cn.foodslab.controller.file.FileController;
 import cn.foodslab.controller.link.LinkController;
 import cn.foodslab.controller.manager.ManagerController;
 import cn.foodslab.controller.menu.MenuController;
@@ -95,6 +96,7 @@ public class ApplicationConfigure extends JFinalConfig {
         me.add("/cart", CartController.class);
         me.add("/order", OrderController.class);
         me.add("/receiver", ReceiverController.class);
+        me.add("/file", FileController.class);
     }
 
     @Override

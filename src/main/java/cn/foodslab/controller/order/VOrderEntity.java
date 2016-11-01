@@ -1,6 +1,6 @@
 package cn.foodslab.controller.order;
 
-import cn.foodslab.controller.product.VFormatEntity;
+import cn.foodslab.controller.cart.VCartEntity;
 import cn.foodslab.controller.receiver.VReceiverEntity;
 import cn.foodslab.service.order.OrderEntity;
 
@@ -15,7 +15,7 @@ public class VOrderEntity extends OrderEntity implements Comparable {
     private String cs;
     private String[] productIds;//请求字段 匿名下单的产品ID或用户购物车中的产品映射IDs
     private VReceiverEntity receiver;//请求字段 兼容匿名订单中的收货人信息
-    private LinkedList<VFormatEntity> formatEntities;//响应字段
+    private LinkedList<VCartEntity> cartEntities;//响应字段
 
     public VOrderEntity() {
         super();
@@ -58,12 +58,12 @@ public class VOrderEntity extends OrderEntity implements Comparable {
         this.receiver = receiver;
     }
 
-    public LinkedList<VFormatEntity> getFormatEntities() {
-        return formatEntities;
+    public LinkedList<VCartEntity> getCartEntities() {
+        return cartEntities;
     }
 
-    public void setFormatEntities(LinkedList<VFormatEntity> formatEntities) {
-        this.formatEntities = formatEntities;
+    public void setCartEntities(LinkedList<VCartEntity> cartEntities) {
+        this.cartEntities = cartEntities;
     }
 
     @Override
