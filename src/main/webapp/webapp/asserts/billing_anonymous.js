@@ -7,7 +7,7 @@ function loadAnonymousBilling(receiverContainer,productContainer,payBarContainer
     let formatIds = document.getElementById("productIds") == undefined ? null : document.getElementById("productIds").content;
     let formatEntity = new Object();
     formatEntity.formatId = formatIds;
-    let url = BASE_PATH + "format/retrieveTreeInversion?p=" + JSON.stringify(formatEntity);
+    let url = BASE_PATH + "/format/retrieveTreeInversion?p=" + JSON.stringify(formatEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -65,7 +65,7 @@ function attachAnonymousReceiverContainer(container) {
 
 
 function requestCreateAnonymousOrder(orderEntity) {
-    let url = BASE_PATH + "order/createAnonymous?p=" + JSON.stringify(orderEntity);
+    let url = BASE_PATH + "/order/createAnonymous?p=" + JSON.stringify(orderEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -73,7 +73,7 @@ function requestCreateAnonymousOrder(orderEntity) {
             if (jsonData.code = RC_SUCCESS) {
                 let requestObject = new Object();
                 requestObject.orderId = jsonData.data.orderId;
-                let url = BASE_PATH + "pq?p=" + JSON.stringify(requestObject);
+                let url = BASE_PATH + "/pq?p=" + JSON.stringify(requestObject);
                 window.open(url, "_self");
             }
         }

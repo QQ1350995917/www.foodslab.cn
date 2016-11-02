@@ -34,7 +34,7 @@ function onMineRequestSessionStatusCommonCallback(data) {
             });
         }
         document.getElementById(ID_HEADER_MENU_QUERY).onclick = function () {
-            window.open(BASE_PATH + "pq");
+            window.open(BASE_PATH + "/pq");
         }
     } else {
         var jsonData = JSON.parse(data);
@@ -49,7 +49,7 @@ function onMineRequestSessionStatusCommonCallback(data) {
             logoutAction.onclick = function () {
                 let requestUserEntity = new Object();
                 requestUserEntity.cs = getCookie(KEY_CS);
-                let url = BASE_PATH + "account/logout?p=" + JSON.stringify(requestUserEntity);
+                let url = BASE_PATH + "/account/logout?p=" + JSON.stringify(requestUserEntity);
                 asyncRequestByGet(url, function (data) {
                     window.open(BASE_PATH, "_self");
                 }, onErrorCallback, onTimeoutCallback);
@@ -82,7 +82,7 @@ function onMineRequestSessionStatusCommonCallback(data) {
                 });
             }
             document.getElementById(ID_HEADER_MENU_QUERY).onclick = function () {
-                window.open(BASE_PATH + "pq");
+                window.open(BASE_PATH + "/pq");
             }
             delCookie(KEY_CS);
         }

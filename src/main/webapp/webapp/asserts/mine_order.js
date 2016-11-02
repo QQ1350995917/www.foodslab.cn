@@ -4,7 +4,7 @@
 function requestMineOrder() {
     let orderEntity = new Object();
     orderEntity.cs = getCookie(KEY_CS);
-    let url = BASE_PATH + "order/retrieves?p=" + JSON.stringify(orderEntity);
+    let url = BASE_PATH + "/order/retrieves?p=" + JSON.stringify(orderEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -43,7 +43,7 @@ function createOrderItemView(orderEntity) {
     orderReceiverView.style.height = itemContainer.customerHeight - 41 + "px";
     itemContainer.appendChild(orderReceiverView);
 
-    let orderMoneyView = createOrderMoneyView(orderEntity.cost,orderEntity.postage);
+    let orderMoneyView = createOrderMoneyView(orderEntity.cost, orderEntity.postage);
     orderMoneyView.style.height = itemContainer.customerHeight - 41 + "px";
     itemContainer.appendChild(orderMoneyView);
 
@@ -112,7 +112,7 @@ function createOrderReceiverView(receiverEntity) {
     return receiverContainer;
 }
 
-function createOrderMoneyView(cost,postage) {
+function createOrderMoneyView(cost, postage) {
     let orderMoneyContainer = document.createElement("div");
     orderMoneyContainer.className = "orderReceiverView";
     let moneyView = document.createElement("div");
@@ -143,7 +143,7 @@ function createOrderStatusView(orderEntity) {
             let requestOrderEntity = new Object();
             requestOrderEntity.cs = getCookie(KEY_CS);
             requestOrderEntity.orderId = orderEntity.orderId;
-            let url = BASE_PATH + "order/expressed?p=" + JSON.stringify(requestOrderEntity);
+            let url = BASE_PATH + "/order/expressed?p=" + JSON.stringify(requestOrderEntity);
             asyncRequestByGet(url, function (data) {
                 var result = checkResponseDataFormat(data);
                 if (result) {

@@ -2,11 +2,15 @@ package cn.foodslab.controller.file;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.interceptor.ManagerInterceptor;
+import cn.foodslab.interceptor.MenuInterceptor;
+import cn.foodslab.interceptor.SessionInterceptor;
 import cn.foodslab.service.file.FFile;
 import cn.foodslab.service.file.FileServices;
 import cn.foodslab.service.file.IFileServices;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
+import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 import com.jfinal.upload.UploadFile;
 
@@ -26,8 +30,8 @@ public class FileController extends Controller implements IFileController {
     }
 
     @Override
-    //@Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
-    public void mImage() {
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
+    public void mTypeCover() {
         UploadFile file = this.getFile();
         String params = this.getPara("p");
         IResultSet iResultSet = new ResultSet();
@@ -70,5 +74,17 @@ public class FileController extends Controller implements IFileController {
         iResultSet.setData(new VFFile(fFile));
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFFile.class, "fileId", "path", "type", "trunkId")));
+    }
+
+    @Override
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
+    public void mTypeDirectionImage() {
+        UploadFile file = this.getFile();
+        String filePath = "/upload/direction_" + file.getFileName();
+        IResultSet iResultSet = new ResultSet();
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(new VFFile(filePath));
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFFile.class, "path")));
     }
 }

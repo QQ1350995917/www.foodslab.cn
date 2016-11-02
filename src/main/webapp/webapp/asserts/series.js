@@ -8,20 +8,20 @@ window.onload = function () {
     requestSeries(seriesId);
 };
 function requestSeries(seriesId) {
-    let url = BASE_PATH + "series/retrieves";
+    let url = BASE_PATH + "/series/retrieves";
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
             var jsonData = JSON.parse(data);
-            createSeriesView(seriesId,jsonData.data,onSeriesTabClick);
+            createSeriesView(seriesId, jsonData.data, onSeriesTabClick);
         }
     }, onErrorCallback, onTimeoutCallback);
 }
 
-function createSeriesView(seriesId,seriesEntities,callback) {
+function createSeriesView(seriesId, seriesEntities, callback) {
     let seriesEntitiesView = document.getElementById(ID_HEADER_MENU_DOWN);
     seriesEntitiesView.innerHTML = null;
-    let length = seriesEntities == undefined ? 0:seriesEntities.length;
+    let length = seriesEntities == undefined ? 0 : seriesEntities.length;
     for (let i = 0; i < length; i++) {
         let seriesEntityView = document.createElement("div")
         let seriesEntity = seriesEntities[i];
@@ -32,7 +32,7 @@ function createSeriesView(seriesId,seriesEntities,callback) {
             seriesEntityView.className = "tabItem_normal";
         }
         seriesEntityView.onclick = function () {
-            createSeriesView(seriesEntity.seriesId,seriesEntities,callback);
+            createSeriesView(seriesEntity.seriesId, seriesEntities, callback);
         };
         seriesEntityView.innerHTML = seriesEntities[i].label;
         seriesEntitiesView.appendChild(seriesEntityView);
@@ -40,7 +40,7 @@ function createSeriesView(seriesId,seriesEntities,callback) {
 }
 
 function onSeriesTabClick(seriesEntity) {
-    let url = BASE_PATH + "series/treeInversion?p=" + JSON.stringify(seriesEntity);
+    let url = BASE_PATH + "/series/treeInversion?p=" + JSON.stringify(seriesEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -52,7 +52,7 @@ function onSeriesTabClick(seriesEntity) {
 
 function createProductView(formatEntities) {
     let formatEntitiesView = document.createElement("div")
-    let length = formatEntities == null ? 0:formatEntities.length;
+    let length = formatEntities == null ? 0 : formatEntities.length;
     for (let i = 0; i < length; i++) {
         if (i % 4 == 0) {
             let clearFloat = document.createElement("div")
@@ -68,17 +68,17 @@ function createProductView(formatEntities) {
         formatEntityTitleView.style.backgroundColor = COLORS[Math.floor(Math.random() * 10)];
         formatEntityTitleView.innerHTML = formatEntity.parent.label;
         formatEntityTitleView.onclick = function () {
-            let url = BASE_PATH + "pd?typeId=" + formatEntity.typeId + "&formatId=" + formatEntity.formatId;
+            let url = BASE_PATH + "/pd?typeId=" + formatEntity.typeId + "&formatId=" + formatEntity.formatId;
             window.open(url);
         };
         formatEntityView.appendChild(formatEntityTitleView);
         let formatEntityImageView = document.createElement("img")
         formatEntityImageView.className = "productItem_img";
-        if (!isNullValue(formatEntity.parent) && !isNullValue(formatEntity.parent.covers) && !isNullValue(formatEntity.parent.covers[0]) && !isNullValue(formatEntity.parent.covers[0].path)){
+        if (!isNullValue(formatEntity.parent) && !isNullValue(formatEntity.parent.covers) && !isNullValue(formatEntity.parent.covers[0]) && !isNullValue(formatEntity.parent.covers[0].path)) {
             formatEntityImageView.src = "http://localhost:8080/foodslab" + formatEntity.parent.covers[0].path;
         }
         formatEntityImageView.onclick = function () {
-            let url = BASE_PATH + "pd?typeId=" + formatEntity.typeId + "&formatId=" + formatEntity.formatId;
+            let url = BASE_PATH + "/pd?typeId=" + formatEntity.typeId + "&formatId=" + formatEntity.formatId;
             window.open(url);
         };
         formatEntityView.appendChild(formatEntityImageView);
@@ -98,7 +98,7 @@ function createProductView(formatEntities) {
         formatEntityLinkView.appendChild(formatEntityPriceLabel);
         formatEntityView.appendChild(formatEntityLinkView);
         formatEntityLinkView.onclick = function () {
-            let url = BASE_PATH + "pd?typeId=" + formatEntity.typeId + "&formatId=" + formatEntity.formatId;
+            let url = BASE_PATH + "/pd?typeId=" + formatEntity.typeId + "&formatId=" + formatEntity.formatId;
             window.open(url);
         };
         let formatEntityBuyView = document.createElement("div")
@@ -109,15 +109,15 @@ function createProductView(formatEntities) {
                 let requestFormatEntity = new Object();
                 requestFormatEntity.cs = getCookie(KEY_CS);
                 requestFormatEntity.formatId = formatEntity.formatId;
-                let url = BASE_PATH + "cart/create?p=" + JSON.stringify(formatEntity);
+                let url = BASE_PATH + "/cart/create?p=" + JSON.stringify(formatEntity);
                 asyncRequestByGet(url, function (data) {
                     var result = checkResponseDataFormat(data);
                     if (result) {
                         var jsonData = JSON.parse(data);
-                        if (jsonData.code == RC_SUCCESS){
+                        if (jsonData.code == RC_SUCCESS) {
                             let object = new Object();
                             object.productIds = jsonData.data.mappingId;
-                            let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
+                            let url = BASE_PATH + "/pb?p=" + JSON.stringify(object);
                             window.open(url);
                         }
                     }
@@ -125,7 +125,7 @@ function createProductView(formatEntities) {
             } else {
                 let object = new Object();
                 object.productIds = formatEntity.formatId;
-                let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
+                let url = BASE_PATH + "/pb?p=" + JSON.stringify(object);
                 window.open(url);
             }
         };

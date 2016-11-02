@@ -12,7 +12,7 @@ window.onload = function () {
 };
 
 function requestType(typeEntity, selectedFormatId) {
-    let url = BASE_PATH + "type/retrieve?p=" + JSON.stringify(typeEntity);
+    let url = BASE_PATH + "/type/retrieve?p=" + JSON.stringify(typeEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -27,7 +27,7 @@ function requestType(typeEntity, selectedFormatId) {
 function requestSeries(seriesId,typeEntity) {
     let requestObject = new Object();
     requestObject.seriesId = seriesId;
-    let url = BASE_PATH + "series/retrieve?p=" + JSON.stringify(requestObject);
+    let url = BASE_PATH + "/series/retrieve?p=" + JSON.stringify(requestObject);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -38,7 +38,7 @@ function requestSeries(seriesId,typeEntity) {
 }
 
 function requestPutInCart(formatEntity) {
-    let url = BASE_PATH + "cart/create?p=" + JSON.stringify(formatEntity);
+    let url = BASE_PATH + "/cart/create?p=" + JSON.stringify(formatEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -67,7 +67,7 @@ function createTypeTitle(seriesEntity,typeEntity) {
     seriesEntityView.className = "tabItem_normal";
     seriesEntityView.innerHTML = seriesEntity.label;
     seriesEntityView.onclick = function () {
-        let url = BASE_PATH + "ps?seriesId=" + seriesEntity.seriesId;
+        let url = BASE_PATH + "/ps?seriesId=" + seriesEntity.seriesId;
         window.open(url, "_self");
     };
     typeEntityView.appendChild(seriesEntityView);
@@ -172,7 +172,7 @@ function createTypeMainView(typeEntity, selectedFormatId) {
 }
 
 function requestFormat(typeEntity, containerView, selectedFormatId) {
-    let url = BASE_PATH + "format/retrieves?p=" + JSON.stringify(typeEntity);
+    let url = BASE_PATH + "/format/retrieves?p=" + JSON.stringify(typeEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -321,7 +321,7 @@ function createFormatDiscountItemView(formatEntity) {
             requestFormatEntity.cs = getCookie(KEY_CS);
             requestFormatEntity.formatId = formatEntity.formatId;
             requestFormatEntity.amount = formatCounterEdit.value;
-            let url = BASE_PATH + "cart/create?p=" + JSON.stringify(requestFormatEntity);
+            let url = BASE_PATH + "/cart/create?p=" + JSON.stringify(requestFormatEntity);
             asyncRequestByGet(url, function (data) {
                 console.log(data);
                 var result = checkResponseDataFormat(data);
@@ -330,7 +330,7 @@ function createFormatDiscountItemView(formatEntity) {
                     if (jsonData.code == RC_SUCCESS){
                         let object = new Object();
                         object.productIds = jsonData.data.mappingId;
-                        let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
+                        let url = BASE_PATH + "/pb?p=" + JSON.stringify(object);
                         window.open(url);
                     }
                 }
@@ -338,7 +338,7 @@ function createFormatDiscountItemView(formatEntity) {
         } else {
             let object = new Object();
             object.productIds = formatEntity.formatId;
-            let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
+            let url = BASE_PATH + "/pb?p=" + JSON.stringify(object);
             window.open(url);
         }
     };
@@ -434,7 +434,7 @@ function createPutInCartResultView(data) {
         document.body.removeChild(keepGoon.parentNode);
         let requestUserEntity = new Object();
         requestUserEntity.cs = getCookie(KEY_CS);
-        let url = BASE_PATH + "pm?p=" + JSON.stringify(requestUserEntity);
+        let url = BASE_PATH + "/pm?p=" + JSON.stringify(requestUserEntity);
         window.open(url, "_self");
     };
     resultView.appendChild(keepGoon);

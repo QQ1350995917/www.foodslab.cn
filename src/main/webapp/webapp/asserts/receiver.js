@@ -302,7 +302,7 @@ function createReceiverEditorSave(receiverEntity, callback, submit) {
             receiverEntity.append = receiverAddressAppend;
             if (submit) {
                 receiverEntity.cs = getCookie(KEY_CS);
-                let url = BASE_PATH + "receiver/create?p=" + JSON.stringify(receiverEntity);
+                let url = BASE_PATH + "/receiver/create?p=" + JSON.stringify(receiverEntity);
                 asyncRequestByGet(url, function (data) {
                     var result = checkResponseDataFormat(data);
                     if (result) {
@@ -333,7 +333,7 @@ function createReceiverEditorSave(receiverEntity, callback, submit) {
             receiverEntity.append = receiverAddressAppend;
             if (submit) {
                 receiverEntity.cs = getCookie(KEY_CS);
-                let url = BASE_PATH + "receiver/update?p=" + JSON.stringify(receiverEntity);
+                let url = BASE_PATH + "/receiver/update?p=" + JSON.stringify(receiverEntity);
                 asyncRequestByGet(url, function (data) {
                     var result = checkResponseDataFormat(data);
                     if (result) {

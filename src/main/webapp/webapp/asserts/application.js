@@ -1,7 +1,7 @@
 /**
  * Created by dingpengwei on 8/19/16.
  */
-const BASE_PATH = "http://localhost:8080/foodslab/";
+const BASE_PATH = "http://localhost:8080/foodslab";
 const ID_HEADER_ICON = "headerIcon";
 const ID_HEADER_MENU_TOP = "headerMenuTop";
 const ID_HEADER_MENU_QUERY = "headerMenuTopQuery";

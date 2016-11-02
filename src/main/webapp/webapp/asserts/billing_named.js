@@ -5,7 +5,7 @@
 function loadNamedBilling(receiverContainer, productContainer, payBarContainer) {
     let requestUserEntity = new Object();
     requestUserEntity.cs = getCookie(KEY_CS);
-    asyncRequestByGet(BASE_PATH + "receiver/retrieves?p=" + JSON.stringify(requestUserEntity), function (data) {
+    asyncRequestByGet(BASE_PATH + "/receiver/retrieves?p=" + JSON.stringify(requestUserEntity), function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
             var jsonData = JSON.parse(data);
@@ -23,7 +23,7 @@ function loadNamedBilling(receiverContainer, productContainer, payBarContainer) 
     let cartEntity = new Object();
     cartEntity.cs = getCookie(KEY_CS);
     cartEntity.productIds = productIds.split(",");
-    asyncRequestByGet(BASE_PATH + "cart/retrieves?p=" + JSON.stringify(cartEntity), function (data) {
+    asyncRequestByGet(BASE_PATH + "/cart/retrieves?p=" + JSON.stringify(cartEntity), function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
             var jsonData = JSON.parse(data);
@@ -134,7 +134,7 @@ function attachMoreReceiverToContainer(moreReceiverContainer, receiverEntities, 
                     requestReceiverEntity.cs = getCookie(KEY_CS);
                     requestReceiverEntity.receiverId = receiverEntity.receiverId;
                     requestReceiverEntity.status = -1;
-                    let url = BASE_PATH + "receiver/delete?p=" + JSON.stringify(requestReceiverEntity);
+                    let url = BASE_PATH + "/receiver/delete?p=" + JSON.stringify(requestReceiverEntity);
                     asyncRequestByGet(url, function (data) {
                         var result = checkResponseDataFormat(data);
                         if (result) {
@@ -157,7 +157,7 @@ function attachMoreReceiverToContainer(moreReceiverContainer, receiverEntities, 
                     requestReceiverEntity.cs = getCookie(KEY_CS);
                     requestReceiverEntity.receiverId = receiverEntity.receiverId;
                     requestReceiverEntity.status = 3;
-                    let url = BASE_PATH + "receiver/king?p=" + JSON.stringify(requestReceiverEntity);
+                    let url = BASE_PATH + "/receiver/king?p=" + JSON.stringify(requestReceiverEntity);
                     asyncRequestByGet(url, function (data) {
                         var result = checkResponseDataFormat(data);
                         if (result) {
@@ -213,7 +213,7 @@ function attachMoreReceiverToContainer(moreReceiverContainer, receiverEntities, 
 
 
 function requestCreateNamedOrder(orderEntity) {
-    let url = BASE_PATH + "order/create?p=" + JSON.stringify(orderEntity);
+    let url = BASE_PATH + "/order/create?p=" + JSON.stringify(orderEntity);
     console.log(url);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
@@ -223,7 +223,7 @@ function requestCreateNamedOrder(orderEntity) {
                 let pageEntity = new Object();
                 pageEntity.cs = getCookie(KEY_CS);
                 pageEntity.dir = "order";
-                let url = BASE_PATH + "pm?p=" + JSON.stringify(pageEntity);
+                let url = BASE_PATH + "/pm?p=" + JSON.stringify(pageEntity);
                 window.open(url, "_self");
             }
         }

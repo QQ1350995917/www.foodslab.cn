@@ -57,7 +57,7 @@ function createAuthRowView() {
 function createFunctionContainer(loginSuccessCallback) {
     let functionContainer = document.createElement("div");
     functionContainer.className = "functionPanel";
-    addLoginContainer(functionContainer,loginSuccessCallback);
+    addLoginContainer(functionContainer, loginSuccessCallback);
     return functionContainer;
 }
 
@@ -65,7 +65,7 @@ function createFunctionContainer(loginSuccessCallback) {
  * 添加登录的容器
  * @param container
  */
-function addLoginContainer(container,loginSuccessCallback) {
+function addLoginContainer(container, loginSuccessCallback) {
     container.innerHTML = null;
     let titleMessage = document.createElement("div");
     titleMessage.style.float = "none";
@@ -99,7 +99,7 @@ function addLoginContainer(container,loginSuccessCallback) {
         let requestAccount = new Object();
         requestAccount.identity = identity;
         requestAccount.password = password;
-        requestLogin(requestAccount,loginSuccessCallback);
+        requestLogin(requestAccount, loginSuccessCallback);
     }
 
     let functionAction = document.createElement("div")
@@ -114,7 +114,7 @@ function addLoginContainer(container,loginSuccessCallback) {
     registerAction.innerHTML = "注册账户";
     functionAction.appendChild(registerAction);
     registerAction.onclick = function () {
-        addRegisterContainer(container,loginSuccessCallback);
+        addRegisterContainer(container, loginSuccessCallback);
     };
 
     let passwordAction = document.createElement("div")
@@ -122,7 +122,7 @@ function addLoginContainer(container,loginSuccessCallback) {
     passwordAction.innerHTML = "忘记密码";
     functionAction.appendChild(passwordAction);
     passwordAction.onclick = function () {
-        addResetPasswordContainer(container,loginSuccessCallback);
+        addResetPasswordContainer(container, loginSuccessCallback);
     };
 }
 
@@ -130,7 +130,7 @@ function addLoginContainer(container,loginSuccessCallback) {
  * 添加注册的容器
  * @param container
  */
-function addRegisterContainer(container,loginSuccessCallback) {
+function addRegisterContainer(container, loginSuccessCallback) {
     container.innerHTML = null;
     let titleMessage = document.createElement("div");
     titleMessage.style.float = "none";
@@ -236,7 +236,7 @@ function addRegisterContainer(container,loginSuccessCallback) {
  * 添加重置密码的容器
  * @param container
  */
-function addResetPasswordContainer(container,loginSuccessCallback) {
+function addResetPasswordContainer(container, loginSuccessCallback) {
     container.innerHTML = null;
     let titleMessage = document.createElement("div");
     titleMessage.style.float = "none";
@@ -325,7 +325,7 @@ function addResetPasswordContainer(container,loginSuccessCallback) {
     loginAction.innerHTML = "返回登录";
     functionAction.appendChild(loginAction);
     loginAction.onclick = function () {
-        addLoginContainer(container,loginSuccessCallback);
+        addLoginContainer(container, loginSuccessCallback);
     };
 
     let registerAction = document.createElement("div")
@@ -333,7 +333,7 @@ function addResetPasswordContainer(container,loginSuccessCallback) {
     registerAction.innerHTML = "注册账户";
     functionAction.appendChild(registerAction);
     registerAction.onclick = function () {
-        addRegisterContainer(container,loginSuccessCallback);
+        addRegisterContainer(container, loginSuccessCallback);
     };
 }
 
@@ -342,14 +342,14 @@ function dismissLoginView() {
     dismissMaskView();
 }
 
-function requestLogin(accountEntity,loginSuccessCallback) {
-    let url = BASE_PATH + "account/login?p=" + JSON.stringify(accountEntity);
+function requestLogin(accountEntity, loginSuccessCallback) {
+    let url = BASE_PATH + "/account/login?p=" + JSON.stringify(accountEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
             var jsonData = JSON.parse(data);
             if (jsonData.code == RC_SUCCESS) {
-                setCookie(KEY_CS,jsonData.data.cs);
+                setCookie(KEY_CS, jsonData.data.cs);
                 new Toast().show(jsonData.message);
                 dismissLoginView();
                 loginSuccessCallback();
@@ -361,7 +361,7 @@ function requestLogin(accountEntity,loginSuccessCallback) {
 }
 
 function requestCreateAccount(accountEntity) {
-    let url = BASE_PATH + "account/create?p=" + JSON.stringify(accountEntity);
+    let url = BASE_PATH + "/account/create?p=" + JSON.stringify(accountEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {

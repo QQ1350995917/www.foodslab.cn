@@ -6,7 +6,7 @@ let CURRENT_SELECTED_CART_ENTITIES = new Array();
 function requestMineCart(cs) {
     let cartEntity = new Object();
     cartEntity.cs = cs;
-    let url = BASE_PATH + "cart/retrieves?p=" + JSON.stringify(cartEntity);
+    let url = BASE_PATH + "/cart/retrieves?p=" + JSON.stringify(cartEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -28,7 +28,7 @@ function requestMineCart(cs) {
 }
 
 function requestUpdateNumber(cartEntity) {
-    let url = BASE_PATH + "cart/update?p=" + JSON.stringify(cartEntity);
+    let url = BASE_PATH + "/cart/update?p=" + JSON.stringify(cartEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -41,7 +41,7 @@ function requestUpdateNumber(cartEntity) {
 
 function requestDelete(cartEntity, parentView, currentView) {
     console.log(cartEntity);
-    let url = BASE_PATH + "cart/delete?p=" + JSON.stringify(cartEntity);
+    let url = BASE_PATH + "/cart/delete?p=" + JSON.stringify(cartEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -128,8 +128,8 @@ function attachMineCartToContent(productContainer, cartEntities) {
                 CURRENT_SELECTED_CART_ENTITIES.push(cartEntity);
             } else {
                 let index = 0;
-                for (let j=0;j<CURRENT_SELECTED_CART_ENTITIES.length;j++){
-                    if (cartEntity.mappingId == CURRENT_SELECTED_CART_ENTITIES[j].mappingId){
+                for (let j = 0; j < CURRENT_SELECTED_CART_ENTITIES.length; j++) {
+                    if (cartEntity.mappingId == CURRENT_SELECTED_CART_ENTITIES[j].mappingId) {
                         index = j;
                         break;
                     }
@@ -144,7 +144,7 @@ function attachMineCartToContent(productContainer, cartEntities) {
         let itemIcon = document.createElement("img");
         itemIcon.className = "itemIcon";
         itemIcon.onclick = function () {
-            let url = BASE_PATH + "pd?typeId=" + cartEntity.formatEntity.parent.typeId + "&formatId=" + cartEntity.formatEntity.formatId;
+            let url = BASE_PATH + "/pd?typeId=" + cartEntity.formatEntity.parent.typeId + "&formatId=" + cartEntity.formatEntity.formatId;
             window.open(url);
         }
         itemView.appendChild(itemIcon);
@@ -156,7 +156,7 @@ function attachMineCartToContent(productContainer, cartEntities) {
         productName.innerHTML = " " + cartEntity.formatEntity.parent.parent.label + " " + cartEntity.formatEntity.parent.label + " " + cartEntity.formatEntity.label + cartEntity.formatEntity.meta;
         productName.style.cursor = "pointer";
         productName.onclick = function () {
-            let url = BASE_PATH + "pd?typeId=" + cartEntity.formatEntity.parent.typeId + "&formatId=" + cartEntity.formatEntity.formatId;
+            let url = BASE_PATH + "/pd?typeId=" + cartEntity.formatEntity.parent.typeId + "&formatId=" + cartEntity.formatEntity.formatId;
             window.open(url);
         };
         itemView.appendChild(productName);
@@ -380,7 +380,7 @@ function onBillingAction() {
         requestObject.cs = getCookie("cs");
         // requestObject.productIds = mappingIds.split(",");;
         requestObject.productIds = mappingIds;
-        let url = BASE_PATH + "pb?p=" + JSON.stringify(requestObject);
+        let url = BASE_PATH + "/pb?p=" + JSON.stringify(requestObject);
         window.open(url, "_self");
     }
 }

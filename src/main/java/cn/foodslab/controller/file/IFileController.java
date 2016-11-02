@@ -15,8 +15,15 @@ public interface IFileController {
 
     /**
      * 管理员接口
-     * 管理员上传图片
+     * 管理员上传类型图片
      */
     @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
-    void mImage();
+    void mTypeCover();
+
+    /**
+     * 管理员接口
+     * 管理员上传类型介绍图片
+     */
+    @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
+    void mTypeDirectionImage();
 }

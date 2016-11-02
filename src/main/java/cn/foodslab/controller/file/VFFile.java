@@ -14,6 +14,11 @@ public class VFFile extends FFile {
         super();
     }
 
+
+    public VFFile(String path) {
+        this.setPath(path);
+    }
+
     public VFFile(FFile fFile) {
         this.setFileId(fFile.getFileId());
         this.setPath(fFile.getPath());

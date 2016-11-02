@@ -12,10 +12,10 @@
  * @constructor
  */
 function Toast(startX, startY, width, height, className) {
-    if (width == 0 || width == undefined || width == "" || width == null){
+    if (width == 0 || width == undefined || width == "" || width == null) {
         width = 200;
     }
-    if (height == 0 || height == undefined || height == "" || height == null){
+    if (height == 0 || height == undefined || height == "" || height == null) {
         height = 30;
     }
     this.view = document.body;
@@ -53,7 +53,7 @@ Toast.prototype.show = function (message) {
     }
     if (!isNullValue(this.width)) {
         width = this.width;
-        if (isNullValue(this.startX)){
+        if (isNullValue(this.startX)) {
             startX = this.view.clientWidth / 2 - width / 2;
         }
     }
@@ -98,7 +98,7 @@ Toast.prototype.show = function (message) {
             opacity -= step;
         }, this.duration);
         clearTimeout(timer);
-    },1000);
+    }, 1000);
 
 }
 

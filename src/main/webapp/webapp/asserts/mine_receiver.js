@@ -4,7 +4,7 @@
 function requestMineReceiver() {
     let userEntity = new Object()
     userEntity.cs = getCookie("cs");
-    let url = BASE_PATH + "receiver/retrieves?p=" + JSON.stringify(userEntity);
+    let url = BASE_PATH + "/receiver/retrieves?p=" + JSON.stringify(userEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -15,7 +15,7 @@ function requestMineReceiver() {
 }
 
 function requestDeleteReceiver(receiverEntity) {
-    let url = BASE_PATH + "receiver/delete?p=" + JSON.stringify(receiverEntity);
+    let url = BASE_PATH + "/receiver/delete?p=" + JSON.stringify(receiverEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -27,7 +27,7 @@ function requestDeleteReceiver(receiverEntity) {
 }
 
 function requestMarkReceiver(receiverEntity) {
-    let url = BASE_PATH + "receiver/king?p=" + JSON.stringify(receiverEntity);
+    let url = BASE_PATH + "/receiver/king?p=" + JSON.stringify(receiverEntity);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {

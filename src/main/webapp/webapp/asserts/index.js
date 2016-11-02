@@ -36,7 +36,7 @@ function initIndexFrameView() {
 }
 
 function requestSeries() {
-    let url = BASE_PATH + "series/retrieves";
+    let url = BASE_PATH + "/series/retrieves";
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -47,7 +47,7 @@ function requestSeries() {
 }
 
 function requestPoster(posterContainer, onResizeCallback) {
-    let url = BASE_PATH + "poster/retrieves";
+    let url = BASE_PATH + "/poster/retrieves";
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -59,7 +59,7 @@ function requestPoster(posterContainer, onResizeCallback) {
 
 
 function requestRecommend(recommendContainer, onResizeCallback) {
-    let url = BASE_PATH + "format/recommends";
+    let url = BASE_PATH + "/format/recommends";
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -76,7 +76,7 @@ function createSeriesView(seriesEntities) {
         seriesEntityView.className = "tabItem_normal";
         seriesEntityView.innerHTML = seriesEntities[i].label;
         seriesEntityView.onclick = function () {
-            let url = BASE_PATH + "ps?seriesId=" + seriesEntities[i].seriesId;
+            let url = BASE_PATH + "/ps?seriesId=" + seriesEntities[i].seriesId;
             window.open(url);
         };
         seriesEntitiesView.appendChild(seriesEntityView);
@@ -128,7 +128,7 @@ function fillRecommendContainer(recommendContainer, formatEntities, onResizeCall
         formatEntityTitleView.style.backgroundColor = COLORS[Math.floor(Math.random() * 10)];
         formatEntityTitleView.innerHTML = formatEntity.parent.parent.label;
         formatEntityTitleView.onclick = function () {
-            let url = BASE_PATH + "ps?seriesId=" + formatEntity.parent.parent.seriesId;
+            let url = BASE_PATH + "/ps?seriesId=" + formatEntity.parent.parent.seriesId;
             window.open(url);
         };
         formatEntityView.appendChild(formatEntityTitleView);
@@ -137,11 +137,11 @@ function fillRecommendContainer(recommendContainer, formatEntities, onResizeCall
          */
         let formatEntityImageView = document.createElement("img")
         formatEntityImageView.className = "productItem_img";
-        if (!isNullValue(formatEntity.parent) && !isNullValue(formatEntity.parent.covers) && !isNullValue(formatEntity.parent.covers[0])){
+        if (!isNullValue(formatEntity.parent) && !isNullValue(formatEntity.parent.covers) && !isNullValue(formatEntity.parent.covers[0])) {
             formatEntityImageView.src = "http://localhost:8080/foodslab" + formatEntity.parent.covers[0].path;
         }
         formatEntityImageView.onclick = function () {
-            let url = BASE_PATH + "pd?typeId=" + formatEntity.typeId + "&formatId=" + formatEntity.formatId;
+            let url = BASE_PATH + "/pd?typeId=" + formatEntity.typeId + "&formatId=" + formatEntity.formatId;
             window.open(url);
         };
         formatEntityView.appendChild(formatEntityImageView);
@@ -164,7 +164,7 @@ function fillRecommendContainer(recommendContainer, formatEntities, onResizeCall
         formatEntityLinkView.appendChild(formatEntityPriceLabel);
         formatEntityView.appendChild(formatEntityLinkView);
         formatEntityLinkView.onclick = function () {
-            let url = BASE_PATH + "pd?typeId=" + formatEntity.typeId + "&formatId=" + formatEntity.formatId;
+            let url = BASE_PATH + "/pd?typeId=" + formatEntity.typeId + "&formatId=" + formatEntity.formatId;
             window.open(url);
         };
         let formatEntityBuyView = document.createElement("div")
@@ -176,16 +176,16 @@ function fillRecommendContainer(recommendContainer, formatEntities, onResizeCall
                 requestFormatEntity.cs = getCookie(KEY_CS);
                 requestFormatEntity.formatId = formatEntity.formatId;
                 requestFormatEntity.amount = 1;
-                let url = BASE_PATH + "cart/create?p=" + JSON.stringify(requestFormatEntity);
+                let url = BASE_PATH + "/cart/create?p=" + JSON.stringify(requestFormatEntity);
                 asyncRequestByGet(url, function (data) {
                     var result = checkResponseDataFormat(data);
                     if (result) {
                         var jsonData = JSON.parse(data);
-                        if (jsonData.code == RC_SUCCESS){
+                        if (jsonData.code == RC_SUCCESS) {
                             let object = new Object();
                             object.productIds = jsonData.data.mappingId;
                             console.log(jsonData.data.mappingId);
-                            let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
+                            let url = BASE_PATH + "/pb?p=" + JSON.stringify(object);
                             window.open(url);
                         }
                     }
@@ -193,7 +193,7 @@ function fillRecommendContainer(recommendContainer, formatEntities, onResizeCall
             } else {
                 let object = new Object();
                 object.productIds = formatEntity.formatId;
-                let url = BASE_PATH + "pb?p=" + JSON.stringify(object);
+                let url = BASE_PATH + "/pb?p=" + JSON.stringify(object);
                 window.open(url);
             }
         };

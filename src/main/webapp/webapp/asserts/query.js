@@ -9,7 +9,7 @@ window.onload = function () {
     diversifyMainView();
     let orderId = document.getElementById("orderId") == undefined ? null : document.getElementById("orderId").content;
     if (orderId != null) {
-         requestOrderByLean(orderId);
+        requestOrderByLean(orderId);
     }
 };
 
@@ -18,16 +18,16 @@ window.onload = function () {
  * @param data
  */
 function onQueryRequestSessionStatusCommonCallback(data) {
-    if (data == undefined){
+    if (data == undefined) {
         document.getElementById(ID_HEADER_MENU_LOGIN).onclick = function () {
             showLoginView(function () {
                 requestSessionStatus(onRequestSessionStatusCommonCallback);
             });
         }
         document.getElementById(ID_HEADER_MENU_QUERY).onclick = function () {
-            window.open(BASE_PATH + "pq");
+            window.open(BASE_PATH + "/pq");
         }
-    }else{
+    } else {
         var jsonData = JSON.parse(data);
         if (jsonData.code == RC_SUCCESS) {
             let userEntity = jsonData.data;
@@ -40,9 +40,9 @@ function onQueryRequestSessionStatusCommonCallback(data) {
             logoutAction.onclick = function () {
                 let requestUserEntity = new Object();
                 requestUserEntity.cs = getCookie(KEY_CS);
-                let url = BASE_PATH + "account/logout?p=" + JSON.stringify(requestUserEntity);
+                let url = BASE_PATH + "/account/logout?p=" + JSON.stringify(requestUserEntity);
                 asyncRequestByGet(url, function (data) {
-                    window.open(BASE_PATH,"_self");
+                    window.open(BASE_PATH, "_self");
                 }, onErrorCallback, onTimeoutCallback);
             }
             headerMenuTop.appendChild(logoutAction);
@@ -53,7 +53,7 @@ function onQueryRequestSessionStatusCommonCallback(data) {
             loginAction.onclick = function () {
                 let requestPageEntity = new Object();
                 requestPageEntity.cs = getCookie("cs");
-                window.open(BASE_PATH + "pm?p=" + JSON.stringify(requestPageEntity),"_self");
+                window.open(BASE_PATH + "/pm?p=" + JSON.stringify(requestPageEntity), "_self");
             }
         } else {
             let headerMenuTop = document.getElementById(ID_HEADER_MENU_TOP);
@@ -76,7 +76,7 @@ function onQueryRequestSessionStatusCommonCallback(data) {
                 });
             }
             document.getElementById(ID_HEADER_MENU_QUERY).onclick = function () {
-                window.open(BASE_PATH + "pq");
+                window.open(BASE_PATH + "/pq");
             }
             delCookie(KEY_CS);
         }
@@ -87,23 +87,23 @@ function onQueryRequestSessionStatusCommonCallback(data) {
 function requestOrderByLean(orderId) {
     let requestObject = new Object();
     requestObject.orderId = orderId;
-    let url = BASE_PATH + "order/query?p=" + JSON.stringify(requestObject);
+    let url = BASE_PATH + "/order/query?p=" + JSON.stringify(requestObject);
     console.log(url);
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
             var jsonData = JSON.parse(data);
-            onRequestOrderByLeanCallback(orderId,jsonData.data);
+            onRequestOrderByLeanCallback(orderId, jsonData.data);
         }
     }, onErrorCallback, onTimeoutCallback);
 }
 
 function requestOrderByKey(key) {
-    onRequestOrderByKeyCallback(key,undefined);
+    onRequestOrderByKeyCallback(key, undefined);
 }
 
 function requestRecommend() {
-    let url = BASE_PATH + "format/recommends";
+    let url = BASE_PATH + "/format/recommends";
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -113,10 +113,10 @@ function requestRecommend() {
     }, onErrorCallback, onTimeoutCallback);
 }
 
-function onRequestOrderByLeanCallback(orderId,data) {
+function onRequestOrderByLeanCallback(orderId, data) {
     let searchResultView = document.getElementById("searchResultView");
     searchResultView.innerHTML = null;
-    if (searchResultView.clientHeight == 0){
+    if (searchResultView.clientHeight == 0) {
         let mainView = document.getElementById(MAIN);
         mainView.style.height = mainView.clientHeight + 120 + "px";
     }
@@ -147,10 +147,10 @@ function onRequestOrderByLeanCallback(orderId,data) {
     }
 }
 
-function onRequestOrderByKeyCallback(key,data) {
+function onRequestOrderByKeyCallback(key, data) {
     let searchResultView = document.getElementById("searchResultView");
     searchResultView.innerHTML = null;
-    if (searchResultView.clientHeight == 0){
+    if (searchResultView.clientHeight == 0) {
         let mainView = document.getElementById(MAIN);
         mainView.style.height = mainView.clientHeight + 100 + "px";
     }
@@ -158,7 +158,7 @@ function onRequestOrderByKeyCallback(key,data) {
         searchResultView.style.height = "100px";
         searchResultView.innerHTML = "没有查询到关于<span style='color: #FF0000'>" + key + "</span>的订单";
     } else {
-        
+
     }
 
 
@@ -174,9 +174,9 @@ function createMenuDownView() {
     searchButton.className = "searchButton";
     searchButton.innerHTML = "查询订单";
     searchButton.onclick = function () {
-        if (searchInput.value != null && searchInput.value != ""){
+        if (searchInput.value != null && searchInput.value != "") {
             requestOrderByKey(searchInput.value);
-        }else{
+        } else {
             new Toast().show("请输入要查询的信息");
         }
     };
@@ -227,8 +227,8 @@ function createRecommendView(formatEntities) {
         formatEntityImageView.style.height = "200px";
         // formatEntityImageView.src = "http://www.foodslab.cn";
         formatEntityImageView.onclick = function () {
-            let url = BASE_PATH + "pd?typeId=" + formatEntities[i].typeId + "&formatId=" + formatEntities[i].formatId;
-            window.open(url,"_self");
+            let url = BASE_PATH + "/pd?typeId=" + formatEntities[i].typeId + "&formatId=" + formatEntities[i].formatId;
+            window.open(url, "_self");
         };
         formatEntitiesView.appendChild(formatEntityImageView);
     }
