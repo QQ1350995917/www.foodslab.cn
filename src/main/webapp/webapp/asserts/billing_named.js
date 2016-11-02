@@ -210,3 +210,22 @@ function attachMoreReceiverToContainer(moreReceiverContainer, receiverEntities, 
     moreReceiverContainer.style.height = (length * 43 + (receiverEntities.length < 10 ? 1 : 0) * 40) + "px";
     moreReceiverContainer.customerHeight = length * 43 + ((receiverEntities.length < 10 ? 1 : 0) * 40);
 }
+
+
+function requestCreateNamedOrder(orderEntity) {
+    let url = BASE_PATH + "order/create?p=" + JSON.stringify(orderEntity);
+    console.log(url);
+    asyncRequestByGet(url, function (data) {
+        var result = checkResponseDataFormat(data);
+        if (result) {
+            var jsonData = JSON.parse(data);
+            if (jsonData.code == RC_SUCCESS) {
+                let pageEntity = new Object();
+                pageEntity.cs = getCookie(KEY_CS);
+                pageEntity.dir = "order";
+                let url = BASE_PATH + "pm?p=" + JSON.stringify(pageEntity);
+                window.open(url, "_self");
+            }
+        }
+    }, onErrorCallback, onTimeoutCallback);
+}

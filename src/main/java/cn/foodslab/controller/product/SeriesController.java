@@ -2,9 +2,13 @@ package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.controller.file.VFFile;
 import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
+import cn.foodslab.service.file.FFile;
+import cn.foodslab.service.file.FileServices;
+import cn.foodslab.service.file.IFileServices;
 import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializeFilter;
@@ -24,6 +28,7 @@ public class SeriesController extends Controller implements ISeriesController {
     private ISeriesServices iSeriesServices = new SeriesServices();
     private ITypeServices iTypeServices = new TypeServices();
     private IFormatServices iFormatServices = new FormatServices();
+    private IFileServices iFileServices = new FileServices();
 
     @Override
     public void index() {
@@ -108,11 +113,18 @@ public class SeriesController extends Controller implements ISeriesController {
             LinkedList<TypeEntity> typeEntities = iTypeServices.retrievesInSeries(seriesEntity);
             if (typeEntities != null) {
                 for (TypeEntity typeEntity : typeEntities) {
+                    LinkedList<VFFile> vfFiles = new LinkedList<>();
+                    LinkedList<FFile> fFiles = iFileServices.retrieveByTrunkId(typeEntity.getTypeId());
+                    for (FFile fFile : fFiles) {
+                        VFFile vfFile = new VFFile(fFile);
+                        vfFiles.add(vfFile);
+                    }
                     LinkedList<FormatEntity> formatEntities = iFormatServices.retrievesInType(typeEntity);
                     if (formatEntities != null) {
                         for (FormatEntity formatEntity : formatEntities) {
                             VFormatEntity vFormatEntity = new VFormatEntity(formatEntity);
                             VTypeEntity vTypeEntity = new VTypeEntity(typeEntity);
+                            vTypeEntity.setCovers(vfFiles);
                             vTypeEntity.setParent(new VSeriesEntity(seriesEntity));
                             vFormatEntity.setParent(vTypeEntity);
                             responseVFormatEntities.add(vFormatEntity);
@@ -130,7 +142,8 @@ public class SeriesController extends Controller implements ISeriesController {
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
                 new SimplePropertyPreFilter(VFormatEntity.class, "formatId", "label", "meta", "price", "priceMeta", "pricing", "postage", "postageMeta", "typeId", "parent"),
-                new SimplePropertyPreFilter(VTypeEntity.class, "typeId", "label", "seriesId", "parent"),
+                new SimplePropertyPreFilter(VTypeEntity.class, "typeId", "label", "seriesId", "parent","covers"),
+                new SimplePropertyPreFilter(VFFile.class, "path"),
                 new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
         }));
     }

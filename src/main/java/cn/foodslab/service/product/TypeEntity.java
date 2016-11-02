@@ -1,9 +1,5 @@
 package cn.foodslab.service.product;
 
-import cn.foodslab.service.image.ImageEntity;
-
-import java.util.LinkedList;
-
 /**
  * Created by Pengwei Ding on 2016-07-30 21:39.
  * Email: www.dingpengwei@foxmail.com www.dingpegnwei@gmail.com
@@ -19,7 +15,6 @@ public class TypeEntity {
     private int status; // -1标示删除，1标示禁用，2标示正常
     private String createTime;
     private String updateTime;
-    private LinkedList<ImageEntity> imageEntities;
 
     public TypeEntity() {
     }
@@ -117,11 +112,4 @@ public class TypeEntity {
         this.updateTime = updateTime;
     }
 
-    public LinkedList<ImageEntity> getImageEntities() {
-        return imageEntities;
-    }
-
-    public void setImageEntities(LinkedList<ImageEntity> imageEntities) {
-        this.imageEntities = imageEntities;
-    }
 }

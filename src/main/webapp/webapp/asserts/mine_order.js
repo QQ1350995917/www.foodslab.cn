@@ -35,15 +35,15 @@ function createOrderItemView(orderEntity) {
     itemContainer.appendChild(orderItemTitleView);
     itemContainer.customerHeight = orderItemTitleView.customerHeight;
 
-    let orderProductsContainer = createOrderProductItem(orderEntity.formatEntities);
+    let orderProductsContainer = createOrderProductItem(orderEntity.cartEntities);
     itemContainer.customerHeight = itemContainer.customerHeight + orderProductsContainer.customerHeight;
     itemContainer.appendChild(orderProductsContainer);
 
-    let orderReceiverView = createOrderReceiverView();
+    let orderReceiverView = createOrderReceiverView(orderEntity.receiver);
     orderReceiverView.style.height = itemContainer.customerHeight - 41 + "px";
     itemContainer.appendChild(orderReceiverView);
 
-    let orderMoneyView = createOrderMoneyView();
+    let orderMoneyView = createOrderMoneyView(orderEntity.cost,orderEntity.postage);
     orderMoneyView.style.height = itemContainer.customerHeight - 41 + "px";
     itemContainer.appendChild(orderMoneyView);
 
@@ -64,13 +64,13 @@ function createOrderItemTitleView(orderEntity) {
     return itemTitleContainer;
 }
 
-function createOrderProductItem(formatEntities) {
+function createOrderProductItem(cartEntities) {
     let productContainer = document.createElement("div");
     productContainer.className = "productContainer";
     productContainer.customerHeight = 0;
-    let length = formatEntities == undefined ? 0 : formatEntities.length;
+    let length = cartEntities == undefined ? 0 : cartEntities.length;
     for (let i = 0; i < length; i++) {
-        let formatEntity = formatEntities[i];
+        let cartEntity = cartEntities[i];
         let productItemView = document.createElement("div");
         productItemView.className = "productItemView";
         productItemView.customerHeight = 101;
@@ -84,13 +84,13 @@ function createOrderProductItem(formatEntities) {
         name.style.width = "350px";
         name.style.textAlign = "left";
         name.style.marginLeft = "10px";
-        name.innerHTML = formatEntity.parent.parent.label + " " + formatEntity.parent.label + " " + formatEntity.label + formatEntity.meta;
+        name.innerHTML = cartEntity.formatEntity.parent.parent.label + " " + cartEntity.formatEntity.parent.label + " " + cartEntity.formatEntity.label + cartEntity.formatEntity.meta;
         productItemView.appendChild(name);
 
         let num = document.createElement("div");
         num.className = "label";
         num.style.width = "60px";
-        num.innerHTML = "X3";
+        num.innerHTML = "X " + cartEntity.amount;
         productItemView.appendChild(num);
 
         productContainer.appendChild(productItemView);
@@ -100,25 +100,25 @@ function createOrderProductItem(formatEntities) {
     return productContainer;
 }
 
-function createOrderReceiverView() {
+function createOrderReceiverView(receiverEntity) {
     let receiverContainer = document.createElement("div");
     receiverContainer.className = "orderReceiverView";
     receiverContainer.style.width = "149px";
     let receiverView = document.createElement("div");
     receiverView.style.height = "40px";
     receiverView.style.lineHeight = "40px";
-    receiverView.innerHTML = "收货人";
+    receiverView.innerHTML = "收货人:" + receiverEntity.name;
     receiverContainer.appendChild(receiverView);
     return receiverContainer;
 }
 
-function createOrderMoneyView() {
+function createOrderMoneyView(cost,postage) {
     let orderMoneyContainer = document.createElement("div");
     orderMoneyContainer.className = "orderReceiverView";
     let moneyView = document.createElement("div");
     moneyView.style.height = "40px";
     moneyView.style.lineHeight = "40px";
-    moneyView.innerHTML = "$1000";
+    moneyView.innerHTML = "总价:" + cost + "<br>" + "邮费:" + postage;
     orderMoneyContainer.appendChild(moneyView);
     return orderMoneyContainer;
 }

@@ -137,6 +137,9 @@ function fillRecommendContainer(recommendContainer, formatEntities, onResizeCall
          */
         let formatEntityImageView = document.createElement("img")
         formatEntityImageView.className = "productItem_img";
+        if (!isNullValue(formatEntity.parent) && !isNullValue(formatEntity.parent.covers) && !isNullValue(formatEntity.parent.covers[0])){
+            formatEntityImageView.src = "http://localhost:8080/foodslab" + formatEntity.parent.covers[0].path;
+        }
         formatEntityImageView.onclick = function () {
             let url = BASE_PATH + "pd?typeId=" + formatEntity.typeId + "&formatId=" + formatEntity.formatId;
             window.open(url);

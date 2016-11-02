@@ -2,9 +2,13 @@ package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.controller.file.VFFile;
 import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
+import cn.foodslab.service.file.FFile;
+import cn.foodslab.service.file.FileServices;
+import cn.foodslab.service.file.IFileServices;
 import cn.foodslab.service.product.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializeFilter;
@@ -23,7 +27,7 @@ import java.util.UUID;
 public class TypeController extends Controller implements ITypeController {
     private ISeriesServices iSeriesServices = new SeriesServices();
     private ITypeServices iTypeServices = new TypeServices();
-    private IFormatServices iFormatServices = new FormatServices();
+    private IFileServices iFileServices = new FileServices();
 
     @Override
     public void index() {
@@ -41,6 +45,13 @@ public class TypeController extends Controller implements ITypeController {
             iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
             renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VTypeEntity.class, "typeId")));
             return;
+        }
+
+        LinkedList<VFFile> vfFiles = new LinkedList<>();
+        LinkedList<FFile> fFiles = iFileServices.retrieveByTrunkId(requestVTypeEntity.getTypeId());
+        for (FFile fFile : fFiles) {
+            VFFile vfFile = new VFFile(fFile);
+            vfFiles.add(vfFile);
         }
 
         TypeEntity typeEntity = iTypeServices.retrieveById(requestVTypeEntity.getTypeId());
@@ -61,10 +72,12 @@ public class TypeController extends Controller implements ITypeController {
         }
 
         responseVTypeEntity.setParent(new VSeriesEntity(seriesEntity));
+        responseVTypeEntity.setCovers(vfFiles);
         iResultSet.setData(responseVTypeEntity);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
-                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label", "summary", "directions"),
+                new SimplePropertyPreFilter(VTypeEntity.class, "seriesId", "typeId", "label", "summary", "directions", "covers"),
+                new SimplePropertyPreFilter(VFFile.class,"fileId","path","trunkId"),
                 new SimplePropertyPreFilter(VSeriesEntity.class, "seriesId", "label")
         }));
     }
@@ -297,7 +310,7 @@ public class TypeController extends Controller implements ITypeController {
         }
         iResultSet.setData(responseVTypeEntities);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
-        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VTypeEntity.class, "typeId", "seriesId","label","status","queue")));
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VTypeEntity.class, "typeId", "seriesId", "label", "status", "queue")));
     }
 
     @Override
@@ -314,6 +327,13 @@ public class TypeController extends Controller implements ITypeController {
             return;
         }
 
+        LinkedList<VFFile> vfFiles = new LinkedList<>();
+        LinkedList<FFile> fFiles = iFileServices.retrieveByTrunkId(requestVTypeEntity.getTypeId());
+        for (FFile fFile : fFiles) {
+            VFFile vfFile = new VFFile(fFile);
+            vfFiles.add(vfFile);
+        }
+
         TypeEntity result = iTypeServices.mRetrieveById(requestVTypeEntity.getTypeId());
         if (result == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
@@ -324,9 +344,14 @@ public class TypeController extends Controller implements ITypeController {
         }
 
         VTypeEntity responseVTypeEntity = new VTypeEntity(result);
+        responseVTypeEntity.setCovers(vfFiles);
         iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
         iResultSet.setData(responseVTypeEntity);
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
-        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VTypeEntity.class, "typeId", "seriesId","label","summary","directions","status")));
+        renderJson(JSON.toJSONString(iResultSet,
+                new SerializeFilter[]{
+                        new SimplePropertyPreFilter(VTypeEntity.class, "typeId", "seriesId", "label", "summary", "directions", "status", "covers"),
+                        new SimplePropertyPreFilter(VFFile.class,"fileId","path","trunkId")
+                }));
     }
 }

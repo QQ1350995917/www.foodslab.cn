@@ -64,7 +64,7 @@ function onBillingRequestSessionStatusCommonCallback(data) {
     }
 }
 
-function attachCurrentReceiverToContainer(receiverContainer,receiverEntity, submit) {
+function attachCurrentReceiverToContainer(receiverContainer, receiverEntity, submit) {
     receiverContainer.innerHTML = null;
     if (receiverEntity == undefined) {
         receiverContainer.innerHTML = "点击编辑收货人信息";
@@ -243,10 +243,10 @@ function attachPayBarContainer(container, formatEntities) {
     payAction.style.textAlign = "center";
     payAction.style.cursor = "pointer";
     payAction.innerHTML = "结算";
-    payAction.onclick = function () {
-        onPayActionClick();
-    };
     container.appendChild(payAction);
+    payAction.onclick = function () {
+        onPayActionClick(pricingAmount);
+    };
 
     let productAmount = 0;
     let pricingAmount = 0;
@@ -255,6 +255,7 @@ function attachPayBarContainer(container, formatEntities) {
         productAmount = productAmount + formatEntities[i].amount;
         pricingAmount = pricingAmount + (formatEntities[i].formatEntity.pricing * formatEntities[i].amount);
     }
+
 
     let buyInfoView = document.createElement("div");
     buyInfoView.className = "payBarContainer";
@@ -277,7 +278,7 @@ function attachPayBarContainer(container, formatEntities) {
     container.appendChild(buyInfoView);
 }
 
-function onPayActionClick() {
+function onPayActionClick(pricingAmount) {
     let name = document.getElementById("RName") == undefined ? undefined : document.getElementById("RName").innerHTML;
     let province = document.getElementById("RProvince") == undefined ? undefined : document.getElementById("RProvince").innerHTML;
     let city = document.getElementById("RCity") == undefined ? undefined : document.getElementById("RCity").innerHTML;
@@ -320,45 +321,15 @@ function onPayActionClick() {
             let orderEntity = new Object();
             orderEntity.cs = getCookie(KEY_CS);
             orderEntity.productIds = productIds.split(",");
+            orderEntity.cost = pricingAmount;
+            orderEntity.postage = 0;
             let currentReceiverId = document.getElementById("currentReceiverId").bindReceiverId;
             if (!isNullValue(currentReceiverId)) {
                 orderEntity.receiverId = currentReceiverId;
+            } else {
+                new Toast().show("请输入收货人信息");
             }
-            requestCreateOrder(orderEntity);
+            requestCreateNamedOrder(orderEntity);
         });
     }
 }
-
-function requestCreateAnonymousOrder(orderEntity) {
-    let url = BASE_PATH + "order/createAnonymous?p=" + JSON.stringify(orderEntity);
-    asyncRequestByGet(url, function (data) {
-        var result = checkResponseDataFormat(data);
-        if (result) {
-            var jsonData = JSON.parse(data);
-            if (jsonData.code = RC_SUCCESS) {
-                let requestObject = new Object();
-                requestObject.orderId = jsonData.data.orderId;
-                let url = BASE_PATH + "pq?p=" + JSON.stringify(requestObject);
-                window.open(url, "_self");
-            }
-        }
-    }, onErrorCallback, onTimeoutCallback);
-}
-
-function requestCreateOrder(orderEntity) {
-    let url = BASE_PATH + "order/create?p=" + JSON.stringify(orderEntity);
-    asyncRequestByGet(url, function (data) {
-        var result = checkResponseDataFormat(data);
-        if (result) {
-            var jsonData = JSON.parse(data);
-            if (jsonData.code == RC_SUCCESS) {
-                let pageEntity = new Object();
-                pageEntity.cs = getCookie(KEY_CS);
-                pageEntity.dir = "order";
-                let url = BASE_PATH + "pm?p=" + JSON.stringify(pageEntity);
-                window.open(url, "_self");
-            }
-        }
-    }, onErrorCallback, onTimeoutCallback);
-}
-

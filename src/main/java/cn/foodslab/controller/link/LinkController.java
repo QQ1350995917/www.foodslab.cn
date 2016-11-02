@@ -34,7 +34,7 @@ public class LinkController extends Controller implements ILinkController {
     public void retrieves() {
         LinkedList<LinkEntity> linkEntities = iLinkServices.retrieves();
         IResultSet iResultSet = new ResultSet();
-        if (linkEntities == null){
+        if (linkEntities == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
             iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
             renderJson(JSON.toJSONString(iResultSet));

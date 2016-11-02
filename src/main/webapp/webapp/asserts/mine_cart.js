@@ -353,7 +353,6 @@ function resetBillingBarMessage() {
             pricingAmount = pricingAmount + (selectCartEntity.amount * selectCartEntity.formatEntity.pricing);
         }
     }
-
     cartBillingBarSelectedProductAmount.innerHTML = "已经选择" + productAmount + "件商品";
     cartBillingBarSelectedProductPricingAmount.innerHTML = "总价(不含运费):" + pricingAmount + "元";
 }

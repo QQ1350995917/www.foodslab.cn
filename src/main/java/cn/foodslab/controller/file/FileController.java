@@ -1,15 +1,16 @@
 package cn.foodslab.controller.file;
 
+import cn.foodslab.common.response.IResultSet;
+import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.service.file.FFile;
+import cn.foodslab.service.file.FileServices;
+import cn.foodslab.service.file.IFileServices;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.jfinal.core.Controller;
 import com.jfinal.upload.UploadFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.util.LinkedHashMap;
+import java.util.UUID;
 
 /**
  * Created by Pengwei Ding on 2016-11-01 15:40.
@@ -17,6 +18,8 @@ import java.util.LinkedHashMap;
  * Description: @TODO
  */
 public class FileController extends Controller implements IFileController {
+    private IFileServices iFileServices = new FileServices();
+
     @Override
     public void index() {
 
@@ -25,41 +28,47 @@ public class FileController extends Controller implements IFileController {
     @Override
     //@Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mImage() {
-        UploadFile file = this.getFile("file");
-//        fileChannelCopy(file.getFile(), new File("/Users/dingpengwei/Desktop/" + file.getFileName()));
-        String p = this.getPara("p");
-        System.out.println(p);
-        System.out.println("------------ok-------------");
-        LinkedHashMap<String,String> map = new LinkedHashMap<>();
-        map.put("code","200");
-        map.put("path","http://localhost:8080/foodslab/upload/" + file.getFileName());
-        renderJson(JSON.toJSONString(map));
-    }
-
-
-    public void fileChannelCopy(File s, File t) {
-        FileInputStream fileInputStream = null;
-        FileOutputStream fileOutputStream = null;
-        FileChannel fileInChannel = null;
-        FileChannel fileOutChannel = null;
-        try {
-            fileInputStream = new FileInputStream(s);
-            fileOutputStream = new FileOutputStream(t);
-            fileInChannel = fileInputStream.getChannel();// 得到对应的文件通道
-            fileOutChannel = fileOutputStream.getChannel();// 得到对应的文件通道
-            fileInChannel.transferTo(0, fileInChannel.size(), fileOutChannel);// 连接两个通道，并且从in通道读取，然后写入out通道
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                fileInputStream.close();
-                fileInChannel.close();
-                fileOutputStream.close();
-                fileOutChannel.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            System.out.println("=========ok=========");
+        UploadFile file = this.getFile();
+        String params = this.getPara("p");
+        IResultSet iResultSet = new ResultSet();
+        VFFile requestVFFileEntity = JSON.parseObject(params, VFFile.class);
+        if (!requestVFFileEntity.checkCreateParams()) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
+            iResultSet.setData(requestVFFileEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
+            return;
         }
+
+        String filePath = "/upload/" + file.getFileName();
+//        boolean fileCopy = FileServices.fileCopy(file.getFile(), new File(filePath));
+//        if (!fileCopy) {
+//            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+//            iResultSet.setData(requestVFFileEntity);
+//            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+//            return;
+//        }
+        FFile fFile;
+        if (requestVFFileEntity.getFileId() == null) {
+            requestVFFileEntity.setFileId(UUID.randomUUID().toString());
+            requestVFFileEntity.setPath(filePath);
+            requestVFFileEntity.setType("image");
+            requestVFFileEntity.setStatus(2);
+            fFile = iFileServices.mCreate(requestVFFileEntity);
+        } else {
+            requestVFFileEntity.setPath(filePath);
+            fFile = iFileServices.mUpdate(requestVFFileEntity);
+        }
+
+        if (fFile == null) {
+            iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
+            iResultSet.setData(requestVFFileEntity);
+            iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
+            return;
+        }
+
+        iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
+        iResultSet.setData(new VFFile(fFile));
+        iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
+        renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VFFile.class, "fileId", "path", "type", "trunkId")));
     }
 }

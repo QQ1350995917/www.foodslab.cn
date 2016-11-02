@@ -62,3 +62,20 @@ function attachAnonymousReceiverContainer(container) {
     attachCurrentReceiverToContainer(currentReceiverContainer,undefined,false);
     container.appendChild(currentReceiverContainer);
 }
+
+
+function requestCreateAnonymousOrder(orderEntity) {
+    let url = BASE_PATH + "order/createAnonymous?p=" + JSON.stringify(orderEntity);
+    asyncRequestByGet(url, function (data) {
+        var result = checkResponseDataFormat(data);
+        if (result) {
+            var jsonData = JSON.parse(data);
+            if (jsonData.code = RC_SUCCESS) {
+                let requestObject = new Object();
+                requestObject.orderId = jsonData.data.orderId;
+                let url = BASE_PATH + "pq?p=" + JSON.stringify(requestObject);
+                window.open(url, "_self");
+            }
+        }
+    }, onErrorCallback, onTimeoutCallback);
+}

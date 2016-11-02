@@ -1,5 +1,6 @@
 package cn.foodslab.controller.product;
 
+import cn.foodslab.controller.file.VFFile;
 import cn.foodslab.service.product.TypeEntity;
 
 import java.util.LinkedList;
@@ -11,6 +12,7 @@ import java.util.LinkedList;
  */
 public class VTypeEntity extends TypeEntity {
     private String cs;
+    private LinkedList<VFFile> covers;
     private LinkedList<VFormatEntity> children;
     private VSeriesEntity parent;
 
@@ -34,6 +36,14 @@ public class VTypeEntity extends TypeEntity {
 
     public void setCs(String cs) {
         this.cs = cs;
+    }
+
+    public LinkedList<VFFile> getCovers() {
+        return covers;
+    }
+
+    public void setCovers(LinkedList<VFFile> covers) {
+        this.covers = covers;
     }
 
     public LinkedList<VFormatEntity> getChildren() {

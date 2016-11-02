@@ -91,7 +91,50 @@ function createTypeMainView(typeEntity, selectedFormatId) {
 
     let typeMainTopLeft = document.createElement("div");
     typeMainTopLeft.className = "typeMainTopLeft";
+    let typeCoverMain = document.createElement("img");
+    typeCoverMain.style.width = "100%";
+    typeCoverMain.style.height = "260px";
+    if (!isNullValue(typeEntity) && !isNullValue(typeEntity.covers) && !isNullValue(typeEntity.covers[0])){
+        typeCoverMain.src = "http://localhost:8080/foodslab" + typeEntity.covers[0].path;
+    }
+    typeMainTopLeft.appendChild(typeCoverMain);
+    let typeCover1 = document.createElement("img");
+    typeCover1.style.width = "33.3%";
+    typeCover1.style.height = "80px";
+    if (!isNullValue(typeEntity) && !isNullValue(typeEntity.covers) && !isNullValue(typeEntity.covers[0])){
+        typeCover1.src = "http://localhost:8080/foodslab" + typeEntity.covers[0].path;
+    }
+    typeMainTopLeft.appendChild(typeCover1);
+    let typeCover2 = document.createElement("img");
+    typeCover2.style.width = "33.3%";
+    typeCover2.style.height = "80px";
+    if (!isNullValue(typeEntity) && !isNullValue(typeEntity.covers) && !isNullValue(typeEntity.covers[1])){
+        typeCover2.src = "http://localhost:8080/foodslab" + typeEntity.covers[1].path;
+    }
+    typeMainTopLeft.appendChild(typeCover2);
+    let typeCover3 = document.createElement("img");
+    typeCover3.style.width = "33.3%";
+    typeCover3.style.height = "80px";
+    if (!isNullValue(typeEntity) && !isNullValue(typeEntity.covers) && !isNullValue(typeEntity.covers[2])){
+        typeCover3.src = "http://localhost:8080/foodslab" + typeEntity.covers[2].path;
+    }
+    typeMainTopLeft.appendChild(typeCover3);
     typeMainTopView.appendChild(typeMainTopLeft);
+    typeCover1.onmousemove = function () {
+        if (!isNullValue(typeEntity) && !isNullValue(typeEntity.covers) && !isNullValue(typeEntity.covers[0])){
+            typeCoverMain.src = "http://localhost:8080/foodslab" + typeEntity.covers[0].path;
+        }
+    }
+    typeCover2.onmousemove = function () {
+        if (!isNullValue(typeEntity) && !isNullValue(typeEntity.covers) && !isNullValue(typeEntity.covers[1])){
+            typeCoverMain.src = "http://localhost:8080/foodslab" + typeEntity.covers[1].path;
+        }
+    }
+    typeCover3.onmousemove = function () {
+        if (!isNullValue(typeEntity) && !isNullValue(typeEntity.covers) && !isNullValue(typeEntity.covers[2])){
+            typeCoverMain.src = "http://localhost:8080/foodslab" + typeEntity.covers[2].path;
+        }
+    }
 
     let typeMainTopRight = document.createElement("div");
     typeMainTopRight.className = "typeMainTopRight";
