@@ -9,6 +9,7 @@ lib/
 bin/
 gen/
 
+upload/
 # Created by OS.
 .DS_Store
 
