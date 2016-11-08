@@ -23,4 +23,26 @@ public class OrderCode {
                 + random.nextInt(9) + ""
                 + random.nextInt(9) + "";
     }
+
+    public static void main(String[] args) {
+        HashMap<String, Integer> codes = new LinkedHashMap<>();
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            String code = OrderCode.gen();
+//            if (codes.containsKey(code)) {
+//                System.out.println("repeat = " + code + "; size = " + codes.get(code));
+//                codes.put(code, codes.get(code) + 1);
+//            } else {
+//                codes.put(code, 1);
+//                System.out.println(code);
+//            }
+//            try {
+//                Thread.sleep(1);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+        }
+        long end = System.currentTimeMillis();
+        System.out.println(end - start);
+    }
 }

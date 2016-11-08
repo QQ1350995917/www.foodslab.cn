@@ -8,6 +8,7 @@ package cn.foodslab.service.order;
 public class OrderEntity {
     private String orderId;
     private String accountId;
+    private String code;
     private String senderName;
     private String senderPhone;
     private String receiverId;
@@ -38,6 +39,14 @@ public class OrderEntity {
 
     public void setAccountId(String accountId) {
         this.accountId = accountId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getSenderName() {
