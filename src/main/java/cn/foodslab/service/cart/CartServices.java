@@ -92,20 +92,20 @@ public class CartServices implements ICartServices {
     }
 
     @Override
-    public int count() {
-        List<Record> records = Db.find("SELECT COUNT(formatId) AS counter FROM user_cart WHERE status != -1 ");
-        if (records.size() == 1) {
-            return Integer.parseInt(records.get(0).getColumns().get("counter").toString());
-        } else {
-            return 0;
-        }
+    public int countByAccounts(LinkedList<? extends AccountEntity> accountEntities) {
+//        List<Record> records = Db.find("SELECT COUNT(mappingId) AS counter FROM user_cart WHERE status = 1 ");
+//        if (records.size() == 1) {
+//            return Integer.parseInt(records.get(0).getColumns().get("counter").toString());
+//        } else {
+//            return 0;
+//        }
     }
 
     @Override
     public LinkedList<CartEntity> retrievesByAccounts(LinkedList<? extends AccountEntity> accountEntities, int pageIndex, int counter) {
         LinkedList<CartEntity> cartEntities = new LinkedList<>();
 
-        String[] params = new String[accountEntities.size()];
+        Object[] params = new Object[accountEntities.size() + 2];
         int index = 0;
         String inAccountIds = "";
         for (AccountEntity accountEntity : accountEntities) {
@@ -116,8 +116,11 @@ public class CartServices implements ICartServices {
         if (inAccountIds.length() > 0) {
             inAccountIds = inAccountIds.substring(0, inAccountIds.length() - 1);
         }
-
-        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND accountId IN (" + inAccountIds + ") ORDER BY updateTime DESC limit ? , ? ", params, pageIndex * counter, counter);
+        params[index] = pageIndex * counter;
+        index++;
+        params[index] = counter;
+        index++;
+        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND accountId IN (" + inAccountIds + ") ORDER BY updateTime DESC limit ? , ? ", params);
         for (Record record : records) {
             cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
         }
@@ -208,7 +211,6 @@ public class CartServices implements ICartServices {
         } else {
             return false;
         }
-
     }
 
     @Override

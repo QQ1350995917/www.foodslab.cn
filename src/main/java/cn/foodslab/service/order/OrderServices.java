@@ -139,10 +139,16 @@ public class OrderServices implements IOrderServices {
 
     @Override
     public int mCountByUser(LinkedList<? extends AccountEntity> accountEntities, int status) {
-        String[] params = new String[accountEntities.size() + 1];
+        String[] params;
         int index = 0;
-        params[index] = status + "";
-        index++;
+        if (status == 0) {
+            params = new String[accountEntities.size()];
+        } else {
+            params = new String[accountEntities.size() + 1];
+            params[index] = status + "";
+            index++;
+        }
+
         String in = "";
         for (AccountEntity accountEntity : accountEntities) {
             in = in + " ? ,";
@@ -167,7 +173,7 @@ public class OrderServices implements IOrderServices {
 
     @Override
     public LinkedList<OrderEntity> mRetrievesByUser(LinkedList<? extends AccountEntity> accountEntities, int status, int pageIndex, int counter) {
-        String[] params = new String[accountEntities.size() + 1];
+        Object[] params = new Object[accountEntities.size() + 3];
         int index = 0;
         params[index] = status + "";
         index++;
@@ -180,11 +186,15 @@ public class OrderServices implements IOrderServices {
         if (in.length() > 0) {
             in = in.substring(0, in.length() - 1);
         }
+        params[index] = (pageIndex * counter);
+        index++;
+        params[index] = counter;
+        index++;
         List<Record> records;
         if (status == 0) {
-            records = Db.find("SELECT * FROM user_order WHERE status > ? AND accountId IN (" + in + ") ORDER BY createTime DESC limit ? , ?", status, params, pageIndex * counter, counter);
+            records = Db.find("SELECT * FROM user_order WHERE status > ? AND accountId IN (" + in + ") ORDER BY createTime DESC limit ? , ?", params);
         } else {
-            records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (" + in + ") ORDER BY createTime DESC limit ? , ?", status, params, pageIndex * counter, counter);
+            records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (" + in + ") ORDER BY createTime DESC limit ? , ?", params);
         }
         if (records == null) {
             return null;

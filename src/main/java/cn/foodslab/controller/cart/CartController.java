@@ -157,7 +157,7 @@ public class CartController extends Controller implements ICartController {
             renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VCartEntity.class, "mappingId")));
             return;
         }
-        int counter = iCartServices.count();
+        int counter = iCartServices.countByAccounts(vUserEntity.getChildren());
         LinkedList<VCartEntity> responseVCartEntities = new LinkedList<>();
         for (CartEntity cartEntity : cartEntities) {// TODO 所有涉及到正反向产品树结构查询的都应该着重考虑产品下架的可能
             FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
@@ -258,7 +258,7 @@ public class CartController extends Controller implements ICartController {
             responseVCartEntity.setFormatEntity(vFormatEntity);
             responseVCartEntities.add(responseVCartEntity);
         }
-        int counter = iCartServices.count();
+        int counter = iCartServices.countByAccounts(accountEntities);
         if (responseVCartEntities.size() == 0) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
         } else {

@@ -60,13 +60,6 @@ public interface ICartServices {
 
     /**
      * 用户接口
-     * 读取购物车总数量
-     * @return
-     */
-    int count();
-
-    /**
-     * 用户接口
      * 用户读取购物车产品集合
      *
      * @param accountEntities 用户名下的账号集合
@@ -113,6 +106,13 @@ public interface ICartServices {
      * @return success true fail false
      */
     boolean attachToOrder(OrderEntity orderEntity, String[] mappingIds);
+
+    /**
+     * 管理员接口
+     * 根据账号读取购物车总数量
+     * @return
+     */
+    int countByAccounts(LinkedList<? extends AccountEntity> accountEntities);
 
     /**
      * 管理员接口
