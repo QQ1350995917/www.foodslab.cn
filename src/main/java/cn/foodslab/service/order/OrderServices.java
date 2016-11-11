@@ -20,6 +20,7 @@ public class OrderServices implements IOrderServices {
         Record record = new Record()
                 .set("orderId", orderEntity.getOrderId())
                 .set("accountId", orderEntity.getAccountId())
+                .set("code", orderEntity.getCode())
                 .set("senderName", orderEntity.getSenderName())
                 .set("senderPhone", orderEntity.getSenderPhone())
                 .set("receiverId", orderEntity.getReceiverId())

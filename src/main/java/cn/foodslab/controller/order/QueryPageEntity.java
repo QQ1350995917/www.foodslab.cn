@@ -19,16 +19,6 @@ public class QueryPageEntity {
         super();
     }
 
-    public QueryPageEntity(String orderId, long orderTime, String address, String name, String phone, String expressName, String expressNumber, String expressStatus) {
-        this.orderId = orderId;
-        this.orderTime = orderTime;
-        this.address = address;
-        this.name = name;
-        this.phone = phone;
-        this.expressName = expressName;
-        this.expressNumber = expressNumber;
-        this.expressStatus = expressStatus;
-    }
 
     public String getOrderId() {
         return orderId;

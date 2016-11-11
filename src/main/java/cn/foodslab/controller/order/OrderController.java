@@ -239,23 +239,14 @@ public class OrderController extends Controller implements IOrderController {
         VOrderEntity requestVOrderEntity = JSON.parseObject(params, VOrderEntity.class);
         IResultSet iResultSet = new ResultSet();
         if (requestVOrderEntity.checkOrderIdParams()) {
-            QueryPageEntity queryPageEntity = new QueryPageEntity();
+//            QueryPageEntity queryPageEntity = new QueryPageEntity();
             LinkedList<OrderEntity> query = iOrderServices.query(requestVOrderEntity.getOrderId(), 0, 0);
             OrderEntity orderEntity = query.get(0);
             ReceiverEntity receiverEntity = iReceiverService.retrieveById(orderEntity.getReceiverId());
-
-            queryPageEntity.setOrderId(orderEntity.getOrderId());
-            queryPageEntity.setOrderTime(orderEntity.getCreateTime());
-            String address = receiverEntity.getProvince() + receiverEntity.getCity() + receiverEntity.getCounty() + receiverEntity.getTown() + receiverEntity.getVillage();
-            queryPageEntity.setAddress(address);
-            queryPageEntity.setName(receiverEntity.getName());
-            queryPageEntity.setPhone(receiverEntity.getPhone0());
-            queryPageEntity.setExpressName("顺丰快递");
-            queryPageEntity.setExpressNumber("1234567890");
-            queryPageEntity.setExpressStatus("2016年1月25日 下午7:06:38  北京市|到件|到北京市【北京分拨中心】北京市|发件|北京市【BEX北京昌平区天龙二部】，正发往【北京金盏分拨中心】");
-
+            VOrderEntity vOrderEntity = new VOrderEntity(orderEntity);
+            vOrderEntity.setReceiver(new VReceiverEntity(receiverEntity));
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
-            iResultSet.setData(queryPageEntity);
+            iResultSet.setData(vOrderEntity);//TODO 裁剪参数
             iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
             renderJson(JSON.toJSONString(iResultSet));
         } else {

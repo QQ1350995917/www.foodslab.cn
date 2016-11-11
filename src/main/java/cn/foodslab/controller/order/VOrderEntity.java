@@ -23,6 +23,7 @@ public class VOrderEntity extends OrderEntity implements Comparable {
 
     public VOrderEntity(OrderEntity orderEntity) {
         this.setOrderId(orderEntity.getOrderId());
+        this.setCode(orderEntity.getCode());
         this.setSenderName(orderEntity.getSenderName());
         this.setSenderPhone(orderEntity.getSenderPhone());
         this.setReceiverId(orderEntity.getReceiverId());
