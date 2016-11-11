@@ -60,12 +60,19 @@ public interface ICartServices {
 
     /**
      * 用户接口
+     * 读取购物车总数量
+     * @return
+     */
+    int count();
+
+    /**
+     * 用户接口
      * 用户读取购物车产品集合
      *
      * @param accountEntities 用户名下的账号集合
      * @return 购物车产品对象集合 fail null
      */
-    LinkedList<CartEntity> retrievesByAccounts(LinkedList<? extends AccountEntity> accountEntities);
+    LinkedList<CartEntity> retrievesByAccounts(LinkedList<? extends AccountEntity> accountEntities,int pageIndex,int counter);
 
     /**
      * 用户接口

@@ -108,9 +108,19 @@ public class AccountServices implements IAccountServices {
     }
 
     @Override
+    public int mCount() {
+        List<Record> records = Db.find("SELECT COUNT(userId) AS counter FROM user WHERE status != -1 ");
+        if (records != null && records.size() == 1) {
+            return Integer.parseInt(records.get(0).getColumns().get("counter").toString());
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
     public LinkedList<UserEntity> mRetrieveUsers(int page, int counter) {
         LinkedList<UserEntity> userEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM user WHERE status != -1");
+        List<Record> records = Db.find("SELECT * FROM user WHERE status != -1 order by createTime DESC limit ? , ?", page * counter, counter);
         for (Record record : records) {
             userEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), UserEntity.class));
         }

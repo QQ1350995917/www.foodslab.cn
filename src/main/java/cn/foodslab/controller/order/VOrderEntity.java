@@ -16,6 +16,8 @@ public class VOrderEntity extends OrderEntity implements Comparable {
     private String[] productIds;//请求字段 匿名下单的产品ID或用户购物车中的产品映射IDs
     private VReceiverEntity receiver;//请求字段 兼容匿名订单中的收货人信息
     private LinkedList<VCartEntity> cartEntities;//响应字段
+    private int currentPageIndex = 0;
+    private int sizeInPage = 12;
 
     public VOrderEntity() {
         super();
@@ -65,6 +67,22 @@ public class VOrderEntity extends OrderEntity implements Comparable {
 
     public void setCartEntities(LinkedList<VCartEntity> cartEntities) {
         this.cartEntities = cartEntities;
+    }
+
+    public int getCurrentPageIndex() {
+        return currentPageIndex;
+    }
+
+    public void setCurrentPageIndex(int currentPageIndex) {
+        this.currentPageIndex = currentPageIndex;
+    }
+
+    public int getSizeInPage() {
+        return sizeInPage;
+    }
+
+    public void setSizeInPage(int sizeInPage) {
+        this.sizeInPage = sizeInPage;
     }
 
     @Override

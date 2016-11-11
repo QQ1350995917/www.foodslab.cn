@@ -12,6 +12,8 @@ public class VCartEntity extends CartEntity {
     private String cs;
     private String[] productIds;//支持一个或多个的mappingIds查找
     private VFormatEntity formatEntity;
+    private int currentPageIndex = 0;
+    private int sizeInPage = 12;
 
     public VCartEntity() {
         super();
@@ -19,11 +21,8 @@ public class VCartEntity extends CartEntity {
 
     public VCartEntity(CartEntity cartEntity) {
         this.setMappingId(cartEntity.getMappingId());
-        ;
         this.setFormatId(cartEntity.getFormatId());
-        ;
         this.setAmount(cartEntity.getAmount());
-        ;
     }
 
     public String getCs() {
@@ -48,6 +47,22 @@ public class VCartEntity extends CartEntity {
 
     public void setFormatEntity(VFormatEntity formatEntity) {
         this.formatEntity = formatEntity;
+    }
+
+    public int getCurrentPageIndex() {
+        return currentPageIndex;
+    }
+
+    public void setCurrentPageIndex(int currentPageIndex) {
+        this.currentPageIndex = currentPageIndex;
+    }
+
+    public int getSizeInPage() {
+        return sizeInPage;
+    }
+
+    public void setSizeInPage(int sizeInPage) {
+        this.sizeInPage = sizeInPage;
     }
 
     public boolean checkCreateParams() {

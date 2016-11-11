@@ -3,6 +3,7 @@ package cn.foodslab.controller.user;
 import cn.foodslab.common.cache.SessionContext;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.common.response.VPageData;
 import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.MenuInterceptor;
 import cn.foodslab.interceptor.SessionInterceptor;
@@ -48,11 +49,11 @@ public class AccountController extends Controller implements IAccountController 
         String params = this.getPara("p");
         VAccountEntity requestVAccountEntity = JSON.parseObject(params, VAccountEntity.class);
         IResultSet iResultSet = new ResultSet();
-        if (!requestVAccountEntity.checkCreateParams()){
+        if (!requestVAccountEntity.checkCreateParams()) {
             iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
             iResultSet.setData(requestVAccountEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
-            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VAccountEntity.class, "identity", "password","source")));
+            renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VAccountEntity.class, "identity", "password", "source")));
             return;
         }
 
@@ -87,7 +88,7 @@ public class AccountController extends Controller implements IAccountController 
         String params = this.getPara("p");
         VAccountEntity requestVAccountEntity = JSON.parseObject(params, VAccountEntity.class);
         IResultSet iResultSet = new ResultSet();
-        if (!requestVAccountEntity.checkLoginParams()){
+        if (!requestVAccountEntity.checkLoginParams()) {
             iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
             iResultSet.setData(requestVAccountEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);
@@ -105,7 +106,7 @@ public class AccountController extends Controller implements IAccountController 
         }
 
         LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(loginAccountEntity.getUserId());
-        if (accountEntities == null){
+        if (accountEntities == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
             iResultSet.setData(requestVAccountEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
@@ -184,7 +185,7 @@ public class AccountController extends Controller implements IAccountController 
         HttpSession session = SessionContext.getSession(requestVUserEntity.getCs());
         VUserEntity sessionUserEntity = (VUserEntity) session.getAttribute(SessionContext.KEY_USER);
         LinkedList<AccountEntity> accountEntities = iAccountServices.retrieveByUserId(sessionUserEntity.getUserId());
-        if (accountEntities == null){
+        if (accountEntities == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
             iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
             renderJson(JSON.toJSONString(iResultSet));
@@ -210,12 +211,15 @@ public class AccountController extends Controller implements IAccountController 
     @Override
     @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mRetrieves() {
+        String params = this.getPara("p");
+        VUserEntity requestVUserEntity = JSON.parseObject(params, VUserEntity.class);
         IResultSet iResultSet = new ResultSet();
-        LinkedList<UserEntity> userEntities = iAccountServices.mRetrieveUsers(1, 1);
+        LinkedList<UserEntity> userEntities = iAccountServices.mRetrieveUsers(requestVUserEntity.getCurrentPageIndex(), requestVUserEntity.getSizeInPage());
         if (userEntities == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
             iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
         }
+
         LinkedList<VUserEntity> responseUserEntities = new LinkedList<>();
         for (UserEntity userEntity : userEntities) {
             VUserEntity vUserEntity = new VUserEntity(userEntity);
@@ -228,17 +232,21 @@ public class AccountController extends Controller implements IAccountController 
             vUserEntity.setChildren(vAccountEntities);
             responseUserEntities.add(vUserEntity);
         }
-
+        int userCounter = iAccountServices.mCount();
         if (responseUserEntities.size() == 0) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
         } else {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
         }
-        iResultSet.setData(responseUserEntities);
+        iResultSet.setData(
+                new VPageData(userCounter % requestVUserEntity.getSizeInPage() == 0 ?
+                        userCounter / requestVUserEntity.getSizeInPage() : userCounter / requestVUserEntity.getSizeInPage() + 1,
+                        requestVUserEntity.getCurrentPageIndex(), requestVUserEntity.getSizeInPage(), responseUserEntities));
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                new SimplePropertyPreFilter(VPageData.class, "totalPageNumber", "currentPageIndex", "sizeInPage", "dataInPage"),
                 new SimplePropertyPreFilter(VUserEntity.class, "userId", "status", "children"),
-                new SimplePropertyPreFilter(VAccountEntity.class, "accountId","identity", "nickName", "gender", "address", "portrait", "birthday", "source", "userId")
+                new SimplePropertyPreFilter(VAccountEntity.class, "accountId", "identity", "nickName", "gender", "address", "portrait", "birthday", "source", "userId")
         }));
     }
 
@@ -254,7 +262,7 @@ public class AccountController extends Controller implements IAccountController 
         String params = this.getPara("p");
         VUserEntity requestVUserEntity = JSON.parseObject(params, VUserEntity.class);
         IResultSet iResultSet = new ResultSet();
-        if (!requestVUserEntity.checkMarkParams()){
+        if (!requestVUserEntity.checkMarkParams()) {
             iResultSet.setCode(IResultSet.ResultCode.RC_PARAMS_BAD.getCode());
             iResultSet.setData(requestVUserEntity);
             iResultSet.setMessage(IResultSet.ResultMessage.RM_PARAMETERS_BAD);

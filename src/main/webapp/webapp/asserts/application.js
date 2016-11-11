@@ -93,7 +93,7 @@ function setTitleViewLoginStatus(userEntity) {
     logoutAction.onclick = function () {
         let requestUserEntity = new Object();
         requestUserEntity.cs = getCookie(KEY_CS);
-        let url = BASE_PATH + "account/logout?p=" + JSON.stringify(requestUserEntity);
+        let url = BASE_PATH + "/account/logout?p=" + JSON.stringify(requestUserEntity);
         asyncRequestByGet(url, function (data) {
             var result = checkResponseDataFormat(data);
             if (result) {
@@ -124,12 +124,12 @@ function setTitleViewLoginStatus(userEntity) {
         let requestPageEntity = new Object();
         requestPageEntity.cs = getCookie("cs");
         requestPageEntity.dir = getCookie("order");
-        window.open(BASE_PATH + "pm?p=" + JSON.stringify(requestPageEntity));
+        window.open(BASE_PATH + "/pm?p=" + JSON.stringify(requestPageEntity));
     }
     queryAction.onclick = function () {
         let requestPageEntity = new Object();
         requestPageEntity.cs = getCookie("cs");
-        window.open(BASE_PATH + "pm?p=" + JSON.stringify(requestPageEntity));
+        window.open(BASE_PATH + "/pm?p=" + JSON.stringify(requestPageEntity));
     }
 }
 
@@ -142,7 +142,7 @@ function requestSessionStatus(onRequestCallback) {
     if (!isNullValue(cs)) {
         let requestUserEntity = new Object();
         requestUserEntity.cs = cs;
-        let url = BASE_PATH + "account/retrieve?p=" + JSON.stringify(requestUserEntity);
+        let url = BASE_PATH + "/account/retrieve?p=" + JSON.stringify(requestUserEntity);
         asyncRequestByGet(url, function (data) {
             onRequestCallback(data);
         }, onErrorCallback, onTimeoutCallback);
@@ -154,6 +154,7 @@ function requestSessionStatus(onRequestCallback) {
  * @param data
  */
 function onRequestSessionStatusCommonCallback(data) {
+    console.log("aaa");
     var jsonData = JSON.parse(data);
     if (jsonData.code == RC_SUCCESS) {
         let userEntity = jsonData.data;
@@ -165,7 +166,7 @@ function onRequestSessionStatusCommonCallback(data) {
 }
 
 function requestLinker() {
-    let url = BASE_PATH + "link/retrieves";
+    let url = BASE_PATH + "/link/retrieves";
     asyncRequestByGet(url, function (data) {
         var result = checkResponseDataFormat(data);
         if (result) {
@@ -252,6 +253,7 @@ function asyncRequestByGet(url, onDataCallback, onErrorCallback, onTimeoutCallba
     xmlHttp.timeout = 5000;
     xmlHttp.ontimeout = onTimeoutCallback;
     xmlHttp.open("GET", url, true);
+    // xmlHttp.withCredentials = true;
     xmlHttp.send(null);
     xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {

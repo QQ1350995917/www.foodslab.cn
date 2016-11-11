@@ -3,6 +3,7 @@ package cn.foodslab.controller.order;
 import cn.foodslab.common.cache.SessionContext;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.common.response.VPageData;
 import cn.foodslab.common.utils.OrderCode;
 import cn.foodslab.controller.cart.VCartEntity;
 import cn.foodslab.controller.manager.VManagerEntity;
@@ -279,7 +280,7 @@ public class OrderController extends Controller implements IOrderController {
             return;
         }
 
-        LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrievesByUser(accountEntities, 0, 0, 0);
+        LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrievesByUser(accountEntities, 0, requestVManagerEntity.getCurrentPageIndex(), requestVManagerEntity.getSizeInPage());
         if (orderEntities == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
             iResultSet.setData(requestVManagerEntity);
@@ -312,14 +313,18 @@ public class OrderController extends Controller implements IOrderController {
             vOrderEntity.setCartEntities(vCartEntities);
             responseVOrderEntities.add(vOrderEntity);
         }
+        int orderCounter = iOrderServices.mCountByUser(accountEntities, 0);
         if (responseVOrderEntities.size() == 0) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
         } else {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
         }
-        iResultSet.setData(responseVOrderEntities);
+        iResultSet.setData(new VPageData((orderCounter % requestVManagerEntity.getSizeInPage() == 0 ?
+                orderCounter / requestVManagerEntity.getSizeInPage() : orderCounter / requestVManagerEntity.getSizeInPage() + 1),
+                requestVManagerEntity.getCurrentPageIndex(), requestVManagerEntity.getSizeInPage(), responseVOrderEntities));
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{//TODO 裁剪参数
+                new SimplePropertyPreFilter(VPageData.class, "totalPageNumber", "currentPageIndex", "sizeInPage", "dataInPage"),
                 new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "code", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "createTime", "receiver", "cartEntities"),
                 new SimplePropertyPreFilter(VReceiverEntity.class, "name", "phone0", "phone1", "province", "city", "county", "town", "village", "append"),
                 new SimplePropertyPreFilter(VCartEntity.class, "mappingId", "accountId", "amount", "pricing", "formatEntity"),
@@ -343,7 +348,7 @@ public class OrderController extends Controller implements IOrderController {
             return;
         }
 
-        LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrieves(requestVOrderEntity.getStatus(), 0, 0);
+        LinkedList<OrderEntity> orderEntities = iOrderServices.mRetrieves(requestVOrderEntity.getStatus(), requestVOrderEntity.getCurrentPageIndex(), requestVOrderEntity.getSizeInPage());
         if (orderEntities == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
             iResultSet.setData(requestVOrderEntity);
@@ -375,13 +380,17 @@ public class OrderController extends Controller implements IOrderController {
             result.setCartEntities(vCartEntities);
             responseVOrderEntities.add(result);
         }
+        int orderCounter = iOrderServices.mCount(requestVOrderEntity.getStatus());
         if (responseVOrderEntities.size() == 0) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
         } else {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
         }
-        iResultSet.setData(responseVOrderEntities);
+        iResultSet.setData(new VPageData(orderCounter % requestVOrderEntity.getSizeInPage() == 0 ?
+                orderCounter / requestVOrderEntity.getSizeInPage() : orderCounter / requestVOrderEntity.getSizeInPage() + 1,
+                requestVOrderEntity.getCurrentPageIndex(), requestVOrderEntity.getSizeInPage(), responseVOrderEntities));
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                new SimplePropertyPreFilter(VPageData.class, "totalPageNumber", "currentPageIndex", "sizeInPage", "dataInPage"),
                 new SimplePropertyPreFilter(VOrderEntity.class, "orderId", "accountId", "code", "senderName", "senderPhone", "receiverId", "cost", "postage", "status", "expressLabel", "expressNumber", "createTime", "receiver", "cartEntities"),
                 new SimplePropertyPreFilter(VReceiverEntity.class, "name", "phone0", "phone1", "province", "city", "county", "town", "village", "append"),
                 new SimplePropertyPreFilter(VCartEntity.class, "mappingId", "accountId", "amount", "pricing", "formatEntity"),

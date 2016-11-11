@@ -60,7 +60,7 @@ function createOrderItemTitleView(orderEntity) {
     let itemTitleContainer = document.createElement("div");
     itemTitleContainer.className = "itemTitleContainer";
     itemTitleContainer.customerHeight = 40;
-    itemTitleContainer.innerHTML = new Date(orderEntity.createTime).format("yyyy-MM-dd hh:mm") + " " + " 订单号: " + orderEntity.orderId;
+    itemTitleContainer.innerHTML = new Date(orderEntity.createTime).format("yyyy-MM-dd hh:mm") + " " + " 订单号: " + orderEntity.code;
     return itemTitleContainer;
 }
 

@@ -113,31 +113,33 @@ function requestRecommend() {
     }, onErrorCallback, onTimeoutCallback);
 }
 
-function onRequestOrderByLeanCallback(orderId, data) {
+function onRequestOrderByLeanCallback(orderId, orderEntity) {
     let searchResultView = document.getElementById("searchResultView");
     searchResultView.innerHTML = null;
     if (searchResultView.clientHeight == 0) {
         let mainView = document.getElementById(MAIN);
         mainView.style.height = mainView.clientHeight + 120 + "px";
     }
-    if (data == undefined) {
+    if (orderEntity == undefined) {
         searchResultView.style.height = "120px";
         searchResultView.innerHTML = "没有查询到订单号为<span style='color: #FF0000'>" + orderId + "</span>的订单";
     } else {
         searchResultView.style.height = "120px";
-
+        console.log(orderEntity);
         let orderInfo = document.createElement("div");
         orderInfo.className = "orderItem";
-        orderInfo.innerHTML = "订单号: " + data.orderId + "  下单时间: " + data.orderTime;
+        orderInfo.innerHTML = "订单号: " + orderEntity.code + "  下单时间: " + new Date(orderEntity.createTime).format("yyyy-MM-dd hh:mm");
         let receiverInfo = document.createElement("div");
         receiverInfo.className = "orderItem";
-        receiverInfo.innerHTML = "收货地址: " + data.address + "  收货人: " + data.name + " " + data.phone;
+        receiverInfo.innerHTML = "收货地址: " + orderEntity.receiver.province  + " " + orderEntity.receiver.city + " "
+            + orderEntity.receiver.county + " " + orderEntity.receiver.town + " " + orderEntity.receiver.village + " "
+            + "  收货人: " + orderEntity.receiver.name + " " + orderEntity.receiver.phone0;
         let expressInfo = document.createElement("div");
         expressInfo.className = "orderItem";
-        expressInfo.innerHTML = "快递公司: " + data.expressName + "    " + "快递单号: " + data.expressNumber;
+        expressInfo.innerHTML = "快递公司: " + orderEntity.expressName + "    " + "快递单号: " + orderEntity.expressNumber;
         let expressCurrentInfo = document.createElement("div");
         expressCurrentInfo.className = "orderItem";
-        expressCurrentInfo.innerHTML = "快递状态: " + data.expressStatus;
+        expressCurrentInfo.innerHTML = "快递状态: " + orderEntity.expressStatus;
 
 
         searchResultView.appendChild(orderInfo);

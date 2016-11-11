@@ -13,6 +13,8 @@ import java.util.LinkedList;
 public class VUserEntity extends UserEntity implements ISessionEntity {
     private String cs;
     private LinkedList<VAccountEntity> children;
+    private int currentPageIndex = 0;
+    private int sizeInPage = 12;
 
     public VUserEntity() {
         super();
@@ -53,6 +55,22 @@ public class VUserEntity extends UserEntity implements ISessionEntity {
 
     public void setChildren(LinkedList<VAccountEntity> children) {
         this.children = children;
+    }
+
+    public int getCurrentPageIndex() {
+        return currentPageIndex;
+    }
+
+    public void setCurrentPageIndex(int currentPageIndex) {
+        this.currentPageIndex = currentPageIndex;
+    }
+
+    public int getSizeInPage() {
+        return sizeInPage;
+    }
+
+    public void setSizeInPage(int sizeInPage) {
+        this.sizeInPage = sizeInPage;
     }
 
     public boolean checkUserIdParams() {

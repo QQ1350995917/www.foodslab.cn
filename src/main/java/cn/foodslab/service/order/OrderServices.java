@@ -52,9 +52,9 @@ public class OrderServices implements IOrderServices {
         }
         List<Record> records;
         if (status == 0) {
-            records = Db.find("SELECT * FROM user_order WHERE status > ? AND accountId IN (" + in + ") ORDER BY createTime DESC", params);
+            records = Db.find("SELECT * FROM user_order WHERE status > ? AND accountId IN (" + in + ") ORDER BY createTime DESC limit ? , ?", params, pageIndex * counter, counter);
         } else {
-            records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (" + in + ") ORDER BY createTime DESC", params);
+            records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (" + in + ") ORDER BY createTime DESC limit ? , ?", params, pageIndex * counter, counter);
         }
         if (records == null) {
             return null;
@@ -92,7 +92,7 @@ public class OrderServices implements IOrderServices {
     @Override
     public LinkedList<OrderEntity> query(String key, int pageIndex, int counter) {
         LinkedList<OrderEntity> result = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM user_order WHERE orderId = ? ", key);
+        List<Record> records = Db.find("SELECT * FROM user_order WHERE orderId = ? limit ? , ?", key, pageIndex * counter, counter);
         if (records.size() > 0) {
             OrderEntity orderEntity = JSON.parseObject(JSON.toJSONString(records.get(0).getColumns()), OrderEntity.class);
             result.add(orderEntity);
@@ -103,13 +103,28 @@ public class OrderServices implements IOrderServices {
     }
 
     @Override
+    public int mCount(int status) {
+        List<Record> records;
+        if (status == 0) {
+            records = Db.find("SELECT COUNT(orderId) AS counter FROM user_order");
+        } else {
+            records = Db.find("SELECT COUNT(orderId) AS counter FROM user_order WHERE status = ? ", status);
+        }
+        if (records != null && records.size() == 1) {
+            return Integer.parseInt(records.get(0).getColumns().get("counter").toString());
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
     public LinkedList<OrderEntity> mRetrieves(int status, int pageIndex, int counter) {
         LinkedList<OrderEntity> orderEntities = new LinkedList<>();
         List<Record> records;
         if (status == 0) {
-            records = Db.find("SELECT * FROM user_order WHERE status != -1 ORDER BY createTime DESC");
+            records = Db.find("SELECT * FROM user_order WHERE status != -1 ORDER BY createTime DESC limit ? , ? ", pageIndex * counter, counter);
         } else {
-            records = Db.find("SELECT * FROM user_order WHERE status = ? AND status != -1 ORDER BY createTime ASC", status);
+            records = Db.find("SELECT * FROM user_order WHERE status = ? AND status != -1 ORDER BY createTime ASC limit ? , ?", status, pageIndex * counter, counter);
         }
         if (records == null) {
             return null;
@@ -119,6 +134,34 @@ public class OrderServices implements IOrderServices {
                 orderEntities.add(orderEntity);
             }
             return orderEntities;
+        }
+    }
+
+    @Override
+    public int mCountByUser(LinkedList<? extends AccountEntity> accountEntities, int status) {
+        String[] params = new String[accountEntities.size() + 1];
+        int index = 0;
+        params[index] = status + "";
+        index++;
+        String in = "";
+        for (AccountEntity accountEntity : accountEntities) {
+            in = in + " ? ,";
+            params[index] = accountEntity.getAccountId();
+            index++;
+        }
+        if (in.length() > 0) {
+            in = in.substring(0, in.length() - 1);
+        }
+        List<Record> records;
+        if (status == 0) {
+            records = Db.find("SELECT COUNT(orderId) AS counter FROM user_order WHERE status != -1 AND accountId IN (" + in + ")", params);
+        } else {
+            records = Db.find("SELECT COUNT(orderId) AS counter FROM user_order WHERE status = ? AND accountId IN (" + in + ") ", params);
+        }
+        if (records.size() == 1) {
+            return Integer.parseInt(records.get(0).getColumns().get("counter").toString());
+        } else {
+            return 0;
         }
     }
 
@@ -139,9 +182,9 @@ public class OrderServices implements IOrderServices {
         }
         List<Record> records;
         if (status == 0) {
-            records = Db.find("SELECT * FROM user_order WHERE status > ? AND accountId IN (" + in + ") ORDER BY createTime DESC", params);
+            records = Db.find("SELECT * FROM user_order WHERE status > ? AND accountId IN (" + in + ") ORDER BY createTime DESC limit ? , ?", status, params, pageIndex * counter, counter);
         } else {
-            records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (" + in + ") ORDER BY createTime DESC", params);
+            records = Db.find("SELECT * FROM user_order WHERE status = ? AND accountId IN (" + in + ") ORDER BY createTime DESC limit ? , ?", status, params, pageIndex * counter, counter);
         }
         if (records == null) {
             return null;

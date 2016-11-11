@@ -25,9 +25,9 @@ public interface IOrderServices {
      * 分页分状态读取名下账户的订单
      *
      * @param accountEntities 账户集合
-     * @param status     订单状态
-     * @param pageIndex  当前页码
-     * @param counter    每页条数
+     * @param status          订单状态
+     * @param pageIndex       当前页码
+     * @param counter         每页条数
      * @return success 订单对象集合 fail null
      */
     LinkedList<OrderEntity> retrievesByAccounts(LinkedList<? extends AccountEntity> accountEntities, int status, int pageIndex, int counter);
@@ -37,10 +37,10 @@ public interface IOrderServices {
      * 用户确认收货
      *
      * @param accountEntities 账户对象集合
-     * @param orderEntity 订单对象
+     * @param orderEntity     订单对象
      * @return success 订单对象 fail null
      */
-    OrderEntity expressed(LinkedList<? extends AccountEntity> accountEntities,OrderEntity orderEntity);
+    OrderEntity expressed(LinkedList<? extends AccountEntity> accountEntities, OrderEntity orderEntity);
 
     /**
      * 用户接口
@@ -55,6 +55,15 @@ public interface IOrderServices {
 
     /**
      * 管理员接口
+     * 获取总的记录数
+     *
+     * @param status 状态
+     * @return
+     */
+    int mCount(int status);
+
+    /**
+     * 管理员接口
      * 管理员读取订单集合
      *
      * @param status    订单状态
@@ -66,12 +75,22 @@ public interface IOrderServices {
 
     /**
      * 管理员接口
+     * 根据用户名统计订单数量
+     *
+     * @param accountEntities 账户对象集合
+     * @param status 订单状态
+     * @return success 数量 fail 0
+     */
+    int mCountByUser(LinkedList<? extends AccountEntity> accountEntities, int status);
+
+    /**
+     * 管理员接口
      * 管理员根据用户分页分类读取订单
      *
-     * @param accountEntities  账户集合
-     * @param status    订单状态
-     * @param pageIndex 页码
-     * @param counter   每页条数
+     * @param accountEntities 账户集合
+     * @param status          订单状态
+     * @param pageIndex       页码
+     * @param counter         每页条数
      * @return success 订单对象集合 fail null
      */
     LinkedList<OrderEntity> mRetrievesByUser(LinkedList<? extends AccountEntity> accountEntities, int status, int pageIndex, int counter);

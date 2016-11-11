@@ -39,6 +39,14 @@ public interface IFormatServices {
 
     /**
      * 管理员接口
+     * 获取总的数据数量
+     *
+     * @return
+     */
+    int mCount();
+
+    /**
+     * 管理员接口
      * 判断该规格是否已经存在
      *
      * @param formatEntity 规格对象

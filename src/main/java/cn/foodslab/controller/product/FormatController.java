@@ -2,6 +2,7 @@ package cn.foodslab.controller.product;
 
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.common.response.VPageData;
 import cn.foodslab.controller.file.VFFile;
 import cn.foodslab.interceptor.ManagerInterceptor;
 import cn.foodslab.interceptor.MenuInterceptor;
@@ -435,7 +436,9 @@ public class FormatController extends Controller implements IFormatController {
     @Override
     @Before({SessionInterceptor.class, ManagerInterceptor.class, MenuInterceptor.class})
     public void mWeights() {
-        LinkedList<FormatEntity> formatEntities = iFormatServices.mRetrieveByWeight(0, 0);
+        String params = this.getPara("p");
+        VFormatEntity requestVFormatEntity = JSON.parseObject(params, VFormatEntity.class);
+        LinkedList<FormatEntity> formatEntities = iFormatServices.mRetrieveByWeight(requestVFormatEntity.getCurrentPageIndex(), requestVFormatEntity.getSizeInPage());
         IResultSet iResultSet = new ResultSet();
         if (formatEntities == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
@@ -443,7 +446,6 @@ public class FormatController extends Controller implements IFormatController {
             renderJson(JSON.toJSONString(iResultSet));
             return;
         }
-
         LinkedList<VFormatEntity> responseVFormatEntities = new LinkedList<>();
         for (FormatEntity formatEntity : formatEntities) {
             TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());//这里有可能是存在被禁用而无法查找到
@@ -463,15 +465,19 @@ public class FormatController extends Controller implements IFormatController {
             vFormatEntity.setParent(vTypeEntity);
             responseVFormatEntities.add(vFormatEntity);
         }
-
+        int formatCounter = iFormatServices.mCount();
         if (responseVFormatEntities.size() == 0) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
         } else {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
         }
-        iResultSet.setData(responseVFormatEntities);
+        iResultSet.setData(
+                new VPageData(formatCounter % requestVFormatEntity.getSizeInPage() == 0 ?
+                        formatCounter / requestVFormatEntity.getSizeInPage() : formatCounter / requestVFormatEntity.getSizeInPage() + 1,
+                        requestVFormatEntity.getCurrentPageIndex(), requestVFormatEntity.getSizeInPage(), responseVFormatEntities));
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet, new SerializeFilter[]{
+                new SimplePropertyPreFilter(VPageData.class, "totalPageNumber", "currentPageIndex", "sizeInPage", "dataInPage"),
                 new SimplePropertyPreFilter(
                         VFormatEntity.class, "typeId", "formatId", "label", "meta", "amount", "amountMeta", "price", "priceMeta",
                         "postage", "postageMeta", "pricing", "pricingDiscount", "pricingStart", "pricingEnd", "pricingStatus",

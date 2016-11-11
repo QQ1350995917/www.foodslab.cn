@@ -17,6 +17,8 @@ public class VManagerEntity extends ManagerEntity implements ISessionEntity {
     private LinkedList<String> actionKeys;//驻留session的内容
     private LinkedList<VMenuEntity> menus;
     private VUserEntity user;//管理员访问某个用户的信息
+    private int currentPageIndex = 0;
+    private int sizeInPage = 12;
 
     public VManagerEntity() {
         super();
@@ -72,6 +74,22 @@ public class VManagerEntity extends ManagerEntity implements ISessionEntity {
 
     public void setUser(VUserEntity user) {
         this.user = user;
+    }
+
+    public int getCurrentPageIndex() {
+        return currentPageIndex;
+    }
+
+    public void setCurrentPageIndex(int currentPageIndex) {
+        this.currentPageIndex = currentPageIndex;
+    }
+
+    public int getSizeInPage() {
+        return sizeInPage;
+    }
+
+    public void setSizeInPage(int sizeInPage) {
+        this.sizeInPage = sizeInPage;
     }
 
     /**

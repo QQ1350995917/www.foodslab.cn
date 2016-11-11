@@ -51,6 +51,16 @@ public class FormatServices implements IFormatServices {
     }
 
     @Override
+    public int mCount() {
+        List<Record> records = Db.find("SELECT COUNT(formatId) AS counter FROM product_format WHERE status = 2 ");
+        if (records.size() == 1) {
+            return Integer.parseInt(records.get(0).getColumns().get("counter").toString());
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
     public boolean mExist(FormatEntity formatEntity) {
         List<Record> records = Db.find("SELECT * FROM product_format WHERE label = ? AND typeId = ? AND formatId != ? AND status != -1 ", formatEntity.getLabel(), formatEntity.getTypeId(),formatEntity.getFormatId());
         if (records.size() == 1) {
@@ -210,7 +220,7 @@ public class FormatServices implements IFormatServices {
     @Override
     public LinkedList<FormatEntity> mRetrieveByWeight(int index,int counter) {
         LinkedList<FormatEntity> result = new LinkedList<>();
-        List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE status = 2 order by weight ASC limit 12 offset 0 ");
+        List<Record> formatRecords = Db.find("SELECT * FROM product_format WHERE status = 2 order by weight ASC limit ? , ? ",index * counter,counter);
         for (Record formatRecord : formatRecords) {
             FormatEntity formatEntity = JSON.parseObject(JSON.toJSONString(formatRecord.getColumns()), FormatEntity.class);
             result.add(formatEntity);

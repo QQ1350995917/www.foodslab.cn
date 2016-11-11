@@ -15,6 +15,8 @@ public class VFormatEntity extends FormatEntity {
     private String formatId2;
     private int weight2;
     private VTypeEntity parent;
+    private int currentPageIndex = 0;
+    private int sizeInPage = 12;
 
     public VFormatEntity() {
         super();
@@ -100,6 +102,22 @@ public class VFormatEntity extends FormatEntity {
         this.parent = parent;
     }
 
+    public int getCurrentPageIndex() {
+        return currentPageIndex;
+    }
+
+    public void setCurrentPageIndex(int currentPageIndex) {
+        this.currentPageIndex = currentPageIndex;
+    }
+
+    public int getSizeInPage() {
+        return sizeInPage;
+    }
+
+    public void setSizeInPage(int sizeInPage) {
+        this.sizeInPage = sizeInPage;
+    }
+
     public boolean checkFormatIdParams() {
         if (this.getFormatId() == null || this.getFormatId().trim().equals("")) {
             return false;
@@ -117,7 +135,7 @@ public class VFormatEntity extends FormatEntity {
         if (this.getStatus() != -1 && this.getStatus() != 1 && this.getStatus() != 2) {
             return false;
         }
-        //规格不能小于0，单位不能为空，数量不能为空，数量单位不能为空，定价不能小于0，邮费不能小于0
+        //规格，数量，定价，邮费是数字，规格不能小于0，单位不能为空，数量不能为空，数量单位不能为空，定价不能小于0，邮费不能小于0
         if (this.getLabel() <= 0 || this.getMeta() == null || this.getMeta().trim().equals("")
                 || this.getAmount() <= 0 || this.getAmountMeta() == null || this.getAmountMeta().trim().equals("")
                 || this.getPrice() <= 0 || this.getPostage() < 0) {

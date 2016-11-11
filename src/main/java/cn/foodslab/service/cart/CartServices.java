@@ -84,7 +84,7 @@ public class CartServices implements ICartServices {
     @Override
     public LinkedList<CartEntity> retrievesByAccountId(String accountId) {
         LinkedList<CartEntity> cartEntities = new LinkedList<>();
-        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND accountId = ? ORDER BY updateTime DESC", accountId);
+        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND accountId = ? ORDER BY updateTime DESC ", accountId);
         for (Record record : records) {
             cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
         }
@@ -92,7 +92,17 @@ public class CartServices implements ICartServices {
     }
 
     @Override
-    public LinkedList<CartEntity> retrievesByAccounts(LinkedList<? extends AccountEntity> accountEntities) {
+    public int count() {
+        List<Record> records = Db.find("SELECT COUNT(formatId) AS counter FROM user_cart WHERE status != -1 ");
+        if (records.size() == 1) {
+            return Integer.parseInt(records.get(0).getColumns().get("counter").toString());
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public LinkedList<CartEntity> retrievesByAccounts(LinkedList<? extends AccountEntity> accountEntities, int pageIndex, int counter) {
         LinkedList<CartEntity> cartEntities = new LinkedList<>();
 
         String[] params = new String[accountEntities.size()];
@@ -107,7 +117,7 @@ public class CartServices implements ICartServices {
             inAccountIds = inAccountIds.substring(0, inAccountIds.length() - 1);
         }
 
-        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND accountId IN (" + inAccountIds + ") ORDER BY updateTime DESC", params);
+        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND accountId IN (" + inAccountIds + ") ORDER BY updateTime DESC limit ? , ? ", params, pageIndex * counter, counter);
         for (Record record : records) {
             cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
         }
@@ -145,7 +155,7 @@ public class CartServices implements ICartServices {
             inMappingIds = inMappingIds.substring(0, inMappingIds.length() - 1);
         }
 
-        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND accountId IN (" + inAccountIds + ") AND mappingId IN (" +  inMappingIds + ") ORDER BY updateTime DESC", params);
+        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND accountId IN (" + inAccountIds + ") AND mappingId IN (" + inMappingIds + ") ORDER BY updateTime DESC", params);
         for (Record record : records) {
             cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
         }

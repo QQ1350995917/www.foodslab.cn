@@ -3,6 +3,7 @@ package cn.foodslab.controller.cart;
 import cn.foodslab.common.cache.SessionContext;
 import cn.foodslab.common.response.IResultSet;
 import cn.foodslab.common.response.ResultSet;
+import cn.foodslab.common.response.VPageData;
 import cn.foodslab.controller.product.VFormatEntity;
 import cn.foodslab.controller.product.VSeriesEntity;
 import cn.foodslab.controller.product.VTypeEntity;
@@ -147,7 +148,7 @@ public class CartController extends Controller implements ICartController {
         if (requestVCartEntity.getProductIds() != null) {
             cartEntities = iCartServices.retrievesByIds(vUserEntity.getChildren(), requestVCartEntity.getProductIds());
         } else {
-            cartEntities = iCartServices.retrievesByAccounts(vUserEntity.getChildren());
+            cartEntities = iCartServices.retrievesByAccounts(vUserEntity.getChildren(), requestVCartEntity.getCurrentPageIndex(), requestVCartEntity.getSizeInPage());
         }
         if (cartEntities == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
@@ -156,8 +157,8 @@ public class CartController extends Controller implements ICartController {
             renderJson(JSON.toJSONString(iResultSet, new SimplePropertyPreFilter(VCartEntity.class, "mappingId")));
             return;
         }
-
-        LinkedList<VCartEntity> requestVCartEntities = new LinkedList<>();
+        int counter = iCartServices.count();
+        LinkedList<VCartEntity> responseVCartEntities = new LinkedList<>();
         for (CartEntity cartEntity : cartEntities) {// TODO 所有涉及到正反向产品树结构查询的都应该着重考虑产品下架的可能
             FormatEntity formatEntity = iFormatServices.retrieveById(cartEntity.getFormatId());
             TypeEntity typeEntity = iTypeServices.retrieveById(formatEntity.getTypeId());
@@ -169,14 +170,16 @@ public class CartController extends Controller implements ICartController {
             vFormatEntity.setParent(vTypeEntity);
             VCartEntity responseVCartEntity = new VCartEntity(cartEntity);
             responseVCartEntity.setFormatEntity(vFormatEntity);
-            requestVCartEntities.add(responseVCartEntity);
+            responseVCartEntities.add(responseVCartEntity);
         }
-        if (requestVCartEntities.size() == 0) {
+        if (responseVCartEntities.size() == 0) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
         } else {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
         }
-        iResultSet.setData(requestVCartEntities);
+        iResultSet.setData(new VPageData(counter % requestVCartEntity.getSizeInPage() == 0 ?
+                counter / requestVCartEntity.getSizeInPage() : counter % requestVCartEntity.getSizeInPage() + 1,
+                requestVCartEntity.getCurrentPageIndex(), requestVCartEntity.getSizeInPage(), responseVCartEntities));
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet));//TODO 调整返回参数
     }
@@ -233,7 +236,7 @@ public class CartController extends Controller implements ICartController {
             return;
         }
 
-        LinkedList<CartEntity> cartEntities = iCartServices.retrievesByAccounts(accountEntities);
+        LinkedList<CartEntity> cartEntities = iCartServices.retrievesByAccounts(accountEntities, requestVUserEntity.getCurrentPageIndex(), requestVUserEntity.getSizeInPage());
         if (cartEntities == null) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SEVER_ERROR.getCode());
             iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_ERROR);
@@ -255,12 +258,15 @@ public class CartController extends Controller implements ICartController {
             responseVCartEntity.setFormatEntity(vFormatEntity);
             responseVCartEntities.add(responseVCartEntity);
         }
+        int counter = iCartServices.count();
         if (responseVCartEntities.size() == 0) {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS_EMPTY.getCode());
         } else {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
         }
-        iResultSet.setData(responseVCartEntities);
+        iResultSet.setData(new VPageData(counter % requestVUserEntity.getSizeInPage() == 0 ?
+                counter / requestVUserEntity.getSizeInPage() : counter % requestVUserEntity.getSizeInPage() + 1,
+                requestVUserEntity.getCurrentPageIndex(), requestVUserEntity.getSizeInPage(), responseVCartEntities));
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet));//TODO 调整返回参数
     }
