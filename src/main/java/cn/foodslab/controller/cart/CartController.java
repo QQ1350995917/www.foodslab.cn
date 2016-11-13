@@ -265,7 +265,7 @@ public class CartController extends Controller implements ICartController {
             iResultSet.setCode(IResultSet.ResultCode.RC_SUCCESS.getCode());
         }
         iResultSet.setData(new VPageData(counter % requestVUserEntity.getSizeInPage() == 0 ?
-                counter / requestVUserEntity.getSizeInPage() : counter % requestVUserEntity.getSizeInPage() + 1,
+                counter / requestVUserEntity.getSizeInPage() : counter / requestVUserEntity.getSizeInPage() + 1,
                 requestVUserEntity.getCurrentPageIndex(), requestVUserEntity.getSizeInPage(), responseVCartEntities));
         iResultSet.setMessage(IResultSet.ResultMessage.RM_SERVER_OK);
         renderJson(JSON.toJSONString(iResultSet));//TODO 调整返回参数

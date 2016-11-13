@@ -93,12 +93,23 @@ public class CartServices implements ICartServices {
 
     @Override
     public int countByAccounts(LinkedList<? extends AccountEntity> accountEntities) {
-//        List<Record> records = Db.find("SELECT COUNT(mappingId) AS counter FROM user_cart WHERE status = 1 ");
-//        if (records.size() == 1) {
-//            return Integer.parseInt(records.get(0).getColumns().get("counter").toString());
-//        } else {
-//            return 0;
-//        }
+        Object[] params = new Object[accountEntities.size()];
+        int index = 0;
+        String in = "";
+        for (AccountEntity accountEntity : accountEntities) {
+            in = in + " ? ,";
+            params[index] = accountEntity.getAccountId();
+            index++;
+        }
+        if (in.length() > 0) {
+            in = in.substring(0, in.length() - 1);
+        }
+        List<Record> records = Db.find("SELECT COUNT(mappingId) AS counter FROM user_cart WHERE status = 1 AND accountId IN (" + in + ")",params);
+        if (records.size() == 1) {
+            return Integer.parseInt(records.get(0).getColumns().get("counter").toString());
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -107,20 +118,20 @@ public class CartServices implements ICartServices {
 
         Object[] params = new Object[accountEntities.size() + 2];
         int index = 0;
-        String inAccountIds = "";
+        String in = "";
         for (AccountEntity accountEntity : accountEntities) {
-            inAccountIds = inAccountIds + " ? ,";
+            in = in + " ? ,";
             params[index] = accountEntity.getAccountId();
             index++;
         }
-        if (inAccountIds.length() > 0) {
-            inAccountIds = inAccountIds.substring(0, inAccountIds.length() - 1);
+        if (in.length() > 0) {
+            in = in.substring(0, in.length() - 1);
         }
         params[index] = pageIndex * counter;
         index++;
         params[index] = counter;
         index++;
-        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND accountId IN (" + inAccountIds + ") ORDER BY updateTime DESC limit ? , ? ", params);
+        List<Record> records = Db.find("SELECT * FROM user_cart WHERE status = 1 AND accountId IN (" + in + ") ORDER BY updateTime DESC limit ? , ? ", params);
         for (Record record : records) {
             cartEntities.add(JSON.parseObject(JSON.toJSONString(record.getColumns()), CartEntity.class));
         }
