@@ -13,6 +13,7 @@ import cn.foodslab.controller.product.FormatController;
 import cn.foodslab.controller.product.SeriesController;
 import cn.foodslab.controller.product.TypeController;
 import cn.foodslab.controller.receiver.ReceiverController;
+import cn.foodslab.controller.system.SystemController;
 import cn.foodslab.controller.user.AccountController;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
@@ -97,6 +98,7 @@ public class ApplicationConfigure extends JFinalConfig {
         me.add("/order", OrderController.class);
         me.add("/receiver", ReceiverController.class);
         me.add("/file", FileController.class);
+        me.add("/system", SystemController.class);
     }
 
     @Override

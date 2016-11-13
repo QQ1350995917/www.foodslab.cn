@@ -63,6 +63,11 @@ public class SessionContext {
                 return (VManagerEntity)attribute;
             }
         }
+
+        HttpSession httpSession = sessionMap.get("");
+
+
+
         return null;
     }
 

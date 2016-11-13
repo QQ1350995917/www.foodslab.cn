@@ -58,4 +58,8 @@ public class DateTime {
         long fixTime = parseFullTimeToLong("2015-12-31 23:59:59");
         return fixTime;
     }
+
+    public static long getCurrentTimestamp(){
+        return new Date().getTime();
+    }
 }

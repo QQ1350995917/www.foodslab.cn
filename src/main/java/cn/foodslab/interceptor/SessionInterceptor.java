@@ -45,7 +45,6 @@ public class SessionInterceptor implements Interceptor {
             inv.getController().renderJson(JSON.toJSONString(paramsMap));
             return;
         }
-
         inv.invoke();
     }
 }
